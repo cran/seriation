@@ -1,0 +1,235 @@
+\begin{thebibliography}{37}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Arabie and Hubert(1996)]{seriation:Arabie:1996}
+P.~Arabie and L.~Hubert.
+\newblock An overview of combinatorial data analysis.
+\newblock In P.~Arabie, L.~Hubert, and G.~D. Soete, editors, \emph{Clustering
+  and Classification}, pages 5--63. World Scientific, River Edge, NJ, 1996.
+
+\bibitem[Arabie and Hubert(1990)]{seriation:Arabie:1990}
+P.~Arabie and L.~J. Hubert.
+\newblock The bond energy algorithm revisited.
+\newblock \emph{{IEEE} Transactions on Systems, Man, and Cybernetics},
+  20\penalty0 (1):\penalty0 268--74, 1990.
+
+\bibitem[Bar-Joseph et~al.(2001)Bar-Joseph, Demaine, Gifford, and
+  Jaakkola]{seriation:Bar-Joseph:2001}
+Z.~Bar-Joseph, E.~D. Demaine, D.~K. Gifford, and T.~Jaakkola.
+\newblock Fast optimal leaf ordering for hierarchical clustering.
+\newblock \emph{Bioinformatics}, 17\penalty0 (1):\penalty0 22--29, 2001.
+
+\bibitem[Bertin(1981)]{seriation:Bertin:1981}
+J.~Bertin.
+\newblock \emph{Graphics and Graphic Information Processing}.
+\newblock Walter de Gruyter, Berlin, 1981.
+\newblock Translated by William J. Berg and Paul Scott.
+
+\bibitem[Bertin(1999)]{seriation:Bertin:1999}
+J.~Bertin.
+\newblock Graphics and graphic information processing.
+\newblock In S.~K. Card, J.~D. Mackinlay, and B.~Shneiderman, editors,
+  \emph{Readings in Information Visualization}, pages 62--65, San Francisco,
+  CA, USA, 1999. Morgan Kaufmann Publishers Inc.
+\newblock ISBN 1-55860-533-9.
+
+\bibitem[Brusco and Stahl(2005)]{seriation:Brusco:2005}
+M.~Brusco and S.~Stahl.
+\newblock \emph{Branch-and-Bound Applications in Combinatorial Data Analysis}.
+\newblock Springer, 2005.
+
+\bibitem[Brusco et~al.(2007)Brusco, K{\"o}hn, and Stahl]{seriation:Brusco:2007}
+M.~Brusco, H.~K{\"o}hn, and S.~Stahl.
+\newblock Heuristic implementation of dynamic programming for matrix
+  permutation problems in combinatorial data analysis.
+\newblock \emph{Psychometrika}, 2007.
+\newblock conditionally accepted.
+
+\bibitem[Caraux and Pinloche(2005)]{seriation:Caraux:2005}
+G.~Caraux and S.~Pinloche.
+\newblock Permutmatrix: A graphical environment to arrange gene expression
+  profiles in optimal linear order.
+\newblock \emph{Bioinformatics}, 21\penalty0 (7):\penalty0 1280--1281, 2005.
+
+\bibitem[Chen(2002)]{seriation:Chen:2002}
+C.-H. Chen.
+\newblock Generalized association plots: Information visualization via
+  iteratively generated correlation matrices.
+\newblock \emph{Statistica Sinica}, 12\penalty0 (1):\penalty0 7--29, 2002.
+
+\bibitem[Chessel et~al.(2007)Chessel, Dufour, and Dray]{seriation:Chessel:2007}
+D.~Chessel, A.-B. Dufour, and S.~Dray.
+\newblock \emph{ade4: Analysis of Ecological Data : Exploratory and Euclidean
+  methods in Multivariate data analysis and graphical display}, 2007.
+\newblock R package version 1.4-3.
+
+\bibitem[de~Falguerolles et~al.(1997)de~Falguerolles, Friedrich, and
+  Sawitzki]{seriation:Falguerolles:1997}
+A.~de~Falguerolles, F.~Friedrich, and G.~Sawitzki.
+\newblock A tribute to {J}. {B}ertin's graphical data analysis.
+\newblock In W.~Bandilla and F.~Faulbaum, editors, \emph{SoftStat '97 (Advances
+  in Statistical Software 6)}, pages 11--20. Lucius \& Lucius, 1997.
+
+\bibitem[de~Leeuw(2005)]{seriation:Leeuw:2005}
+J.~de~Leeuw.
+\newblock Unidimensional scaling.
+\newblock In B.~Everitt and D.~Howelll, editors, \emph{Encyclopedia of
+  Statistics in Behavioral Science}, volume~4. Wiley, 2005.
+
+\bibitem[Eisen et~al.(1998)Eisen, Spellman, Browndagger, and
+  Botstein]{seriation:Eisen:1998}
+M.~B. Eisen, P.~T. Spellman, P.~O. Browndagger, and D.~Botstein.
+\newblock Cluster analysis and display of genome-wide expression patterns.
+\newblock \emph{Proceedings of the National Academy of Science of the United
+  States}, 95\penalty0 (25):\penalty0 14863--14868, December 1998.
+
+\bibitem[Gale et~al.(1984)Gale, Halperin, and Costanzo]{seriation:Gale:1984}
+N.~Gale, W.~Halperin, and C.~Costanzo.
+\newblock Unclassed matrix shading and optimal ordering in hierarchical cluster
+  analysis.
+\newblock \emph{Journal of Classification}, 1:\penalty0 75--92, 1984.
+
+\bibitem[Garfinkel(1985)]{seriation:Garfinkel:1985}
+R.~Garfinkel.
+\newblock Motivation and modeling.
+\newblock chapter~2, pages 17--36. Wiley, New York, 1985.
+
+\bibitem[Gruvaeus and Wainer(1972)]{seriation:Gruvaeus:1972}
+G.~Gruvaeus and H.~Wainer.
+\newblock Two additions to hierarchical cluster analysis.
+\newblock \emph{British Journal of Mathematical and Statistical Psychology},
+  25:\penalty0 200--206, 1972.
+
+\bibitem[Gutin and Punnen(2002)]{seriation:Gutin:2002}
+G.~Gutin and A.~Punnen, editors.
+\newblock \emph{The Traveling Salesman Problem and Its Variations}, volume~12
+  of \emph{Combinatorial Optimization}.
+\newblock Kluwer, Dordrecht, 2002.
+
+\bibitem[Hahsler and Hornik(2007)]{seriation:Hahsler:2007}
+M.~Hahsler and K.~Hornik.
+\newblock \emph{TSP: Traveling Salesperson Problem (TSP)}, 2007.
+\newblock R package version 0.2-1.
+
+\bibitem[Held and Karp(1962)]{seriation:Held:1962}
+M.~Held and R.~Karp.
+\newblock A dynamic programming approach to sequencing problems.
+\newblock \emph{Journal of {SIAM}}, 10:\penalty0 196--210, 1962.
+
+\bibitem[Hubert(1974)]{seriation:Hubert:1974}
+L.~Hubert.
+\newblock Some applications of graph theory and related nonmetric techniques to
+  problems of approximate seriation: The case of symmetric proximity measures.
+\newblock \emph{British Journal of Mathematical Statistics and Psychology},
+  27:\penalty0 133--153, 1974.
+
+\bibitem[Hubert et~al.(1987)Hubert, Arabie, and Meulman]{seriation:Hubert:1987}
+L.~Hubert, P.~Arabie, and J.~Meulman.
+\newblock \emph{Combinatorial Data Analysis: Optimization by Dynamic
+  Programming}.
+\newblock Society for Industrial Mathematics, 1987.
+
+\bibitem[Hurley(2007)]{seriation:Hurley:2007}
+C.~Hurley.
+\newblock \emph{gclus: Clustering Graphics}, 2007.
+\newblock R package version 1.2.
+
+\bibitem[Ihm(2005)]{seriation:Ihm:2005}
+P.~Ihm.
+\newblock A contribution to the history of seriation in archaeology.
+\newblock In C.~Weihs and W.~Gaul, editors, \emph{Classification - the
+  Ubiquitous Challenge, Proceedings of the 28th Annual Conference of the
+  Gesellschaft f{\"u}r Klassifikation e.V., University of Dortmund, March
+  9--11, 2004}, Studies in Classification, Data Analysis, and Knowledge
+  Organization, pages 307--316, 2005.
+
+\bibitem[Kendall(1971)]{seriation:Kendall:1971}
+D.~Kendall.
+\newblock Seriation from abundance matrices.
+\newblock In F.~Hodson, D.~Kendall, and P.~Tautu, editors, \emph{Mathematics in
+  the archaeological and historical sciences}, pages 214--252. 1971.
+
+\bibitem[Lenstra(1974)]{seriation:Lenstra:1974}
+J.~K. Lenstra.
+\newblock Clustering a data array and the traveling-salesman problem.
+\newblock \emph{Operations Research}, 22\penalty0 (2):\penalty0 413--414, 1974.
+
+\bibitem[Lin and Kernighan(1973)]{seriation:Lin:1973}
+S.~Lin and B.~Kernighan.
+\newblock An effective heuristic algorithm for the traveling-salesman problem.
+\newblock \emph{Operations Research}, 21\penalty0 (2):\penalty0 498--516, 1973.
+
+\bibitem[Ling(1973)]{seriation:Ling:1973}
+R.~L. Ling.
+\newblock A computer generated aid for cluster analysis.
+\newblock \emph{Communications of the {ACM}}, 16\penalty0 (6):\penalty0
+  355--361, 1973.
+
+\bibitem[Marcotorchino(1987)]{seriation:Marcotorchino:1987}
+F.~Marcotorchino.
+\newblock Block seriation problems: A unified approach.
+\newblock \emph{Applied Stochastic Models and Data Analysis}, 3:\penalty0
+  73--91, 1987.
+
+\bibitem[McCormick et~al.(1972)McCormick, Schweitzer, and
+  White]{seriation:McCormick:1972}
+W.~T. McCormick, P.~J. Schweitzer, and T.~W. White.
+\newblock Problem decomposition and data reorganization by a clustering
+  technique.
+\newblock \emph{Operations Research}, 20\penalty0 (5):\penalty0 993--1009,
+  1972.
+
+\bibitem[Niermann(2005)]{seriation:Niermann:2005}
+S.~Niermann.
+\newblock Optimizing the ordering of tables with evolutionary computation.
+\newblock \emph{The American Statistician}, 59\penalty0 (1):\penalty0 41--46,
+  2005.
+
+\bibitem[Oksanen et~al.(2007)Oksanen, Kindt, Legendre, and
+  O'Hara]{seriation:Oksanen:2007}
+J.~Oksanen, R.~Kindt, P.~Legendre, and B.~O'Hara.
+\newblock \emph{vegan: Community Ecology Package}, 2007.
+\newblock R package version 1.8-6.
+
+\bibitem[Padberg and Rinaldi(1990)]{seriation:Padberg:1990}
+M.~Padberg and G.~Rinaldi.
+\newblock Facet identification for the symmetric traveling salesman polytope.
+\newblock \emph{Mathematical Programming}, 47\penalty0 (2):\penalty0 219--257,
+  1990.
+\newblock ISSN 0025-5610.
+
+\bibitem[Petrie(1899)]{seriation:Petrie:1899}
+F.~W.~M. Petrie.
+\newblock Sequences in prehistoric remains.
+\newblock \emph{Journal of the Anthropological Institute}, 29:\penalty0
+  295--301, 1899.
+
+\bibitem[Robinson(1951)]{seriation:Robinson:1951}
+W.~Robinson.
+\newblock A method for chronologically ordering archaeological deposits.
+\newblock \emph{American Antiquity}, 16:\penalty0 293--301, 1951.
+
+\bibitem[Rosenkrantz et~al.(1977)Rosenkrantz, Stearns, and Philip
+  M.~Lewis]{seriation:Rosenkrantz:1977}
+D.~J. Rosenkrantz, R.~E. Stearns, and I.~Philip M.~Lewis.
+\newblock An analysis of several heuristics for the traveling salesman problem.
+\newblock \emph{{SIAM} Journal on Computing}, 6\penalty0 (3):\penalty0
+  563--581, 1977.
+
+\bibitem[Sneath and Sokal(1973)]{seriation:Sneath:1973}
+P.~H.~A. Sneath and R.~R. Sokal.
+\newblock \emph{Numerical Taxonomy}.
+\newblock Freeman and Company, San Francisco, 1973.
+
+\bibitem[Strehl and Ghosh(2003)]{seriation:Strehl:2003}
+A.~Strehl and J.~Ghosh.
+\newblock Relationship-based clustering and visualization for high-dimensional
+  data mining.
+\newblock \emph{{INFORMS} Journal on Computing}, 15\penalty0 (2):\penalty0
+  208--230, 2003.
+
+\end{thebibliography}
