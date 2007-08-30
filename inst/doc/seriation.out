@@ -1,0 +1,24 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}
+\BOOKMARK [1][-]{section.2}{Seriation as a combinatorial optimization problem}{}
+\BOOKMARK [2][-]{subsection.2.1}{Column/row gradient measures}{section.2}
+\BOOKMARK [2][-]{subsection.2.2}{Anti-Robinson events}{section.2}
+\BOOKMARK [2][-]{subsection.2.3}{Hamiltonian path length}{section.2}
+\BOOKMARK [2][-]{subsection.2.4}{Inertia criterion}{section.2}
+\BOOKMARK [2][-]{subsection.2.5}{Least squares criterion}{section.2}
+\BOOKMARK [2][-]{subsection.2.6}{Measure of effectiveness}{section.2}
+\BOOKMARK [2][-]{subsection.2.7}{Stress}{section.2}
+\BOOKMARK [1][-]{section.3}{Seriation methods}{}
+\BOOKMARK [2][-]{subsection.3.1}{Partial enumeration methods}{section.3}
+\BOOKMARK [2][-]{subsection.3.2}{Traveling salesperson problem solver}{section.3}
+\BOOKMARK [2][-]{subsection.3.3}{Bond energy algorithm}{section.3}
+\BOOKMARK [2][-]{subsection.3.4}{Hierarchical clustering}{section.3}
+\BOOKMARK [2][-]{subsection.3.5}{Rank-two ellipse seriation}{section.3}
+\BOOKMARK [1][-]{section.4}{The package infrastructure}{}
+\BOOKMARK [1][-]{section.5}{Examples and applications}{}
+\BOOKMARK [2][-]{subsection.5.1}{A first session using seriation}{section.5}
+\BOOKMARK [2][-]{subsection.5.2}{Comparing different seriation methods}{section.5}
+\BOOKMARK [2][-]{subsection.5.3}{Heat maps}{section.5}
+\BOOKMARK [2][-]{subsection.5.4}{Bertin's permutation matrix}{section.5}
+\BOOKMARK [2][-]{subsection.5.5}{Binary data matrices}{section.5}
+\BOOKMARK [2][-]{subsection.5.6}{Dissimilarity plot}{section.5}
+\BOOKMARK [1][-]{section.6}{Conclusion}{}
