@@ -1,33 +1,25 @@
 ## seriate dist objects
 
-seriate.dist <- function(x, method = NULL, control = NULL, ...){ 
-    
-    ## build-in methods
-    methods <- list(
-        "ARSA"  = .seriate_arsa,   
-        "BBURCG"= .seriate_bburcg,
-        "BBWRCG"= .seriate_bbwrcg,
-        "TSP"   = .seriate_tsp,
-        "Chen"  = .seriate_chen,
-        "MDS"   = .seriate_mds,
-        "HC"    = .seriate_hc,
-        "GW"    = .seriate_hc_gw,
-        "OLO"   = .seriate_hc_optimal
-    )
-    
-    method <- .choose_method(method, methods, "ARSA")
+seriate.dist <-
+function(x, method = NULL, control = NULL, ...)
+{
+    if(is.null(method))
+        method <- "ARSA"
+    else if(!is.character(method) || (length(method) != 1L))
+        stop("Argument 'method' must be a character string.")
 
-    order <- methods[[method]](x, control)
-    ser_permutation(ser_permutation_vector(order, method = method))
+    method <- get_seriation_method("dist", method)
+
+    order <- method$definition(x, control)
+    
+    ser_permutation(ser_permutation_vector(order, method = method$name))
 }
-
-
 
 ## uses a sequence of correlation matrices and finds  the first matrix
 ## with rank 2. The elements are projected into the plane spanned by the 
 ## first two eigenvectors. All points are lying on a ellipse. The order
 ## of the elements on the ellipse is returned (see Chen 2002). 
-.seriate_chen <- function(x, control){
+seriate_dist_chen <- function(x, control = NULL){
     x <- as.matrix(x)
     
     rank <- qr(x)$rank
@@ -54,24 +46,28 @@ seriate.dist <- function(x, method = NULL, control = NULL, ...){
     left <- which(e[,1] < 0)
     left <- left[order(e[left,2])]
     
-    c(right,left)
+    o <- c(right,left)
+    names(o) <- labels(x)[o]
+    o
 }
 
 
 ## Bridge to package tsp 
-.seriate_tsp <- function(x, control = NULL){
+seriate_dist_tsp <- function(x, control = NULL){
     ## add a dummy city for cutting
     tsp <- insert_dummy(TSP(x), n = 1, label = "cut_here")
    
     tour <- solve_TSP(tsp, method = control$method, 
         control = control$control)
     
-    cut_tour(tour, cut = "cut_here", exclude_cut = TRUE)
+    o <- cut_tour(tour, cut = "cut_here", exclude_cut = TRUE)
+    names(o) <- labels(x)[o]
+    o
 }
 
 
 ## Multidimensional scaling
-.seriate_mds <- function(x, control = NULL){
+seriate_dist_mds <- function(x, control = NULL){
     if(is.null(control$method) || control$method == "cmdscale" ) {
         sc <- cmdscale(x, k=1)
         return(order(sc[,1]))
@@ -80,19 +76,17 @@ seriate.dist <- function(x, method = NULL, control = NULL, ...){
         if(require("MASS", quietly = TRUE)) {
             sc <- isoMDS(x+1e-6, trace = FALSE, k=1)
             return(order(sc$points[,1])) 
-        } else stop("please install package MASS for this method.")
+        } else stop("Please install package MASS for this method.")
     
     }else if(control$method == "sammon") {
         if(require("MASS", quietly = TRUE)) {
             sc <- sammon(x+1e-6, trace = FALSE, k=1)
             return(order(sc$points[,1]))
-        } else stop("please install package MASS for this method.")
+        } else stop("Please install package MASS for this method.")
 
     }else stop("unknown method")
 
 }
-
-
 
 ## Hierarchical clustering related seriations
 
@@ -103,17 +97,17 @@ seriate.dist <- function(x, method = NULL, control = NULL, ...){
     else return(hclust(d, method = control$method))
 }
 
-.seriate_hc <- function(x, control = NULL) .hclust_helper(x, control)$order
+seriate_dist_hc <- function(x, control = NULL) .hclust_helper(x, control)
 
 ## workhorses are in seriation.hclust
-.seriate_hc_gw <- function(x, control = NULL) 
+seriate_dist_hc_gw <- function(x, control = NULL) 
     .seriate_gruvaeus(.hclust_helper(x, control), x)
 
-.seriate_hc_optimal <- function(x, control = NULL)
-    .seriate_optimal(.hclust_helper(x, control), x)
+seriate_dist_hc_optimal <- function(x, control = NULL)
+    seriate_optimal(.hclust_helper(x, control), x)
 
 ## brusco: simulated annealing for anti-robinson
-.seriate_arsa <- function(x, control = NULL) {
+seriate_dist_arsa <- function(x, control = NULL) {
     param <- list(
         cool = 0.5,
         tmin = 0.1,
@@ -122,7 +116,8 @@ seriate.dist <- function(x, method = NULL, control = NULL, ...){
     )
     for(n in names(control)) {
         i <- pmatch(n, names(param))
-        if(is.na(i)) stop("unknown control parameter: ", n)
+        if(is.na(i))
+            stop(gettextf("Unknown control parameter '%s'.", n))
         param[i] <- control[[n]] 
     }
 
@@ -142,19 +137,22 @@ seriate.dist <- function(x, method = NULL, control = NULL, ...){
     ret <- .Fortran("arsa", N, A, param$cool, param$tmin, param$nreps, IPERM,
         R1, R2, D, U, S, T, SB, param$verbose)
 
-    ret[[6]]
+    o <- ret[[6]]
+    names(o) <- labels(x)[o]
+    o
 }
 
 
 ## brusco: branch-and-bound - unweighted row gradient 
-.seriate_bburcg <- function(x, control = NULL) {
+seriate_dist_bburcg <- function(x, control = NULL) {
     param <- list(
         eps = 1e-7,
         verbose = FALSE
     )
     for(n in names(control)) {
         i <- pmatch(n, names(param))
-        if(is.na(i)) stop("unknown control parameter: ", n)
+        if(is.na(i))
+            stop(gettextf("Unknown control parameter '%s'.", n))
         param[i] <- control[[n]] 
     }
     
@@ -172,19 +170,22 @@ seriate.dist <- function(x, method = NULL, control = NULL, ...){
     ret <- .Fortran("bburcg", N, A, param$eps, X, Q, D, DD, S, UNSEL,
         param$verbose)
     
-    ret[[4]]
+    o <- ret[[4]]
+    names(o) <- labels(x)[o]
+    o
 }
 
 
 ## brusco: branch-and-bound - weighted row gradient 
-.seriate_bbwrcg <- function(x, control = NULL) {
+seriate_dist_bbwrcg <- function(x, control = NULL) {
     param <- list(
         eps = 1e-7,
         verbose = FALSE
     )
     for(n in names(control)) {
         i <- pmatch(n, names(param))
-        if(is.na(i)) stop("unknown control parameter: ", n)
+        if(is.na(i))
+            stop(gettextf("Unknown control parameter '%s'.", n))
         param[i] <- control[[n]] 
     }
     
@@ -202,14 +203,26 @@ seriate.dist <- function(x, method = NULL, control = NULL, ...){
     ret <- .Fortran("bbwrcg", N, A, param$eps, X, Q, D, DD, S, UNSEL,
         param$verbose)
     
-    ret[[4]]
+    o <- ret[[4]]
+    names(o) <- labels(x)[o]
+    o
 }
 
-
-
-## generic for criterion
-seriate <- function(x, ...) UseMethod("seriate")
-seriate.default <- function(x, ...) 
-stop(paste("\nseriate not implemented for class: ", class(x)))
-
-
+set_seriation_method("dist", "ARSA", seriate_dist_arsa, 
+    "Minimize Anti-Robinson events using simulated annealing")
+set_seriation_method("dist", "BBURCG", seriate_dist_bburcg, 
+    "Minimize the unweighted row/column gradient by branch-and-bound")
+set_seriation_method("dist", "BBWRCG", seriate_dist_bbwrcg,
+    "Minimize the weighted row/column gradient by branch-and-bound")
+set_seriation_method("dist", "TSP", seriate_dist_tsp,
+    "Minimize Hamiltonian path length with a TSP solver")
+set_seriation_method("dist", "Chen", seriate_dist_chen,
+    "Rank-two ellipse seriation")
+set_seriation_method("dist", "MDS", seriate_dist_mds,
+    "MDS - first dimension")
+set_seriation_method("dist", "HC", seriate_dist_hc,
+    "Hierarchical clustering")
+set_seriation_method("dist", "GW", seriate_dist_hc_gw,
+    "Hierarchical clustering reordered by Gruvaeus and Wainer heuristic")
+set_seriation_method("dist", "OLO", seriate_dist_hc_optimal,
+    "Hierarchical clustering with optimal leaf ordering")
