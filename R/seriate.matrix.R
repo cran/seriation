@@ -1,33 +1,10 @@
 ## seriate matrices 
 
-seriate.matrix <- function(x, method = NULL, control = NULL, 
-    margin = c(1,2), ...) {
-    
-    ## margin 1...rows, 2...cols
-
-    ## build-in methods
-    methods <- list(
-        "BEA_TSP"   = .seriate_bea_tsp,
-        "BEA"       = .seriate_bea,
-        "PCA"       = .seriate_fpc
-    )
-    
-    method <- .choose_method(method, methods, "BEA_TSP")
-    
-    order <- methods[[method]](x, control)
-
-    row <- ser_permutation_vector(order$row, method)
-    col <- ser_permutation_vector(order$col, method)
-
-    ## this is inefficient since the workhorse does both
-    if(length(margin) == 1) {
-        if(margin == 1) return(ser_permutation(row))
-        if(margin == 2) return(ser_permutation(col))
-    }
-
-    ser_permutation(row, col)
-}
-
+seriate.matrix <-
+function(x, method = NULL, control = NULL, 
+         margin = c(1,2), ...)
+    .seriate_array_helper(x, method, control, margin, 
+        datatype = "matrix", defmethod = "BEA_TSP", ...)
 
 ## Algorithm B
 ##  F. Murtagh (1985). Multidimensional Cluster Algorithms. Lectures
@@ -35,9 +12,9 @@ seriate.matrix <- function(x, method = NULL, control = NULL,
 #
 # this is actually just the same as BEA
 #    
-#.seriate_murtagh <- function(x, control) {
+#.seriate_matrix_murtagh <- function(x, control) {
 #
-#    if(any(x < 0)) stop("Requires a nonnegative matrix")
+#    if(any(x < 0)) stop("Requires a nonnegative matrix.")
 #    
 #    criterion <- as.dist(tcrossprod(x))
 #    row <- hclust_greedy(-criterion)$order
@@ -47,10 +24,9 @@ seriate.matrix <- function(x, method = NULL, control = NULL,
 #    list(row = row, col = col)
 #}
 
+seriate_matrix_bea_tsp <- function(x, control) {
 
-.seriate_bea_tsp <- function(x, control) {
-
-    if(any(x < 0)) stop("Requires a nonnegative matrix")
+    if(any(x < 0)) stop("Requires a nonnegative matrix.")
     
     criterion <- as.dist(tcrossprod(x))
     row <- seriate(max(criterion)-criterion, 
@@ -66,9 +42,9 @@ seriate.matrix <- function(x, method = NULL, control = NULL,
 
 ## Bond Energy Algorithm (McCormick 1972)
 
-.seriate_bea <- function(x, control = NULL){
+seriate_matrix_bea <- function(x, control = NULL){
     
-    if(any(x < 0)) stop("Requires a nonnegative matrix")
+    if(any(x < 0)) stop("Requires a nonnegative matrix.")
     istart <- if(is.null(control$istart)) 0 else control$istart
     jstart <- if(is.null(control$jstart)) 0 else control$jstart
     rep  <- if(!is.null(control$rep)) control$rep else 1
@@ -78,14 +54,20 @@ seriate.matrix <- function(x, method = NULL, control = NULL,
     
     best <- which.max(sapply(res, "[[", "e"))
     res <- res[[best]]
+    
+    row <- res$ib
+    col <- res$jb
+    
+    names(row) <- rownames(x)
+    names(col) <- colnames(x)
 
-    list(row = res$ib, col = res$jb)
+    list(row = row, col = col)
     
 }
 
 ## use the projection on the first pricipal component to determine the
 ## order
-.seriate_fpc <- function(x, control) {
+seriate_matrix_fpc <- function(x, control) {
     
     center  <- if(!is.null(control$center)) control$center else TRUE
     scale.  <- if(!is.null(control$scale.)) control$scale. else FALSE
@@ -103,9 +85,17 @@ seriate.matrix <- function(x, method = NULL, control = NULL,
     col <- order(scores)
     cat("col: first principal component explains", 
         pr$sdev[1] / sum(pr$sdev)* 100,"%\n")
+    
+    names(row) <- rownames(x)
+    names(col) <- colnames(x)
 
     list(row = row, col = col)
 }
 
-
-
+## register methods
+set_seriation_method("matrix", "BEA_TSP", seriate_matrix_bea_tsp,
+    "TSP to maximize ME")
+set_seriation_method("matrix", "BEA", seriate_matrix_bea,
+    "Bond Energy Algorithm to maximize ME")
+set_seriation_method("matrix", "PCA", seriate_matrix_fpc,
+    "First principal component")

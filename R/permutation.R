@@ -20,11 +20,21 @@ ser_permutation_vector <- function(x, method = NULL) {
 ## accessors
 get_order <- function(x, ...) UseMethod("get_order")
 get_order.ser_permutation_vector <- function(x, ...) NextMethod()
-get_order.default <- function(x, ...) 
-    stop(paste("\nNo permutation accessor implemented for class: ", class(x)))
+get_order.hclust <- function(x, ...) {
+    o <- x$order
+    names(o) <- x$labels[o]
+    o
+}
+get_order.integer <- function(x, ...) {
+    o <- as.integer(x)
+    names(o) <- names(x)
+    o
+}
 
-get_order.hclust <- function(x, ...) x$order
-get_order.integer <- function(x, ...) as.integer(x)
+get_order.default <- function(x, ...) 
+    stop(gettextf("No permutation accessor implemented for class '%s'.",
+                  class(x)))
+
 
 ## currently method is an attribute of permutation
 get_method <- function(x, printable = FALSE) {
@@ -38,13 +48,26 @@ get_method <- function(x, printable = FALSE) {
 ## print et al
 length.ser_permutation_vector <- function(x) length(get_order(x)) 
 
-print.ser_permutation_vector <- function(x, ...) {
-    cat("object of class", sQuote(class(x)), "\n")
-
-    cat("contains a permutation vector of length", length(x), "\n")
-    
-    cat("used seriation method:", sQuote(get_method(x, printable = TRUE)), "\n")
+print.ser_permutation_vector <-
+function(x, ...)
+{
+    writeLines(c(gettextf("object of class '%s'\n", class(x)),
+                 gettextf("contains a permutation vector of length %d",
+                          length(x)),
+                 gettextf("used seriation method: '%s'",
+                          get_method(x, printable = TRUE))))
+    invisible(x)
 }
+
+## fake summary (we dont really provide a summary, 
+## but summary produces now a reasonable result --- same as print)
+summary.ser_permutation_vector <- function(object, ...) {
+    object
+}
+summary.ser_permutation <- function(object, ...) {
+    object
+}
+
 
 ## helpers
 .valid_permutation_vector <- function(x) {
@@ -62,20 +85,17 @@ print.ser_permutation_vector <- function(x, ...) {
 
 ## constructor
 ser_permutation <- function(x,...) {
-    ddd <- list(...)
     if(inherits(x, "ser_permutation")) {
-        if(length(ddd) != 0) warning(sQuote("x"),
-            " is already ser_permutation, ... ignored")
+        if(length(list(...)) != 0)
+            warning("Argument 'x' already has class 'ser_permutation' ... ignored")
         return(x)
     }
-
-    x <- c(list(x), ddd)
 
     ## check if all elements are ser_permutation_vector
     #if(any(!sapply(x, inherits, "ser_permutation_vector")))
     #stop("some elements are not of class ", sQuote("ser_permutation_vector"))
     ## we make them ser_permutation_vector
-    x <- lapply(x, "ser_permutation_vector")
+    x <- lapply(list(x, ...), "ser_permutation_vector")
 
     class(x) <- c("ser_permutation", "list")
     x
