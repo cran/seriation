@@ -1,7 +1,7 @@
 \name{dissplot}
 \alias{dissplot}
-\alias{plot.cluster_dissimilarity_matrix}
-\alias{print.cluster_dissimilarity_matrix}
+\alias{plot.reordered_cluster_dissimilarity_matrix}
+\alias{print.reordered_cluster_dissimilarity_matrix}
 \title{Dissimilarity Plot}
 \description{
 Visualizes a dissimilarity matrix using seriation and matrix shading.
@@ -15,7 +15,7 @@ algorithm which tries to place large similarities/small dissimilarities close to
 the diagonal. Compact clusters are visible as dark squares (low dissimilarity)
 on the diagonal of the plot. Additionally, a Silhouette plot (Rousseeuw 1987)
 is added. This visualization is similar to CLUSION (see Strehl and Ghosh 2002),
-however, allows for using arbitrary seriateing algorithms.
+however, allows for using arbitrary sereating algorithms.
 }
 \usage{
 dissplot(x, labels = NULL, method = NULL, control = NULL, options = NULL)   
@@ -26,10 +26,10 @@ dissplot(x, labels = NULL, method = NULL, control = NULL, options = NULL)
       rows/columns in \code{x} indicating the cluster membership for each
       object in \code{x} as consecutive integers starting with one. The labels
       are used to reorder the matrix.}
-  \item{method}{ a single character strings indicating the used
-      seriation algorithm (\code{NA} to plot the matrix as is). The same
-      algorithm is used to reorder the clusters (inter cluster seriation) as
-      well as the objects within each cluster (intra cluster seriation). 
+  \item{method}{ a list with up to three elements or a single character string.
+	  Use a single character string to apply the same algorithm to reorder
+	  the clusters (inter cluster seriation) as well as the objects within each
+	  cluster (intra cluster seriation).
 
       If separate algorithms for inter and intra cluster seriation are
       required, \code{method} can be a \code{list} of two named elements
@@ -37,15 +37,26 @@ dissplot(x, labels = NULL, method = NULL, control = NULL, options = NULL)
       of the respective seriation method. See \code{seriate.dist} for available
       algorithms. 
 
-      For intra cluster reordering the special
+      Set method to \code{NA} to plot the matrix as is (no or only coarse 
+	  seriation). For intra cluster reordering the special
       method \code{silhouette width} is available. Objects in clusters are
-      then ordered by silhouette width (the standard for silhouette plots).
-
+      then ordered by silhouette width (from silhouette plots).
       If no \code{method} is given, the default method of \code{seriate.dist}
       is used.
-      }
-  \item{control}{ a list of control options passed on to the seriation algorithm.
-      In case of two different seriation algorithms, \code{control} can
+      
+	  The third list element (named \code{aggregation}) 
+	  controls how inter cluster dissimilarities are computed from from
+	  the given dissimilarity matrix. The choices are
+	   \code{"avg"} (average pairwise dissimilarities; average-link), 
+	   \code{"min"} (minimal pairwise dissimilarities; single-link), 
+	   \code{"max"} (maximal pairwise dissimilarities; complete-link), and
+	   \code{"Hausdorff"} (pairs up each point from one cluster with the most
+	   similar point from the other cluster and then uses the largest
+	   dissimilarity of paired up points). 
+	  }
+  \item{control}{ a list of control options passed on to the seriation
+      algorithm.  
+	  In case of two different seriation algorithms, \code{control} can
       contain a list of two named elements (\code{inter_cluster} 
       and \code{intra_cluster}) containing each a list with the control options
       for the respective algorithm.}
@@ -59,22 +70,36 @@ dissplot(x, labels = NULL, method = NULL, control = NULL, options = NULL)
       (see \code{options} below).}
   \item{\code{cluster_labels}}{ a logical indicating whether to display cluster
       labels in the plot.}
-  \item{\code{averages}}{ a logical indicating whether to display the average
-      pair-wise dissimilarity between clusters instead of the individual
-      dissimilarities in the lower triangle of the plot.}
+  \item{\code{averages}}{ a logical vector of length two. 
+	The first element controls the upper triangle and the second element 
+	the lower triangle of the plot. \code{FALSE} displays the original
+	dissimilarity between objects, \code{TRUE} displays cluster-wise 
+	average dissimilarities, and \code{NA} leaves the triangle white
+	(default: \code{c(FALSE, TRUE)}, i.e., the lower triangle displays
+	averages)}
   \item{\code{lines}}{ a logical indicating  whether to draw lines to separate
       clusters.} 
+  \item{\code{flip}}{ a logical indicating if the clusters are displayed 
+  on the diagonal from
+  north-west to south-east (\code{FALSE}; default) or from 
+  north-east to south-west (\code{TRUE}).} 
   \item{\code{silhouettes}}{ a logical indicating  whether to include a
       silhouette plot (see Rousseeuw, 1987).} 
   \item{\code{threshold}}{ a numeric. If used, only plot distances below the
       threshold are displayed.} 
-  \item{\code{main}}{ title for the plot.}
-  \item{\code{col}}{ colors used for the image plot (default: 100 shades of gray
-      using the hcl colorspace with 
-      \code{hcl(h = 0, c = 0, l = seq(20, 95, len = 100))}). If \code{col} is
-      a single number, it specifies the number of gray values used in the plot.}
+  \item{\code{col}}{ colors used for the image plot. If \code{col} is a single
+  number, it specifies the number of different shades used in the plot
+  (default: 100 shades of gray using the HCL colorspace). If \code{col} 
+  not a single number, it is expected to be a full color palatte and
+  the potions \code{hue}, \code{power} and \code{gamma} are ignorred.}
+  \item{\code{hue}}{ color in [0,360] taken from the HCL color wheel. \code{NA}
+  indicates gray scale (default: gray scale).}
+  \item{\code{power}}{ determines how luminance (and chroma for color) 
+	should be increased (1 = linear, 2 = quadratic, etc.) with dissimilarity. }
+  \item{\code{gamma}}{gamma correction for the display (default: 2.4).}
   \item{\code{colorkey}}{ a logical indicating  whether to place a color key
       below the plot. }
+  \item{\code{main}}{ title for the plot.}
   \item{\code{lines_col}}{ color used for the lines to separate clusters. }
   \item{\code{newpage}}{ a logical indicating  whether to start plot on a new
       page (see \code{grid.newpage} in package \pkg{grid}). }
@@ -161,28 +186,29 @@ popViewport()
 pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 2))
 
 ## more visualization options
-## threshold
-plot(res, options = list(main = "PAM + Seriation (Chen) - threshold", 
-    threshold = 1.5, newpage = FALSE))
+## color: use 10 shades of blue (hue = 270)
+plot(res, options = list(main = "PAM + Seriation (Chen) - blue, only avg.", 
+    col= 10, hue=260, averages = c(TRUE, TRUE), newpage = FALSE))
 
 popViewport()
 pushViewport(viewport(layout.pos.row = 2, layout.pos.col = 1))
 
-## color: use 10 shades of blue
-plot(res, options = list(main = "PAM + Seriation (Chen) - blue", 
-    col = hcl(h = 260, c = seq(75,0, length=10), l = seq(30,95, length=10)),
-    gp = gpar(fill = hcl(h = 260, c=30, l = 80)), newpage = FALSE))
+## threshold and cubic scale to highlight differences
+plot(res, options = list(main = "PAM + Seriation (Chen) - threshold", 
+    threshold = 1.5, power = 3, newpage = FALSE))
 
 popViewport()
 pushViewport(viewport(layout.pos.row = 2, layout.pos.col = 2))
 
-## supress average in lower triangle
-plot(res, options = list(main = "PAM + Seriation (Chen) - no avg.", 
-    average = FALSE, newpage = FALSE))
+## use custom (logistic) scale
+plot(res, options = list(main = "PAM + Seriation (Chen) - logistic scale", 
+    col= hcl(c = 0, l = (plogis(seq(0,10,length=100), 
+	location = 2, scale = 1/2, log = FALSE))*100), 
+	newpage = FALSE))
 
 popViewport(2)
 
-## the cluster_dissimilarity_matrix object
+## the reordered_cluster_dissimilarity_matrix object
 res 
 names(res)
 }
