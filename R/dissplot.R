@@ -1,3 +1,23 @@
+#######################################################################
+# seriation - Infrastructure for seriation
+# Copyrigth (C) 2011 Michael Hahsler, Christian Buchta and Kurt Hornik
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+
+
 ## Cluster visualization by proximity matrix shading
 
 
@@ -440,13 +460,15 @@ plot.reordered_cluster_dissimilarity_matrix <- function(x, options = NULL, ...) 
 
 		labels_unique_y		<- labels_unique
         cluster_width_y		<- (tabulate(labels)[labels_unique])
-        cluster_cuts_y		<- cumsum(cluster_width_y) + 0.5
+	#cluster_cuts_y		<- cumsum(cluster_width_y) + 0.5
+        cluster_cuts_y		<- cumsum(cluster_width_y)
         cluster_center_y	<- cluster_cuts_y - cluster_width_y / 2
         
 		if(options$flip) {
 			labels_unique_x	<- rev(labels_unique)
 			cluster_width_x <- (tabulate(labels)[labels_unique_x])
-			cluster_cuts_x  <- cumsum(cluster_width_x) + 0.5
+			#	cluster_cuts_x  <- cumsum(cluster_width_x) + 0.5
+			cluster_cuts_x  <- cumsum(cluster_width_x)
 			cluster_center_x<- cluster_cuts_x - cluster_width_x / 2
 		}else{
 			labels_unique_x <- labels_unique_y
@@ -485,15 +507,17 @@ plot.reordered_cluster_dissimilarity_matrix <- function(x, options = NULL, ...) 
             seekViewport("image")
             for(i in 1:k) {
 
-                grid.lines(
-                    x = c(0.5, dim + 0.5), 
-					y = cluster_cuts_y[i], 
-                    default.units = "native", gp = gp_lines)
+		grid.lines(
+			#x = c(0, dim), 
+			x = c(0.5, dim + 0.5), 
+			y = cluster_cuts_y[i]+.5, 
+			default.units = "native", gp = gp_lines)
 
-                grid.lines(
-                    x = cluster_cuts_x[i], 
-					y = c(0.5, dim + 0.5), 
-                    default.units = "native", gp=gp_lines)
+		grid.lines(
+			x = cluster_cuts_x[i]+.5, 
+			#y = c(0, dim), 
+			   	y = c(0.5, dim + 0.5), 
+			default.units = "native", gp=gp_lines)
 
             }
 
@@ -502,9 +526,11 @@ plot.reordered_cluster_dissimilarity_matrix <- function(x, options = NULL, ...) 
                 ##    default.unit="native", gp = gp_lines)
             
             ## redraw border
-            grid.rect(x = 0,5 * dim, y = 0.5 * dim, width = dim - 1, 
-                height =  dim - 1, default.units = "native", 
-                gp = gp_lines)
+	    #grid.rect(x = 0,5 * dim, y = 0.5 * dim, width = dim - 1, 
+	    #    height =  dim - 1, default.units = "native", 
+	    #    gp = gp_lines)
+
+	    #grid.rect(gp = gp_lines)
 
             upViewport(2)
 
