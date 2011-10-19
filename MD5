@@ -1,5 +1,5 @@
-0a25e53d0c7b98495163cac3224e5d5d *CHANGES
-7d9d4f3e03783df147752e6a3a88446d *DESCRIPTION
+ef1d5e3e2de3ac60d171722d2c614b06 *CHANGES
+93e113f5c14cd73b5df81daf69c13ae7 *DESCRIPTION
 4641e94ec96f98fabc56ff9cc48be14b *LICENSE
 eb6b9088057cd55915af1c7a24f77a75 *NAMESPACE
 6327b718b89bca4182be2014bc0f0d99 *R/AAAdefs.R
@@ -9,7 +9,7 @@ da69419e2a52febdabffdf15c7b53d84 *R/criterion.R
 a5892ad33a265ef1d0b8f08b2ca79da4 *R/criterion.array.R
 877d0a47523fcf7428b4a698193297eb *R/criterion.dist.R
 7049d4a737facacb6c06c110034e5a45 *R/criterion.matrix.R
-5ac6e60ffd77e29e831845676cb00857 *R/dissplot.R
+28fb921aef4162cd96fd8e99d8db7a4d *R/dissplot.R
 0741cc6516e61cf85157c5a61d258ce4 *R/grid.R
 06680c8658261226b815e9851144f78b *R/hclust_greedy.R
 3a48bd086f09367f04113a771c840e65 *R/hmap.R
@@ -22,11 +22,11 @@ e33822e0113af2c67b76ce765d85c390 *R/permute.R
 2ab9b4bfb6981e754249226d6f495706 *R/seriate.dist.R
 c3aa932a728146c1b12a9c2ec646a24c *R/seriate.hclust.R
 84dc865f44505b93f983edf921d3fb56 *R/seriate.matrix.R
-ad82bfa89863d02af793e9c28635d399 *data/Irish.rda
-a9de0c1889a9a6f82eb6f8112c9602b8 *data/Munsingen.rda
-e0322caa72252f51b812ccbeeb62aef4 *data/Psych24.rda
-554715df3903da0c5ee2200114531b75 *data/Townships.rda
-a701df778af9b7860d5fce54a2d8c332 *data/Zoo.rda
+fb3bea6d3622389f03161ccb1bee9c71 *data/Irish.rda
+fb71cf673dd264af5ec2b3b828bfa27e *data/Munsingen.rda
+f8c05d21ad8c45b7d2f60b74b1b64155 *data/Psych24.rda
+865c1d4993abbb863acb4e0c08ecb71a *data/Townships.rda
+3fb4fe6f185d346d72b6d4c92934cb61 *data/Zoo.rda
 a0e7f0d3d09d919c5aa51248b86e8d8b *inst/CITATION
 b59872d48cf446767be0c79dae8900f8 *inst/doc/classes.odg
 7f67ca8c5483222bc0a154258388db86 *inst/doc/classes.pdf
@@ -34,7 +34,7 @@ b59872d48cf446767be0c79dae8900f8 *inst/doc/classes.odg
 548716518889269a341371e856f88fd9 *inst/doc/jss.cls
 6850dd8b8d38b7ad296696469bc725b8 *inst/doc/seriation.Rnw
 4e746cfe5d1845885a244412a3e61187 *inst/doc/seriation.bib
-81f83863cd524f71871a802629040498 *inst/doc/seriation.pdf
+b2f7b9ae1da6b5b3d56d813cb281999d *inst/doc/seriation.pdf
 b1e5a23d757ca438836d245fa2587d30 *man/Irish.Rd
 d9b9322e22d1fb6461bd5288af198774 *man/Munsingen.Rd
 75a3d0a3fa29fdbaebf94cc6eafc5f3c *man/Psych24.Rd
@@ -43,7 +43,7 @@ d9b9322e22d1fb6461bd5288af198774 *man/Munsingen.Rd
 c2799a3bf5db867b479e468bb6011e3d *man/bertinplot.Rd
 b6729102365f8ed03b561cca3da40667 *man/criterion.Rd
 b32c628f5c866fbe9536fdbbe0867ac1 *man/criterion_methods.Rd
-49cfb3b1baad79e1fd11e3243abbda15 *man/dissplot.Rd
+0c9bf1651ea69d1662ed89af54ede0a3 *man/dissplot.Rd
 8200b1e9ffa2cd084de61b611f8d2ef1 *man/get_order.Rd
 551c6d008ce3396dd4062ec948af90cf *man/hmap.Rd
 416a126b6b63b9d3ba6d6aa4579d037c *man/permutation.Rd
