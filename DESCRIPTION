@@ -3,8 +3,8 @@ Type: Package
 Title: Infrastructure for seriation
 Author: Michael Hahsler, Christian Buchta and Kurt Hornik
 Maintainer: Michael Hahsler <mhahsler@lyle.smu.edu>
-Version: 1.0-9
-Date: 2012-11-19
+Version: 1.0-10
+Date: 2013-02-15
 Description: Infrastructure for seriation with an implementation of
         several seriation/sequencing techniques to reorder matrices,
         dissimilarity matrices, and dendrograms. Also contains some
@@ -20,6 +20,7 @@ Copyright: The code in src/bea.f is Copyright (C) 1991 F. Murtagh;
         2005 M. Brusco, H.F. Kohn, and S. Stahl. All other code is
         Copyright (C) Michael Hahsler, Christian Buchta, and Kurt
         Hornik.
-Packaged: 2012-11-19 13:27:23 UTC; hahsler
+Packaged: 2013-02-15 10:28:35 UTC; hahsler
+NeedsCompilation: yes
 Repository: CRAN
-Date/Publication: 2012-11-19 14:07:26
+Date/Publication: 2013-02-15 11:48:45
