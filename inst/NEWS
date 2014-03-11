@@ -1,3 +1,6 @@
+Changes in version 1.0-13 
+    * Fixed dependence on MASS
+
 Changes in version 1.0-12 (2/18/14)
     * ser_permutation_vectors can now be reversed with rev
     * get_order: removed the weird labels. 
