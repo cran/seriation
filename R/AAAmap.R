@@ -1,6 +1,6 @@
 #######################################################################
-# seriation - Infrastructure for seriation
-# Copyrigth (C) 2011 Michael Hahsler, Christian Buchta and Kurt Hornik
+# Code to map between ranges for contunuous variables
+# Copyrigth (C) 2011 Michael Hahsler
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,36 +15,29 @@
 # You should have received a copy of the GNU General Public License along
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
-
-## registry helpers
-.make_db_key <-
-function(kind, name)
-    paste(kind, name, sep = "_")
-
-get_method_from_db <-
-function(db, kind, name, msg)
-{
-    keys <- objects(db)
-    ind <- pmatch(.make_db_key(kind, tolower(name)), tolower(keys))
-    if(is.na(ind))
-        stop(msg, call. = FALSE, domain = NA)
     
-    db[[keys[ind]]]
-}
+## mapping helper
 
-put_method_into_db <-
-function(db, kind, name, value)
-{
-    db[[.make_db_key(kind, name)]] <- value
+map <- function(x, range = c(0,1), from.range=NA) {
+    if(any(is.na(from.range))) from.range <- range(x, na.rm=TRUE)
+    
+    ## check if all values are the same
+    if(!diff(from.range)) return(
+	    matrix(mean(range), ncol=ncol(x), nrow=nrow(x), 
+		    dimnames = dimnames(x)))
+    
+    ## map to [0,1]
+    x <- (x-from.range[1])
+    x <- x/diff(from.range)
+    ## handle single values
+    if(diff(from.range) == 0) x <- 0 
+    
+    ## map from [0,1] to [range]
+    if (range[1]>range[2]) x <- 1-x
+    x <- x*(abs(diff(range))) + min(range)
+    
+    x[x<min(range) | x>max(range)] <- NA
+    
+    x
 }
-
-list_methods_in_db <-
-function(db, kind)
-{
-    pattern <- sprintf("^%s_", kind)
-    sub(pattern, "",
-        grep(pattern, objects(db), value = TRUE))
-}
-
 

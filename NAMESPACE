@@ -2,10 +2,13 @@ useDynLib(seriation)
 
 import("TSP")
 import("grid")
+import("registry")
 importFrom("colorspace", "sequential_hcl")
 importFrom("gclus", "reorder.hclust") ## we use :: for gclus in seriate.hclust
 importFrom("cluster", "silhouette") ## we use :: for silhouette in dissplot
 importFrom("MASS", "isoMDS", "sammon")
+importFrom("gplots", "heatmap.2")
+importFrom("stats", "reorder")
 
 export(
     bertinplot,
@@ -14,6 +17,7 @@ export(
     dissplot,
     get_method,
     get_order,
+    get_rank,
     hmap,
     panel.bars, 
     panel.circles, 
@@ -23,8 +27,23 @@ export(
     permute,
     ser_permutation,
     ser_permutation_vector,
+    permutation_matrix2vector,
+    permutation_vector2matrix,
     pimage, 
     seriate,
+  
+    path_dist,
+    VAT,
+    iVAT,
+    create_lines_data,
+    create_ordered_data,
+  
+    bluered,
+    greenred,
+    grays,
+    greys,
+
+  ## registries
     set_criterion_method,
     get_criterion_method,
     list_criterion_methods,
@@ -32,10 +51,17 @@ export(
     set_seriation_method,
     get_seriation_method,
     list_seriation_methods,
-    show_seriation_methods
+    show_seriation_methods,
+    registry_criterion,
+    registry_seriate,
+    
+    seriation_dist,
+    seriation_cor,
+    seriation_align
     )
 
 S3method("c", "ser_permutation")
+S3method("c", "ser_permutation_vector")
 S3method("[", "ser_permutation")
 
 S3method(criterion, dist)
@@ -73,6 +99,8 @@ S3method(permute, data.frame)
 S3method(seriate, dist)
 S3method(seriate, matrix)
 S3method(seriate, array)
+
+S3method(reorder, hclust)
 
 S3method(summary, ser_permutation)
 S3method(summary, ser_permutation_vector)

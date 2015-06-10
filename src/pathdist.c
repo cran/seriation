@@ -17,40 +17,35 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
 #include <R.h>
-#include <Rinternals.h>
+#include <Rdefines.h>
 
 #include "lt.h"
 
-/* 
- * Reorder a dist object with a given order
- * Beware: all checking and attribute stuff has to be done in the R wrapper
- */
+/* Calculate the path distance for iVAT */
+/* Note this changes A! */
 
-SEXP reorder_dist(SEXP R_dist, SEXP R_order) {
+/* FIXME: INF and NA */
+SEXP pathdist_floyd(SEXP R_x) {
+  int *dimX = INTEGER( GET_DIM(R_x) );
+  int i, j, k, n = dimX[0];
+  SEXP R_y;
+  double *x = REAL(R_x);
+  double *y;
+  
+  PROTECT(R_y = allocMatrix(REALSXP, dimX[0], dimX[1]));
+  y = REAL(R_y);
+  
+  /* initialize y with paths of length 1 */
+  for(i=0; i<n*n; i++) y[i] = x[i];
 
-    SEXP R_dist_out;
-     
-    int n = INTEGER(getAttrib(R_dist, install("Size")))[0];
-    int n_out = LENGTH(R_order);
-    int *o = INTEGER(R_order);
+  /* dynamic programming */
+  for (k=0; k<n; k++)
+	  for (i=0; i<n; i++)
+	    for (j=0; j<n; j++)
+		    if (MAX(y[i+n*k], y[k+n*j]) < y[i+n*j]) 
+          y[i+n*j] = MAX(y[i+n*k], y[k+n*j]); 
 
-    PROTECT(R_dist_out = allocVector(REALSXP, n_out*(n_out-1)/2));
-
-    double *dist = REAL(R_dist);
-    double *dist_out = REAL(R_dist_out);
-
-    for (int i = 1; i <= n_out; i++) {		
-        for (int j = (i+1); j <=n_out; j++) {
-
-            if(o[i-1] == o[j-1]) dist_out[LT_POS(n_out, i, j)] = 0.0;	
-            else dist_out[LT_POS(n_out, i, j)] = 
-                dist[LT_POS(n, o[i-1], o[j-1])];
-        }
-    }
-
-    UNPROTECT(1);
-    return R_dist_out;
+  UNPROTECT(1);
+  return R_y;
 }
-

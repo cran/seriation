@@ -35,11 +35,11 @@ function(x, order = NULL, method = NULL, datatype = "array")
     method <- lapply(method, function(m) get_criterion_method(datatype, m))
 
     sapply(method,
-        function(m) structure(m$definition(x, order), names=m$name))
+        function(m) structure(m$fun(x, order), names=m$name))
 }
 
 criterion.array <-
-function(x, order = NULL, method = NULL)
+function(x, order = NULL, method = NULL, ...)
     .criterion_array_helper(x, order, method, "array")
 
 ## methods

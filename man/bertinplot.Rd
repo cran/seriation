@@ -6,7 +6,7 @@
 \alias{panel.squares}
 \alias{panel.lines}
 \alias{panel.blocks}
-\title{Plot a Bertin matrix}
+\title{Plot a Bertin Matrix}
 \description{
 Plot a data matrix of cases and variables. Each value is represented by a
 symbol. Large values are highlighted. The matrix can be rearranged to make
@@ -88,7 +88,7 @@ In: Proceedings of the SoftStat '97 (Advances in Statistical Software 6),
     \code{\link{seriate}},
     Package \pkg{grid}.
 }
-%\author{Michael Hahsler}
+\author{Michael Hahsler}
 \examples{
 data("Irish")
 scale_by_rank <- function(x) apply(x, 2, rank)

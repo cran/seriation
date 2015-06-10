@@ -4,8 +4,8 @@
 \alias{print.ser_permutation}
 \alias{c.ser_permutation}
 \alias{"[.ser_permutation"}
-\title{Class ser\_permutation -- A collection of 
-permutation vectors for seriation}
+\title{Class ser\_permutation -- A Collection of 
+Permutation Vectors for Seriation}
 \description{
 The class \code{ser_permutation} is a collection of permutation vectors
 (see class \code{ser_permutation_vector}), one for each dimension (mode) 
@@ -22,15 +22,19 @@ ser_permutation(x, \ldots)
       vector).}
   \item{\ldots}{permutation vectors for further dimensions}
     }
-%\details{
-%}
-%\value{
-%}
-%\references{}
-%\author{}
-\seealso{
-\code{\link{ser_permutation_vector}}
+\details{
+The basic functions \code{print}, \code{"["}, \code{"[["} and \code{c}
+are provided.
 }
+\value{
+An object of class \code{ser_permutation}.
+}
+\seealso{
+\code{\link{ser_permutation_vector}},
+\code{\link{get_order}},
+\code{\link{get_rank}}
+}
+\author{Michael Hahsler}
 \examples{
 o <- ser_permutation(1:5, 10:1)
 o

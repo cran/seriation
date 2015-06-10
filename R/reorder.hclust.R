@@ -16,19 +16,26 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-
+reorder.hclust <- function(x, dist, method = "OLO", ...) {
+  method <- match.arg(tolower(method), choices = c("olo", "gw"))
+  
+  ## no reordering for less than 3 objects!
+  if(length(x$order)<3) return(x)
+  
+  switch(method, 
+      olo = .seriate_optimal(x, dist),
+      gw  = .seriate_gruvaeus(x, dist)
+    )
+}
 
 ## wrapper for reorder.hclust in gclus
-.seriate_gruvaeus <-
-function(hclust, dist)
+.seriate_gruvaeus <- function(hclust, dist)
     gclus::reorder.hclust(hclust, dist)
 
 ## wrapper to the optimal leaf ordering algorithm
 ##
 ## ceeboo 2005
-seriate_optimal <-
-function(hclust, dist)
-{
+.seriate_optimal <- function(hclust, dist) {
     ## check hclust
     merge <- hclust$merge
     if (!is.matrix(merge))

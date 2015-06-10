@@ -1,10 +1,12 @@
 \name{Zoo}
 \alias{Zoo}
 \docType{data}
-\title{Zoo database}
+\title{Zoo Data Set}
 \description{
 A database containing characteristics of different animals.
-The database was created and donated by Richard S. Forsyth.
+The database was created and donated by Richard S. Forsyth
+and is available from the UCI Machine Learning Repository 
+(Newman et al, 1998).
 }
 \usage{data("Zoo")}
 \format{
@@ -37,8 +39,6 @@ UCI Repository of machine learning databases,
 \url{http://www.ics.uci.edu/~mlearn/MLRepository.html},
 University of California, Irvine, Dept. of Information and Computer Sciences.
 }
-%\references{
-%}
 \examples{
 data("Zoo")
 x <- scale(Zoo[, -17])

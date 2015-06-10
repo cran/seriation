@@ -6,10 +6,9 @@
 \alias{permute.matrix}
 \alias{permute.array}
 \alias{permute.data.frame}
-\title{Permute a dist object, a matrix, an array, a list, or a numeric vector}
+\title{Permute a dist Object, a Matrix, an Array, a List, or a Vector}
 \description{
 A method for permuting 
-%and/or subsetting 
 various classes including 
 the observations in a
 \code{dist} object, the rows and columns of a matrix,
@@ -20,7 +19,7 @@ object.
 permute(x, order)
 }
 \arguments{
-  \item{x}{an object (a list, a numeric vector, a \code{dist} object, a matrix,
+  \item{x}{an object (a list, a vector, a \code{dist} object, a matrix,
       an array or any other object which provides \code{dim} and standard 
       subsetting with \code{"["}).} 
   \item{order}{an object of class \code{ser_permutation}
@@ -38,24 +37,31 @@ permutation vector of class \code{ser_permutation_vector} or data which can be
 automatically coerced to this class
 (e.g. a numeric vector).
 }
-%\author{Michael Hahsler}
 \seealso{
 \code{\link{ser_permutation}},
 \code{\link{dist}} in package \pkg{stats}.
   }
+\author{Michael Hahsler}
 \examples{
-m <- matrix(rnorm(10), 5, 2)
+## permute matrix
+m <- matrix(rnorm(10), 5, 2, dimnames = list(1:5, 1:2))
 m
 
+## permute rows and columns
 permute(m, ser_permutation(5:1, 2:1))
-
+## permute only columns
+permute(m, ser_permutation(NA, 2:1))
+  
+## permute dist
 d <- dist(m)
 d
 
 permute(d, ser_permutation(c(3,2,1,4,5)))
 
-## this also works for 1-mode data:
-# permute(d, ser_permutation_vector(c(3,2,1,4,5)))
-# permute(d, c(3,2,1,4,5))
+## permute list
+l <- list(a=1:5, b=letters[1:3], c=0)
+l
+  
+permute(l, c(2,3,1))    
 }
 \keyword{manip}

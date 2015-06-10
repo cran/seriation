@@ -19,7 +19,8 @@ is added. This visualization is similar to CLUSION (see Strehl and Ghosh 2002),
 however, allows for using arbitrary seriating algorithms.
 }
 \usage{
-dissplot(x, labels = NULL, method = NULL, control = NULL, options = NULL)   
+dissplot(x, labels = NULL, method = "ARSA", 
+  control = NULL, options = NULL, \ldots)   
 }
 \arguments{
   \item{x}{ an object of class \code{dist}.}
@@ -40,7 +41,7 @@ dissplot(x, labels = NULL, method = NULL, control = NULL, options = NULL)
 
       Set method to \code{NA} to plot the matrix as is (no or only coarse 
 	  seriation). For intra cluster reordering the special
-      method \code{silhouette width} is available. Objects in clusters are
+      method \code{"silhouette width"} is available. Objects in clusters are
       then ordered by silhouette width (from silhouette plots).
       If no \code{method} is given, the default method of \code{seriate.dist}
       is used.
@@ -64,53 +65,49 @@ dissplot(x, labels = NULL, method = NULL, control = NULL, options = NULL)
   \item{options}{a list with options for plotting the matrix. The
       list can contain the following elements:
 
-      \describe{
-  \item{plot}{a logical indicating  if a plot should be produced.  if
+  \describe{
+    \item{\code{plot}}{a logical indicating  if a plot should be produced.  if
       \code{FALSE}, the returned object can be plotted later using the function
       \code{plot} which takes as the second argument a list of plotting options
       (see \code{options} below).}
-  \item{\code{cluster_labels}}{ a logical indicating whether to display cluster
+    \item{\code{cluster_labels}}{ a logical indicating whether to display cluster
       labels in the plot.}
-  \item{\code{averages}}{ a logical vector of length two. 
+    \item{\code{averages}}{ a logical vector of length two. 
 	The first element controls the upper triangle and the second element 
 	the lower triangle of the plot. \code{FALSE} displays the original
 	dissimilarity between objects, \code{TRUE} displays cluster-wise 
 	average dissimilarities, and \code{NA} leaves the triangle white
 	(default: \code{c(FALSE, TRUE)}, i.e., the lower triangle displays
 	averages)}
-  \item{\code{lines}}{ a logical indicating  whether to draw lines to separate
+    \item{\code{lines}}{ a logical indicating  whether to draw lines to separate
       clusters.} 
-  \item{\code{flip}}{ a logical indicating if the clusters are displayed 
+    \item{\code{flip}}{ a logical indicating if the clusters are displayed 
   on the diagonal from
   north-west to south-east (\code{FALSE}; default) or from 
   north-east to south-west (\code{TRUE}).} 
-  \item{\code{silhouettes}}{ a logical indicating  whether to include a
+    \item{\code{silhouettes}}{ a logical indicating  whether to include a
       silhouette plot (see Rousseeuw, 1987).} 
-  \item{\code{threshold}}{ a numeric. If used, only plot distances below the
-      threshold are displayed.} 
-  \item{\code{col}}{ colors used for the image plot. If \code{col} is a single
-  number, it specifies the number of different shades used in the plot
-  (default: 100 shades of gray using the HCL colorspace). If \code{col} 
-  not a single number, it is expected to be a full color palette and
-  the potions \code{hue} and \code{power} are ignored.}
-  \item{\code{hue}}{ color in [0,360] taken from the HCL color wheel. \code{NA}
-  indicates gray scale (default: gray scale).}
-  \item{\code{power}}{ determines how luminance (and chroma for color) 
-	should be increased (1 = linear, 2 = quadratic, etc.) with dissimilarity. }
-  \item{\code{colorkey}}{ a logical indicating  whether to place a color key
+    \item{\code{threshold}}{ a numeric. If used, only plot distances below the
+      threshold are displayed. Consider also using \code{zlim} for this purpose.} 
+    \item{\code{col}}{ colors used for the image plot.}
+    \item{\code{key}}{ a logical indicating  whether to place a color key
       below the plot. }
-  \item{\code{main}}{ title for the plot.}
-  \item{\code{lines_col}}{ color used for the lines to separate clusters. }
-  \item{\code{newpage}}{ a logical indicating  whether to start plot on a new
+    \item{\code{zlim}}{ range of values to display (defaults to range \code{x}).}
+    \item{\code{axes}}{ \code{"auto"} (default; enabled for less than 
+        25 objects), \code{"y"} or \code{"none"}.}
+    \item{\code{main}}{ title for the plot.}
+    \item{\code{newpage}}{ a logical indicating  whether to start plot on a new
       page (see \code{grid.newpage} in package \pkg{grid}). }
-  \item{\code{pop}}{a logical indicating  whether to pop the created viewports
+    \item{\code{pop}}{a logical indicating  whether to pop the created viewports
       (see package \pkg{grid})?  }
-  \item{\code{gp}}{an object of class \code{gpar} containing graphical
+    \item{\code{gp}, \code{gp_lines}, \code{gp_labels}}{ 
+      objects of class \code{gpar}       
+      containing graphical
       parameters (see \code{gpar} in package \pkg{grid}). }
       }
-}}
-%\details{
-%}
+  }
+  \item{\ldots}{further arguments are added to \code{options}.}
+}
 \value{
 An invisible object of class \code{cluster_proximity_matrix} with the following
 elements:
@@ -153,12 +150,12 @@ visualization for high-dimensional data mining.
 
 }
 \seealso{
-  \code{\link[stats]{dist}}
-  (in package \pkg{stats}),
-   package \pkg{grid} and
-   \code{\link{seriate}}.
+  \code{\link[stats]{dist}},
+  \code{\link{seriate}},
+  \code{\link{pimage}} and
+  \code{\link{hmap}}.
 }
-%\author{Michael Hahsler}
+\author{Michael Hahsler}
 \examples{
 data("iris")
 d <- dist(iris[-5])
@@ -167,7 +164,7 @@ d <- dist(iris[-5])
 res <- dissplot(d, method = NA)
 
 ## plot reordered matrix using the nearest insertion algorithm (from tsp)
-res <- dissplot(d, method = "tsp",
+res <- dissplot(d, method = "TSP",
     options = list(main = "Seriation (TSP)"))
 
 ## cluster with pam (we know iris has 3 clusters)
@@ -181,32 +178,32 @@ pushViewport(viewport(layout=grid.layout(nrow = 2, ncol = 2),
     gp = gpar(fontsize = 8)))
 pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 1))
 
-## visualize the clustering
-res <- dissplot(d, l, method = "chen",  
-    options = list(main = "PAM + Seriation (Chen) - standard", 
+## visualize the clustering (using ARSA between clusters and MDS within)
+res <- dissplot(d, l, method = list(inter = "ARSA", intra = "MDS"),  
+    options = list(main = "PAM + Seriation - standard", 
     newpage = FALSE))
 
 popViewport()
 pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 2))
 
-## more visualization options
-## color: use 10 shades of blue (hue = 270)
-plot(res, options = list(main = "PAM + Seriation (Chen) - blue, only avg.", 
-    col= 10, hue=260, averages = c(TRUE, TRUE), newpage = FALSE))
+## more visualization options. Note that we reuse the reordered object res!
+## color: use 10 shades red-blue
+plot(res, options = list(main = "PAM + Seriation", 
+    col= bluered(10, bias=.5), newpage = FALSE))
 
 popViewport()
 pushViewport(viewport(layout.pos.row = 2, layout.pos.col = 1))
 
-## threshold and cubic scale to highlight differences
-plot(res, options = list(main = "PAM + Seriation (Chen) - threshold", 
-    threshold = 1.5, power = 3, newpage = FALSE))
+## threshold (using zlim) and cubic scale to highlight differences
+plot(res, options = list(main = "PAM + Seriation - threshold", 
+    zlim = c(0, 1.5), col = greys(100, power = 2), newpage = FALSE))
 
 popViewport()
 pushViewport(viewport(layout.pos.row = 2, layout.pos.col = 2))
 
 ## use custom (logistic) scale
-plot(res, options = list(main = "PAM + Seriation (Chen) - logistic scale", 
-    col= hcl(c = 0, l = (plogis(seq(0,10,length=100), 
+plot(res, options = list(main = "PAM + Seriation - logistic scale", 
+    col= hcl(c = 0, l = (plogis(seq(10, 0, length=100), 
 	location = 2, scale = 1/2, log = FALSE))*100), 
 	newpage = FALSE))
 

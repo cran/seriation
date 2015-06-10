@@ -1,8 +1,8 @@
 Package: seriation
 Type: Package
-Title: Infrastructure for seriation
-Version: 1.0-14
-Date: 2014-12-02
+Title: Infrastructure for Seriation
+Version: 1.1-0
+Date: 2015-06-09
 Authors@R: c(
 	person("Michael", "Hahsler", role = c("aut", "cre", "cph"),
 	    email = "mhahsler@lyle.smu.edu"),
@@ -14,13 +14,13 @@ Authors@R: c(
 	person("Hans-Friedrich", "Koehn", role = c("ctb", "cph")))
 Description: Infrastructure for seriation with an implementation of several
     seriation/sequencing techniques to reorder matrices, dissimilarity
-    matrices, and dendrograms. Also contains some visualizations techniques
-    based on seriation.
+    matrices, and dendrograms. Also provides (optimally) reordered heatmaps, 
+    color images and clustering visualizations like dissimilarity plots, and
+    visual assessment of cluster tendency plots (VAT and iVAT).
 Classification/ACM: G.1.6, G.2.1, G.4
-URL: http://R-Forge.R-project.org/projects/seriation/,
-        http://lyle.smu.edu/IDA/seriation/
+URL: http://lyle.smu.edu/IDA/seriation
 Depends: R (>= 2.14.0)
-Imports: TSP, grid, cluster, gclus, colorspace, MASS
+Imports: TSP, grid, cluster, gclus, colorspace, MASS, gplots, registry
 Suggests: biclust, testthat
 License: GPL-3
 Copyright: The code in src/bea.f is Copyright (C) 1991 F. Murtagh;
@@ -28,7 +28,8 @@ Copyright: The code in src/bea.f is Copyright (C) 1991 F. Murtagh;
         2005 M. Brusco, H.F. Koehn, and S. Stahl. All other code is
         Copyright (C) Michael Hahsler, Christian Buchta, and Kurt
         Hornik.
-Packaged: 2014-12-03 13:24:56 UTC; hahsler
+NeedsCompilation: yes
+Packaged: 2015-06-09 21:54:14 UTC; hahsler
 Author: Michael Hahsler [aut, cre, cph],
   Christian Buchta [aut, cph],
   Kurt Hornik [aut, cph],
@@ -37,6 +38,5 @@ Author: Michael Hahsler [aut, cre, cph],
   Stephanie Stahl [ctb, cph],
   Hans-Friedrich Koehn [ctb, cph]
 Maintainer: Michael Hahsler <mhahsler@lyle.smu.edu>
-NeedsCompilation: yes
 Repository: CRAN
-Date/Publication: 2014-12-03 17:23:32
+Date/Publication: 2015-06-10 01:04:30

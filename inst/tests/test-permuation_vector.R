@@ -1,7 +1,7 @@
 library(seriation)
 
 
-context("permutation vector")
+context("ser_permutation_vector")
 
 p <- sample(1:10)
 sp <- ser_permutation_vector(p, method="valid")
@@ -14,6 +14,16 @@ expect_identical(get_order(rev(sp)), rev(p))
 expect_error(ser_permutation_vector(c(1:10, 12L), method="invalid"), "Invalid permutation vector!")
 expect_error(ser_permutation_vector(c(1:10, 3L), method="invalid"), "Invalid permutation vector!")
 
+context("ser_permutation")
+
+expect_identical(length(ser_permutation(sp)), 1L)
+expect_identical(length(ser_permutation(sp, sp)), 2L)
+
+hc <- hclust(dist(runif(10)))
+expect_identical(length(ser_permutation(sp, hc)), 2L)
+hc <- ser_permutation_vector(hc, method="hc")
+expect_identical(length(ser_permutation(sp, hc, sp)), 3L)
+expect_identical(length(ser_permutation(ser_permutation(sp), 1:10)), 2L)
 
 context("permute")
 
@@ -35,6 +45,17 @@ d <- dist(matrix(runif(25), ncol=5))
 attr(d, "call") <- NULL   ### permute removes the call attribute
 expect_identical(permute(d, ser_permutation(1:5)), d)
 ### is_equivalent_to ignores attributes
-expect_equivalent_to(permute(d, ser_permutation(5:1)), as.dist(as.matrix(d)[5:1,5:1]))
+expect_equivalent(permute(d, ser_permutation(5:1)), as.dist(as.matrix(d)[5:1,5:1]))
 
 expect_error(permute(d, ser_permutation(1:8)))
+
+
+context("permutation_matrix2vector")
+pv <- sample(1:100)
+
+## convert into a permutation matrix
+pm <- permutation_vector2matrix(pv)
+
+## convert back  
+expect_identical(permutation_matrix2vector(pm), pv)
+

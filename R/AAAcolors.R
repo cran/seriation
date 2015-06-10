@@ -16,28 +16,19 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
     
-## mapping helper
+greenred <- function(n, bias = 1)
+  grDevices::colorRampPalette(c("green", "black", "red"), bias = bias, space = "Lab")(n)
 
-map <- function(x, range = c(0,1), from.range=NA) {
-    if(any(is.na(from.range))) from.range <- range(x, na.rm=TRUE)
-    
-    ## check if all values are the same
-    if(!diff(from.range)) return(
-	    matrix(mean(range), ncol=ncol(x), nrow=nrow(x), 
-		    dimnames = dimnames(x)))
-    
-    ## map to [0,1]
-    x <- (x-from.range[1])
-    x <- x/diff(from.range)
-    ## handle single values
-    if(diff(from.range) == 0) x <- 0 
-    
-    ## map from [0,1] to [range]
-    if (range[1]>range[2]) x <- 1-x
-    x <- x*(abs(diff(range))) + min(range)
-    
-    x[x<min(range) | x>max(range)] <- NA
-    
-    x
-}
+### Lab looks a little purple here!
+bluered <- function(n, bias = 1) 
+  grDevices::colorRampPalette(c("blue", "white", "red"), bias = bias)(n)
 
+grays <- function(n, power = 1)
+  colorspace::sequential_hcl(n, c.=c(0), l=c(95, 40), power = power)
+
+greys <- grays
+
+
+## define default colors
+.sequential_pal <- function(n=100, power=1) greys(n, power)
+.diverge_pal <- function(n=100, bias=1) bluered(n, bias)
