@@ -25,7 +25,7 @@ criterion(x, order = NULL, method = NULL, ...)
 }
 \details{
 For a symmetric dissimilarity matrix
-\eqn{D} with elements \eqn{d(i,j)} where \eqn{i, j = 1 \ldots p},
+\eqn{D} with elements \eqn{d(i,j)} where \eqn{i, j = 1 \ldots n},
 the aim is generally to place low distance values close to the diagonal.
 The following criteria to judge the quality of a
 certain permutation of the objects in a dissimilarity matrix
@@ -42,8 +42,8 @@ are currently implemented:
     anti-Robinson form is
 
     \deqn{
-    M(D) = \sum_{i=1}^p \sum_{i<k<j} f(d_{ij}, d_{ik}) + \sum_{i<k<j} f(d_{ij}, d_{kj})}
-    where \eqn{f(\cdot,\cdot)}
+    M(D) = \sum_{i=1}^n \sum_{i<k<j} f(d_{ij}, d_{ik}) + \sum_{i<k<j} f(d_{ij}, d_{kj})}
+    where \eqn{f(.,.)}
     is a function which defines how a violation
     or satisfaction
     of a gradient condition for an object triple (\eqn{O_i, O_k, O_j})
@@ -51,13 +51,13 @@ are currently implemented:
 
     Hubert et al (2001) suggest two functions. The first
     function is given by:
-    \deqn{f(z,y) = \mathrm{sign}(y-z) = +1 \quad \mathrm{if} \quad z < y; \quad 0 \quad \mathrm{if} \quad z = y; \quad \mathrm{and} \quad -1 \quad \mathrm{if} \quad z > y.}
+    \deqn{f(z,y) = sign(y-z) = +1 if z < y; 0 if z = y; and -1 if z > y.}
 
     It results in raw number of triples satisfying the gradient
     constraints minus triples which violate the constraints.
 
     The second function is defined as:
-    \deqn{f(z,y) = |y-z|\mathrm{sign}(y-z) = y-z}
+    \deqn{f(z,y) = |y-z| sign(y-z) = y-z}
     It weights the each satisfaction or violation by the difference by
     its magnitude given by the absolute difference between the values.
 }
@@ -67,14 +67,12 @@ are currently implemented:
     measures above by concentrating on violations only.
     \deqn{
         L(D) =
-        \sum_{i=1}^p \sum_{i<k<j} f(d_{ik}, d_{ij}) + \sum_{i<k<j} f(d_{kj}, d_{ij})
+        \sum_{i=1}^n \sum_{i<k<j} f(d_{ik}, d_{ij}) + \sum_{i<k<j} f(d_{kj}, d_{ij})
     }
 
     To only count the violations we use
     \deqn{
-        f(z, y) = I(z, y) =
-            1 \quad \mathrm{if} \quad z < y \quad \mathrm{and} \quad
-            0 \quad \mathrm{otherwise.}
+        f(z, y) = I(z, y) = 1 if z < y and 0 otherwise.
    }
 
 
@@ -96,13 +94,35 @@ function resulting in
 
     \deqn{
         L(D) = 1/m
-        \sum_{i=1}^p \sum_{max((i-w),1) \le i<k<j} I(d_{ik} < d_{ij}) + \sum_{i<k<j\le min((i+w, n))} I(d_{kj} > d_{ij})
-    } where \eqn{m = \sum_{i=1}^p \sum_{max((i-w),1)\le i<k<j} 1 + \sum_{i<k<j\le min((i+w, n))} 1}
+        \sum_{i=1}^n \sum_{(i-w)\le j<k<i} I(d_{ij} < d_{ik}) + \sum_{i<j<k\le(i+w))} I(d_{ij} > d_{ik})
+    }
 
-  \eqn{m} represents the maximal number of possible anti-Robinson events.
-  The window size \eqn{w} represents the number of neighboring objects (number of entries from the diagonal of the distance matrix) are considered. The window size is \eqn{1 \le w < n}, where smaller values result in
-  focusing on the local structure while larger values look at the global structure.
+    where \eqn{m=(2/3-n)w + nw^2 - 2/3 w^3}, the maximal number
+    of possible anti-Robinson events in the window.
+  The window size \eqn{w} represents the number of neighboring objects (number of entries from the diagonal of the distance matrix) are considered. The window size is \eqn{2 \le w < n}, where smaller values result in
+  focusing on the local structure while larger values look at the global structure. Alternatively, \code{pct} can be used instead of \code{w} to
+  specify the window as a percentage of \eqn{n}. \code{relative=FALSE} can be
+ to get the GAR, i.e., the absolute number of AR events in the window.
 }
+
+\item{\code{"BAR"}}{Banded Anti-Robinson Form (Earle and Hurley 2015).
+
+    Simplified measure for closeness to the anti-Robinson form in a band of
+    size \eqn{b} with \eqn{1 <= b < n} around the diagonal.
+
+    \deqn{
+        L(D) =
+        \sum_{|i-j|<=b} (b+1-|i-j|) d_{ij}
+    }
+
+    For \eqn{b=1} the measure reduces to the Hamiltonian path length.
+    For \eqn{b=n-1} the measure is equivalent to ARc defined
+    (Earle and Hurley, 2015). Note that ARc is equivalent to the
+    Linear Seriation criterion (scaled by 1/2).
+
+    \eqn{b} defaults to a band of 20\% of \eqn{n}.
+}
+
 
 
 \item{\code{"Path_length"}}{Hamiltonian path length (Caraux and Pinloche 2005).
@@ -112,7 +132,7 @@ function resulting in
     once, i.e., a Hamilton path. The length of the path is defined as the sum
     of the edge weights, i.e., dissimilarities.
 
-    \deqn{L(D) = \sum_{i=1}^{p-1} d_{i,i+1}}
+    \deqn{L(D) = \sum_{i=1}^{n-1} d_{i,i+1}}
 
     The length of the Hamiltonian path is equal to the
     value of the minimal span loss function (as used by Chen 2002).
@@ -121,12 +141,25 @@ function resulting in
     If \code{order} is not unique or
     there are non-finite distance values \code{NA} is returned.}
 
+\item{\code{"Lazy_path_length"}}{Lazy path length (Earl and Hurley 2015).
+
+    A weighted version of the Hamiltonian path criterion. This loss function
+    postpones larger distances to later in the order (i.e., a lazy traveling
+    sales person).
+
+    \deqn{L(D) = \sum_{i=1}^{n-1} (n-i) d_{i,i+1}}
+
+    Earl and Hurley (2015) proposed this criterion for reordering in
+    visualizations to concentrate on closer objects first.
+    }
+
+
 \item{\code{"Inertia"}}{Inertia criterion (Caraux and Pinloche 2005).
 
     Measures the moment of the inertia of dissimilarity values
     around the diagonal as
 
-    \deqn{M(D) = \sum_{i=1}^p \sum_{j=1}^p d(i,j)|i-j|^2}
+    \deqn{M(D) = \sum_{i=1}^n \sum_{j=1}^n d(i,j)|i-j|^2}
 
     \eqn{|i-j|} is used as a measure for the distance to the diagonal and
     \eqn{d(i,j)} gives the weight. This criterion gives higher weight
@@ -138,7 +171,7 @@ function resulting in
     The sum of squares of deviations between the
     dissimilarities and rank differences (in the matrix) between two
     elements:
-    \deqn{L(D) = \sum_{i=1}^p \sum_{j=1}^p (d(i,j) - |i-j|)^2,}
+    \deqn{L(D) = \sum_{i=1}^n \sum_{j=1}^n (d(i,j) - |i-j|)^2,}
     where \eqn{d(i,j)} is an element of the dissimilarity matrix \eqn{D} and
     \eqn{|i-j|} is the rank difference between the objects.
 
@@ -153,7 +186,7 @@ function resulting in
 
     Weights the distances with the absolute rank differences.
 
-    \deqn{L(D) \sum_{i,j=1}^p d(i,j) (-|i-j|)}
+    \deqn{L(D) \sum_{i,j=1}^n d(i,j) (-|i-j|)}
     }
 
     \item{\code{"2SUM"}}{2-Sum Criterion (Barnard, Pothen, and Simon 1993).
@@ -162,7 +195,7 @@ function resulting in
     loss criterion multiplies the similarity between objects
     with the squared rank differences.
 
-    \deqn{L(D) \sum_{i,j=1}^p 1/(1+d(i,j)) (i-j)^2,}
+    \deqn{L(D) \sum_{i,j=1}^n 1/(1+d(i,j)) (i-j)^2,}
 
     where \eqn{s(i,j) = 1/(1+d(i,j))} represents the similarity between
     objects \eqn{i} and \eqn{j}.
@@ -250,6 +283,9 @@ C.-H. Chen (2002): Generalized association plots:
 Information visualization via iteratively generated correlation matrices,
 \emph{Statistica Sinica,} \bold{12}(1), 7--29.
 
+D. Earle and C.B. Hurley (2015): Advances in Dendrogram Seriation for Application to Visualization. \emph{Journal of Computational and Graphical Statistics,}
+\bold{24}(1), 1--25.
+
 L. Hubert and J. Schultz (1976): Quadratic Assignment as a General Data Analysis Strategy. \emph{British Journal of Mathematical and Statistical
 Psychology} \bold{29}(2). Blackwell Publishing Ltd. 190--241.
 
@@ -298,9 +334,10 @@ rbind(
 )
 
 ## compare RGAR by window size (from local to global)
-RGAR <- sapply(1:(nrow(m)-1), FUN = function (w)
+w <- 2:(nrow(m)-1)
+RGAR <- sapply(w, FUN = function (w)
   criterion(d, o, method="RGAR", w = w))
-plot(RGAR, type = "b", ylim = c(0,1),
+plot(w, RGAR, type = "b", ylim = c(0,1),
   xlab = "Windows size (w)", main = "RGAR by window size")
 }
 \keyword{cluster}

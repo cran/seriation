@@ -12,7 +12,8 @@ importFrom("stats", "reorder", "as.dist", "hclust", "runif", "rnorm",
   "as.dendrogram", "as.hclust", "nobs", "order.dendrogram",
   "cmdscale", "prcomp", "cor", "cor.test", "dist")
 importFrom("methods", "is")
-importFrom("grDevices", "gray.colors", "gray")
+importFrom("grDevices", "grey.colors", "grey")
+importFrom("dendextend", "rotate")
 
 export(
     bertinplot,
@@ -64,7 +65,11 @@ export(
 
     ser_dist,
     ser_cor,
-    ser_align
+    ser_align,
+
+    register_DendSer,
+    register_GA,
+    gaperm_mixedMutation
     )
 
 S3method("c", "ser_permutation")
@@ -78,6 +83,7 @@ S3method(criterion, array)
 S3method(get_order, ser_permutation_vector)
 S3method(get_order, integer)
 S3method(get_order, hclust)
+S3method(get_order, dendrogram)
 S3method(get_order, ser_permutation)
 S3method(rev, ser_permutation_vector)
 

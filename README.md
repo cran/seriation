@@ -50,45 +50,32 @@ reordered 356945979      76487641 402332.1     13593.32       5274.093 17810802 
 ```
 
 ## Available Seriation Methods
-For disimilarity data:
+For dissimilarity data:
 
- *  2-SUM (QAP) 
- *  Hierarchical clustering (avg. link) 
- *  Hierarchical clustering (avg. link) reordered by Gruvaeus and Wainer heuristic 
- *  Hierarchical clustering (avg. link) with optimal leaf ordering 
- *  Hierarchical clustering (complete link) 
- *  Hierarchical clustering (complete link) reordered by Gruvaeus and Wainer heuristic 
- *  Hierarchical clustering (complete link) with optimal leaf ordering 
- *  Hierarchical clustering reordered by Gruvaeus and Wainer heuristic 
- *  Hierarchical clustering (single link) 
- *  Hierarchical clustering (single link) reordered by Gruvaeus and Wainer heuristic 
- *  Hierarchical clustering (single link) with optimal leaf ordering 
- *  Hierarchical clustering with optimal leaf ordering 
+ *  Branch-and-bound to minimize the unweighted/weighted column gradient 
+ *  DendSer - Dendrogram seriation heuristic to optimize various criteria
+ *  GA - Genetic algorithm with warm start to optimize various criteria
+ *  HC - Hierarchical clustering (single link, avg. link, complete link) 
+ *  GW - Hierarchical clustering reordered by Gruvaeus and Wainer heuristic 
+ *  OLO - Hierarchical clustering with optimal leaf ordering 
  *  Identity permutation 
- *  Linear Seriation (QAP) 
- *  MDS (angle) 
- *  MDS (metric) 
- *  MDS (non-metric) 
- *  Minimize Anti-Robinson events using simulated annealing 
- *  Minimize Hamiltonian path length with a TSP solver 
- *  Minimize the unweighted row/column gradient by branch-and-bound 
- *  Minimize the weighted row/column gradient by branch-and-bound 
- *  Random permutation 
- *  Rank-two ellipse seriation 
- *  Spectral seriation 
- *  Spectral seriation (normalized) 
- *  SPIN (Neighborhood algorithm) 
- *  SPIN (Side-to-Side algorithm) 
- *  Visual assesment of clustering tendency (VAT) 
-
+ *  MDS - Multidimensional scaling (metric, non-metric, angle) 
+ *  SA - Simulated annealing to minimize anti-Robinson events  
+ *  TSP - Traveling sales person solver to minimize Hamiltonian path length 
+ *  R2E - Rank-two ellipse seriation 
+ *  Random permutation
+ *  Spectral seriation (unnormalized, normalized) 
+ *  SPIN - Sorting points into neighborhoods (neighborhood algorithm, side-to-site algorithm) 
+ *  VAT - Visual assessment of clustering tendency ordering 
+ *  QAP - Quadratic assignment problem heuristic (2-SUM, linear seriation, inertia, banded anti-Robinson form)
+  
 For matrices:
 
- *  Bond Energy Algorithm to maximize ME 
- *  First principal component 
- *  First two principal components (angle) 
+ *  BEA - Bond Energy Algorithm to maximize the measure of effectiveness (ME) 
  *  Identity permutation 
+ *  PCA - First principal component or angle on the projection on the first two principal components 
  *  Random permutation 
- *  TSP to maximize ME 
+ *  TSP - Traveling sales person solver to maximize ME 
 
 ## Further Information
 

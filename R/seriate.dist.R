@@ -285,6 +285,8 @@ seriate_dist_identity <- function(x, control = NULL) {
 
 seriate_dist_random <- function(x, control = NULL) {
   #param <- .get_parameters(control, NULL)
+  .get_parameters(control, NULL)
+
   o <- 1:attr(x, "Size")
   names(o) <- labels(x)
   sample(o)
@@ -549,6 +551,42 @@ seriate_dist_LS <- function(x, control = NULL) {
     B = as.matrix(x)), control))
 }
 
+## QAP Inertia
+seriate_dist_Inertia <- function(x, control = NULL) {
+  ## param are passed on to QAP
+  n <- attr(x, "Size")
+
+  ## inertia uses the same A matrix as 2SUM
+  do.call(qap::qap, c(list(A = n^2-.A_2SUM(n),
+    B = as.matrix(x)), control))
+}
+
+## QAP BAR
+seriate_dist_BAR <- function(x, control = NULL) {
+  ## param are passed on to QAP
+
+  .A_BAR <- function(n, b) {
+    b <- floor(b)
+    if(b<1 || b>=n) stop("b: needs to be 1<=b<n!")
+    A <- b+1- outer(1:n,1:n, FUN = function(i,j) abs(i-j))
+    A[A<0] <- 0
+    A
+  }
+
+  n <- attr(x, "Size")
+  if(is.null(control$b)) b <- max(1, floor(n/5))
+  else {
+    b <- control$b
+    control$b <- NULL
+  }
+
+  ## inertia uses the same A matrix as 2SUM
+  do.call(qap::qap, c(list(A = .A_BAR(n, b = b),
+    B = as.matrix(x)), control))
+}
+
+
+
 
 
 set_seriation_method("dist", "Identity", seriate_dist_identity,
@@ -566,8 +604,8 @@ set_seriation_method("dist", "BBWRCG", seriate_dist_bbwrcg,
 set_seriation_method("dist", "TSP", seriate_dist_tsp,
   "Minimize Hamiltonian path length with a TSP solver")
 
-set_seriation_method("dist", "Chen", seriate_dist_chen,
-  "Rank-two ellipse seriation")
+#set_seriation_method("dist", "Chen", seriate_dist_chen,
+#  "Rank-two ellipse seriation")
 set_seriation_method("dist", "R2E", seriate_dist_chen,
   "Rank-two ellipse seriation")
 
@@ -629,6 +667,10 @@ set_seriation_method("dist", "SPIN_STS", seriate_dist_SPIN_STS,
   "SPIN (Side-to-Side algorithm)")
 
 set_seriation_method("dist", "QAP_2SUM", seriate_dist_2SUM,
-  "2-SUM (QAP)")
+  "QAP (2-SUM)")
 set_seriation_method("dist", "QAP_LS", seriate_dist_LS,
-  "Linear Seriation (QAP)")
+  "QAP (Linear Seriation)")
+set_seriation_method("dist", "QAP_BAR", seriate_dist_BAR,
+  "QAP (Banded anti-Robinson form)")
+set_seriation_method("dist", "QAP_Inertia", seriate_dist_Inertia,
+  "QAP (Inertia)")
