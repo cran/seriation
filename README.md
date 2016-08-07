@@ -1,7 +1,7 @@
 # seriation - Infrastructure for Ordering Objects Using Seriation - R package
 
-[![CRAN version](http://www.r-pkg.org/badges/version/seriation)](http://cran.r-project.org/web/packages/seriation/index.html)
-[![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/seriation)](http://cran.r-project.org/web/packages/seriation/index.html)
+[![CRAN version](http://www.r-pkg.org/badges/version/seriation)](https://cran.r-project.org/package=seriation)
+[![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/seriation)](https://cran.r-project.org/package=seriation)
 [![Travis-CI Build Status](https://travis-ci.org/mhahsler/seriation.svg?branch=master)](https://travis-ci.org/mhahsler/seriation)
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/mhahsler/seriation?branch=master&svg=true)](https://ci.appveyor.com/project/mhahsler/seriation)
 
@@ -15,7 +15,7 @@ visual assessment of cluster tendency plots (VAT and iVAT).
 ## Installation
 
 * __Stable CRAN version:__ install from within R.
-* __Current development version:__ Download package from [AppVeyor](https://ci.appveyor.com/project/mhahsler/seriation/build/artifacts) or install via `intall_github("mhahsler/seriation")` (requires R package `devtools`) 
+* __Current development version:__ Download package from [AppVeyor](https://ci.appveyor.com/project/mhahsler/seriation/build/artifacts) or install via `install_github("mhahsler/seriation")` (requires R package `devtools`) 
 
 ## Example
 
@@ -79,8 +79,9 @@ For matrices:
 
 ## Further Information
 
+* Development version of [seriation on github](https://github.com/mhahsler/seriation).
 * Michael Hahsler, Kurt Hornik and Christian Buchta, [Getting Things in Order: An Introduction to the R Package seriation,](http://dx.doi.org/10.18637/jss.v025.i03) _Journal of Statistical Software,_ 25(3), 2008.
 * [Seriation package vignette](http://cran.r-project.org/web/packages/seriation/vignettes/seriation.pdf) with complete examples.
 * [Reference manual](http://cran.r-project.org/web/packages/seriation/seriation.pdf)
 
-
+_Maintainer:_ [Michael Hahsler](http://michael.hahsler.net)

@@ -94,7 +94,7 @@ seriate_dist_tsp <- function(x, control = NULL){
     )
 
   tour <- solve_TSP(tsp, method = control$method,
-    control = control$control)
+    control = control)
 
   o <- cut_tour(tour, cut = "cut_here", exclude_cut = TRUE)
   names(o) <- labels(x)[o]
@@ -557,6 +557,7 @@ seriate_dist_Inertia <- function(x, control = NULL) {
   n <- attr(x, "Size")
 
   ## inertia uses the same A matrix as 2SUM
+  ## we use n^2 since A needs to be positive
   do.call(qap::qap, c(list(A = n^2-.A_2SUM(n),
     B = as.matrix(x)), control))
 }
