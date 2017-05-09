@@ -3,6 +3,10 @@
 \alias{seriate.matrix}
 \alias{seriate.dist}
 \alias{seriate.array}
+\alias{LS_insert}
+\alias{LS_swap}
+\alias{LS_reverse}
+\alias{LS_mixed}
 \title{Seriate Dissimilarity Matrices, Matrices or Arrays}
 \description{
 Tries to find an linear order for objects using data in form of a dissimilarity
@@ -10,7 +14,7 @@ matrix (two-way one mode data), a data matrix (two-way two-mode data) or a
 data array (k-way k-mode data).
 }
 \usage{
-\method{seriate}{dist}(x, method = "ARSA", control = NULL, \ldots)
+\method{seriate}{dist}(x, method = "Spectral", control = NULL, \ldots)
 \method{seriate}{matrix}(x, method = "PCA", control = NULL,
     margin = c(1,2), \ldots)
 \method{seriate}{array}(x, method = "PCA", control = NULL,
@@ -42,12 +46,24 @@ A definition of the measures can be found in the
 
 Two-way two-mode data has to be provided as a dist object (not as a symmetric
 matrix). Similarities have to be transformed in a suitable way into
-dissimilarities. Currently the following methods are implemented for dist:
+dissimilarities. Currently the following methods are implemented for dist
+(for a more detailed description and an experimental comparison see
+Hahsler (2017)):
 
 \describe{
 \item{\code{"ARSA"}}{Anti-Robinson seriation by simulated annealing to minimize
-  the \bold{unweighted gradient measure} (Brusco et al 2007).
+  the \bold{linear seriation criterion} (simulated annealing initialization used in Brusco et al 2008).
+
+Several \code{control} parameters are available:
+    \code{cool} (cooling rate),
+    \code{tmin} (minimum temperature),
+    \code{swap_to_inversion} (proportion of swaps to inversions for local neighborhood search),
+    \code{try_multiplier} (local search tries per temperature; multiplied with the number of objects),
+    \code{reps} (repeat the algorithm with random initialization),
+    \code{verbose}. Use \code{verbose = TRUE} to see the default values
+    for the parameters.
     }
+
 \item{\code{"BBURCG"}}{Anti-Robinson seriation by branch-and-bound to minimize
   the \bold{unweighted gradient measure} (Brusco and Stahl 2005).
   This is only feasible for a
@@ -62,8 +78,9 @@ dissimilarities. Currently the following methods are implemented for dist:
       the \bold{Hamiltonian path length}.
       The solvers in \pkg{TSP} are used (see \code{solve_TSP}).
       The solver method can be passed on via the
-      \code{control} argument, e.g. \code{control = list(method = "2-opt")}.
-      Default is the nearest insertion heuristic.
+      \code{control} argument, e.g. \code{control = list(method = "two_opt")}.
+      Default is the est of 10 runs of
+      arbitrary insertion heuristic with 2-opt improvement.
 
       Since a tour returned by a TSP solver is a connected circle and we are
       looking for a path representing a linear order, we need to find the best
@@ -97,9 +114,12 @@ dissimilarities. Currently the following methods are implemented for dist:
 \item{\code{"MDS"}, \code{"MDS_metric"}, \code{"MDS_nonmetric"},
   \code{"MDS_angle"}}{Multidimensional scaling (MDS).
 
-    Use multidimensional scaling techniques to find an linear order. Note
-    that unidimensional scaling would be more appropriate but is very hard to
-    solve. Generally, ordering along the first component of
+    Use multidimensional scaling techniques to find an linear order
+    by minimizing \bold{stress}. Note
+    MDS algorithms used for a single dimension tend to end up in local optima
+    and unidimensional scaling (see Maier and De Leeuw, 2015)
+    would be more appropriate.
+    However, generally, ordering along the first component of
     MDS provides good results.
 
     By default, metric MDS (\code{cmdscale} in \pkg{stats}) is used.
@@ -171,12 +191,42 @@ be supplied using an element named \code{"hclust"}.
     to the MST.
     }
 
+\item{\code{"SA"}}{ Simulated Annealing for diverse criterion measures.
+
+Implement simulated annealing similar to the ARSA method, however,
+it works for any criterion measure defined in \pkg{seriation}.
+By default the algorithm optimizes for raw gradient measure and is warm started with the result of spectral seriation (2-Sum problem)
+since Hahsler (2017) shows that 2-Sum solutions are similar to
+solutions for the gradient measure.
+
+Local neighborhood functions are \code{LS_insert}, \code{LS_swap},
+\code{LS_reverse}, and \code{LS_mix} (1/3 insertion, 1/3 swap and 1/3 reverse).
+Any neighborhood function can be defined. It needs to take as the only argument
+the order (integer vector) and return a random neighbor.
+
+Note that this is an R implementation repeatedly calling criterion, and therefore is relatively slow.
+
+Several \code{control} parameters are available:
+    \code{criterion} (criterion to optimize; default: "Gradient_raw"),
+    \code{init} (initial order; default: "Spectral"),
+    \code{localsearch} (neighborhood function; default: LS_insert),
+    \code{cool} (cooling rate),
+    \code{tmin} (minimum temperature),
+    \code{swap_to_inversion} (proportion of swaps to inversions),
+    \code{nlocal} (number of objects times nlocal is the number of search tries per temperature),
+    \code{verbose}. Use \code{verbose = TRUE} to see the default values
+    for the parameters.
+}
+
 \item{\code{"Spectral"}, \code{"Spectral_norm"}}{ Spectral seriation (Ding and He 2004).
 
 Spectral seriation uses a relaxation to
 minimize the \bold{2-Sum Problem} (Barnard, Pothen, and Simon 1993).
 It uses the order of the Fiedler
 vector of the similarity matrix's (normalized) Laplacian.
+
+Spectral seriation gives a good trade-off between seriation quality, speed and
+scalability (see Hahsler, 2017).
   }
 
 \item{\code{"SPIN_NH"}, \code{"SPIN_STS"}}{ Sorting Points Into Neighborhoods (SPIN) (Tsafrir 2005).
@@ -213,15 +263,23 @@ The parameter \code{verbose} can be used to display progress information.
 
 \item{\code{"QAP_LS"}, \code{"QAP_2SUM"}, \code{"QAP_BAR"}, \code{"QAP_Inertia"} }{ Quadratic assignment problem
 formulations for seriation using a simulated annealing solver.
-
 These methods minimize the \bold{Linear Seriation Problem} (LS)
 formulation (Hubert and Schultz 1976),
 the \bold{2-Sum Problem} formulation
 (Barnard, Pothen, and Simon 1993),
 the \bold{banded anti-Robinson form} (BAR) or
 the \bold{inertia criterion.}
+
+The parameters in \code{control} are passed on to \code{qap} in \pkg{qap}.
+An important parameter is \code{rep} to return the best result out of
+the given number of repetitions with random restarts. Default is 1, but bigger numbers result in better and more stable results.
 }
 
+\item{\code{"GA"}}{ Use a genetic algorithm to optimize for various criteria.
+ The GA code has to be first registered. A detailed description can be found in the manual page for \code{\link{register_GA}}.}
+
+ \item{\code{"DendSer"}}{ Use heuristic dendrogram seriation to optimize for various criteria.
+ The DendSer code has to be first registered. A detailed description can be found in the manual page for \code{\link{register_DendSer}}.}
 
 \item{\code{"Identity"}}{ Produces an identity permutation. }
 
@@ -298,15 +356,15 @@ Optimal Leaf Ordering for Hierarchical Clustering.
 \emph{Bioinformatics,} \bold{17}(1), 22--29.
 
 Barnard, S. T., A. Pothen, and H. D. Simon (1993): A Spectral Algorithm for Envelope Reduction of Sparse Matrices. \emph{In Proceedings of the 1993
-ACM/IEEE Conference on Supercomputing,} 493-502. Supercomputing '93.
+ACM/IEEE Conference on Supercomputing,} 493--502. Supercomputing '93.
 New York, NY, USA: ACM.
 
 Bezdek, J.C. and Hathaway, R.J. (2002): VAT: a tool for visual assessment of (cluster) tendency. \emph{Proceedings of the 2002 International Joint
 Conference on Neural Networks (IJCNN '02)}, Volume: 3, 2225--2230.
 
-Brusco, M., Koehn, H.F., and Stahl, S. (2007): Heuristic Implementation of
+Brusco, M., Koehn, H.F., and Stahl, S. (2008): Heuristic Implementation of
 Dynamic Programming for Matrix Permutation Problems in Combinatorial
-Data Analysis. \emph{Psychometrika,} conditionally accepted.
+Data Analysis. \emph{Psychometrika,} \bold{73}(3), 503--522.
 
 Brusco, M., and Stahl, S. (2005):
 \emph{Branch-and-Bound Applications in Combinatorial Data Analysis.}
@@ -332,6 +390,9 @@ Analysis,
 \emph{British Journal of Mathematical and Statistical Psychology,}
 \bold{25}, 200--206.
 
+Hahsler, M. (2017): An experimental comparison of seriation methods for one-mode two-way data. \emph{European Journal of Operational Research,} \bold{257},
+133--143.
+
 Hubert, Lawrence, and James Schultz (1976): Quadratic Assignment as a General Data Analysis Strategy. \emph{British Journal of Mathematical and Statistical
 Psychology} \bold{29}(2). Blackwell Publishing Ltd. 190--241.
 
@@ -342,6 +403,8 @@ Data.
 
 Lenstra, J.K (1974): Clustering a Data Array and the Traveling-Salesman
 Problem, \emph{Operations Research,} \bold{22}(2) 413--414.
+
+Mair P., De Leeuw J. (2015). Unidimensional scaling. In \emph{Wiley StatsRef: Statistics Reference Online,} Wiley, New York.
 
 McCormick, W.T., P.J. Schweitzer and T.W. White (1972): Problem decomposition
 and data reorganization by a clustering technique,
@@ -354,6 +417,8 @@ Tsafrir, D., Tsafrir, I., Ein-Dor, L., Zuk, O., Notterman, D.A. and Domany, E.
 \seealso{
 \code{\link{list_seriation_methods}},
 \code{\link{criterion}},
+\code{\link{register_GA}},
+\code{\link{register_DendSer}},
 \code{\link[TSP]{solve_TSP}} in \pkg{TSP},
 \code{\link{hclust}} in \pkg{stats}.
 }
@@ -412,3 +477,4 @@ criterion(x, order)
 }
 \keyword{optimize}
 \keyword{cluster}
+

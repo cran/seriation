@@ -19,7 +19,8 @@
 ## Criterion for the quality of a permutation of a dissimilarity
 ## matrix
 
-criterion.dist <- function(x, order = NULL, method = NULL, ...) {
+criterion.dist <- function(x, order = NULL, method = NULL,
+  force_loss = FALSE, ...) {
 
     ## check order and x
     if(!is.null(order)) {
@@ -37,8 +38,13 @@ criterion.dist <- function(x, order = NULL, method = NULL, ...) {
     if(is.null(method)) method <- list_criterion_methods("dist")
     method <- lapply(method, function(m) get_criterion_method("dist", m))
 
-    sapply(method,
+    crit <- sapply(method,
         function(m) structure(m$fun(x, order, ...), names=m$name))
+
+    if(force_loss) crit <- crit * sapply(method, FUN =
+          function(m) ifelse(m$merit, -1, 1))
+
+    crit
 }
 
 criterion.default <- criterion.dist
@@ -141,10 +147,11 @@ criterion_2SUM <- function(x, order, ...) {
     if(is.null(order)) order <- 1:attr(x, "Size")
     else order <- get_order(order)
 
+    # this is sum(diag(A%*%B[o,o]))
     qap::qap.obj(.A_2SUM(attr(x, "Size")), 1/(1+as.matrix(x)), order)
 }
 
-### Note: We use n-abs(1-j) sice QAP needs positive entires in A!
+### Note: We use n-abs(1-j) since QAP needs positive entires in A!
 .A_LS <- function(n)
   outer(1:n,1:n, FUN = function(i,j) n-abs(i-j))
 
@@ -152,18 +159,22 @@ criterion_LS <- function(x, order, ...) {
     if(is.null(order)) order <- 1:attr(x, "Size")
     else order <- get_order(order)
 
+    # this is sum(diag(A%*%B[o,o]))
     qap::qap.obj(.A_LS(attr(x, "Size")), as.matrix(x), order)
 }
 
 
+### these measures are calculated on similarity matrices
 criterion_ME_dist <- function(x, order, ...)
-    criterion(as.matrix(x), c(order, order), "ME")
-
+    criterion(1/(1+as.matrix(x)), c(order, order), "ME")
 criterion_Moore_stress_dist  <- function(x, order, ...)
-    criterion(as.matrix(x), c(order, order), "Moore_stress")
-
+    criterion(1/(1+as.matrix(x)), c(order, order),
+      "Moore_stress")
 criterion_Neumann_stress_dist  <- function(x, order, ...)
-    criterion(as.matrix(x), c(order, order), "Neumann_stress")
+    criterion(1/(1+as.matrix(x)), c(order, order),
+      "Neumann_stress")
+criterion_R_dist  <- function(x, order, ...)
+    criterion(1/(1+as.matrix(x)), c(order, order), "Cor_R")
 
 
 ### register methods
@@ -194,6 +205,8 @@ set_criterion_method("dist", "Least_squares", criterion_least_squares,
     "Least squares criterion", FALSE)
 set_criterion_method("dist", "ME", criterion_ME_dist,
     "Measure of effectiveness", TRUE)
+set_criterion_method("dist", "Cor_R", criterion_R_dist,
+    "Correlation coefficient R", TRUE)
 
 set_criterion_method("dist", "Moore_stress", criterion_Moore_stress_dist,
     "Stress (Moore neighborhood)", FALSE)

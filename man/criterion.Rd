@@ -10,7 +10,7 @@ merit function \eqn{M} for
   data given a permutation.
 }
 \usage{
-criterion(x, order = NULL, method = NULL, ...)
+criterion(x, order = NULL, method = NULL, force_loss = FALSE, ...)
 }
 \arguments{
   \item{x}{an object of class \code{dist} or a matrix (currently no
@@ -22,6 +22,8 @@ criterion(x, order = NULL, method = NULL, ...)
     employed, or \code{NULL} (default) in which case all available
     criteria are used.}
   \item{...}{additional parameters passed on to the criterion method.}
+  \item{force_loss}{logical; should merit function be converted into
+    loss functions by multiplying with -1?}
 }
 \details{
 For a symmetric dissimilarity matrix
@@ -29,7 +31,8 @@ For a symmetric dissimilarity matrix
 the aim is generally to place low distance values close to the diagonal.
 The following criteria to judge the quality of a
 certain permutation of the objects in a dissimilarity matrix
-are currently implemented:
+are currently implemented (for a more detailed description and an
+experimental comparison see Hahsler (2017)):
 \describe{
 
 \item{\code{"Gradient_raw", "Gradient_weighted"}}{Gradient measures
@@ -201,6 +204,13 @@ function resulting in
     objects \eqn{i} and \eqn{j}.
     }
 
+    \item{\code{"ME"}, \code{"Moore_stress"},
+          \code{"Neumann_stress"}, \code{"Cor_R"}}{These
+    criteria are defined on general matrices (see below for definitions).
+    The dissimilarity matrix is first converted into a similarity matrix
+    using \eqn{S = 1/(1+D)}. If a different transformation is required, then
+    perform the transformation first and supply a matrix instead
+    of a dist object.}
     }
 
 For a general matrix
@@ -226,6 +236,18 @@ are implemented:
     i.e. a higher ME indicates a better arrangement.
     Maximizing ME is the objective of the bond energy algorithm
     (BEA).
+}
+
+\item{\code{"Cor_R"}}{Weighted correlation coefficient R developed
+     as the Measure of Effectiveness for the Moment Ordering
+     Algorithm (Deutsch and Martin 1971).
+
+     R is a merit measure normalized so that its value always
+     lies in \eqn{[-1,1]}.
+     For the special case of a square matrix \eqn{R=1} corresponds to only the
+     main diagonal being filled, \eqn{R=0} to a random distribution of value
+     throughout the array, and \eqn{R=-1} to the opposite diagonal only being
+     filled.
 }
 
 \item{\code{"Moore_stress"}, \code{"Neumann_stress"}}{ Stress (Niermann 2005).
@@ -270,43 +292,49 @@ of neighborhoods are available:
   A named vector of real values.
 }
 \references{
-S. T. Barnard,  A. Pothen, and H. D. Simon (1993): A Spectral Algorithm for Envelope Reduction of Sparse Matrices. \emph{In Proceedings of the 1993
+Barnard, S.T.,  A. Pothen, and H. D. Simon (1993): A Spectral Algorithm for Envelope Reduction of Sparse Matrices. \emph{In Proceedings of the 1993
 ACM/IEEE Conference on Supercomputing,} 493--502. Supercomputing '93.
 New York, NY, USA: ACM.
 
-G. Caraux and S. Pinloche (2005): Permutmatrix: A Graphical Environment
+Caraux, G. and S. Pinloche (2005): Permutmatrix: A Graphical Environment
 to Arrange Gene Expression Profiles in Optimal Linear Order,
 \emph{Bioinformatics,}
 \bold{21}(7), 1280--1281.
 
-C.-H. Chen (2002): Generalized association plots:
+Chen, C.-H. (2002): Generalized association plots:
 Information visualization via iteratively generated correlation matrices,
 \emph{Statistica Sinica,} \bold{12}(1), 7--29.
 
-D. Earle and C.B. Hurley (2015): Advances in Dendrogram Seriation for Application to Visualization. \emph{Journal of Computational and Graphical Statistics,}
+Deutsch, S.B. and J.J. Martin (1971): An ordering algorithm for analysis of
+data arrays. \emph{Operational Research,} \bold{19}(6), 1350--1362.
+
+Earle, D. and C.B. Hurley (2015): Advances in Dendrogram Seriation for Application to Visualization. \emph{Journal of Computational and Graphical Statistics,}
 \bold{24}(1), 1--25.
 
-L. Hubert and J. Schultz (1976): Quadratic Assignment as a General Data Analysis Strategy. \emph{British Journal of Mathematical and Statistical
-Psychology} \bold{29}(2). Blackwell Publishing Ltd. 190--241.
+Hahsler, M. (2017): An experimental comparison of seriation methods for one-mode two-way data. \emph{European Journal of Operational Research,} \bold{257},
+133--143.
+
+Hubert, L. and J. Schultz (1976): Quadratic Assignment as a General Data Analysis Strategy. \emph{British Journal of Mathematical and Statistical
+Psychology,} \bold{29}(2). Blackwell Publishing Ltd. 190--241.
 
 
-L. Hubert, P. Arabie, and J. Meulman (2001): \emph{Combinatorial Data Analysis:
+Hubert, L., P. Arabie, and J. Meulman (2001): \emph{Combinatorial Data Analysis:
 Optimization by Dynamic Programming.} Society for Industrial Mathematics.
 
-S. Niermann (2005): Optimizing the Ordering of Tables
+Niermann, S. (2005): Optimizing the Ordering of Tables
 With Evolutionary Computation, \emph{The American Statistician,}
 \bold{59}(1), 41--46.
 
-W.T. McCormick, P.J. Schweitzer and T.W. White (1972):
+McCormick, W.T., P.J. Schweitzer and T.W. White (1972):
 Problem decomposition and data reorganization by a clustering technique,
 \emph{Operations Research,}
 \bold{20}(5), 993-1009.
 
-W.S. Robinson (1951): A method for chronologically ordering archaeological
+Robinson, W.S. (1951): A method for chronologically ordering archaeological
 deposits,
 \emph{American Antiquity,} \bold{16}, 293--301.
 
-Yin-Jing Tien, Yun-Shien Lee, Han-Ming Wu and Chun-Houh Chen (2008):
+Tien, Y-J., Yun-Shien Lee, Han-Ming Wu and Chun-Houh Chen (2008):
 Methods for simultaneously identifying coherent local clusters with
 smooth global patterns in gene expression profiles,
 \emph{BMC Bioinformatics,} \bold{9}(155), 1--16.
