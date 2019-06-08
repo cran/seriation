@@ -1,6 +1,6 @@
-86605ae913dfdf8dc8212e7489f2bec9 *DESCRIPTION
+dce2f955d777fd5982645ee2b808c4af *DESCRIPTION
 1051f6568327e555a6413bb9f05ebab9 *NAMESPACE
-cfdb73e23a055e3b7beff7c7e9ffea65 *NEWS.md
+7378594d256d02587aad4d3c0749f08c *NEWS.md
 3d54a38130e4ce777a8cbdbbdfe5fce7 *R/AAAcolors.R
 86907cdcf0715b24bf88c2fef3448f39 *R/AAAgrid.R
 a36061f0103a0462915af6332d192d20 *R/AAAinstalled.R
@@ -57,7 +57,7 @@ e4ee428e26e80ce891fc72b1e3c41a54 *data/SupremeCourt.rda
 bfc58954ad470e4e87259e503e5b9bb3 *inst/CITATION
 ec78b63673305829af7e9bed07c3be8b *inst/doc/seriation.R
 0a36b142bde1b91bea2124bfa6a50c7f *inst/doc/seriation.Rnw
-f61b1668c2b287b3e1e2d13f42ed059f *inst/doc/seriation.pdf
+1bd29fbcc51aaaecb87a11b980d730b0 *inst/doc/seriation.pdf
 cadd939fb9deb4742484aeae3ac68bc8 *man/Chameleon.Rd
 928cdf6c55993eaf852f764ba6718bd5 *man/Irish.Rd
 0705c259c1db15283255ea4592526773 *man/Munsingen.Rd
@@ -96,7 +96,7 @@ a0b10ff4ed36935d3dc63a588fa0830b *src/arsa.f
 452900ef3d8c5f672210a9b9c2ffc8ba *src/criterion.c
 c369aeb45f31eb9c323f4ab2a5982d74 *src/dist.c
 24f94b97113901b88285588bd7328932 *src/greedy.c
-12e3c92db4eab199e38254aacf14fa89 *src/init.c
+cfb55fec0d250fcfaef06d0a2a98b02c *src/init.c
 425191f429888b2797c315ef4848ccc9 *src/lt.h
 35e47d9ec00b94d133287e2baf6dcc29 *src/optimal.c
 6551bc5b5b01965b09cdf66ea9b34551 *src/pathdist.c
