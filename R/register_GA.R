@@ -30,23 +30,25 @@ gaperm_mixedMutation <- function(ismProb = .8) {
 register_GA <- function() {
   if(!.installed("GA")) stop("Package 'GA' needs to be  installed!")
 
+  .ga_contr <- list(
+    criterion = "BAR",
+    suggestions = c("TSP", "QAP_LS", "Spectral"),
+    selection = GA::gaperm_nlrSelection,
+    crossover = GA::gaperm_oxCrossover,
+    mutation = seriation::gaperm_mixedMutation(.8),
+    pcrossover = .2,
+    pmutation = .5,
+    popSize = 100,
+    maxiter = 1000,
+    run = 50,
+    parallel = TRUE,
+    verbose = TRUE
+  )
+
   GA_helper <- function(x, control) {
     n <- attr(x, "Size")
 
-    control <- .get_parameters(control, list(
-      criterion = "BAR",
-      suggestions = c("TSP", "QAP_LS", "Spectral"),
-      selection = GA::gaperm_nlrSelection,
-      crossover = GA::gaperm_oxCrossover,
-      mutation = seriation::gaperm_mixedMutation(.8),
-      pcrossover = .2,
-      pmutation = .5,
-      popSize = 100,
-      maxiter = 1000,
-      run = 50,
-      parallel = TRUE,
-      verbose = TRUE
-    ))
+    control <- .get_parameters(control, .ga_contr)
 
     if(control$verbose) cat("\nPreparing suggestions\n")
 
@@ -56,21 +58,14 @@ register_GA <- function() {
 
     if(control$verbose) cat("\nStarting GA\n")
 
-    ### FIXME: handle ...
-    ## max fitness
-    crit2fit <- function(x, method) {
-      if(seriation::get_criterion_method("dist", method)$merit)
-        function(o) criterion(x, o, method)
-      else
-        function(o) -criterion(x, o, method)
-    }
-
-    f <- crit2fit(x, control$criterion)
+    ### FIXME: need to be able to set bandwidth for BAR
+    # fitness function
+    f <- function(o) -criterion(x, o, method = control$criterion, force_loss = TRUE)
 
     result <- GA::ga(type="permutation",
       fitness=f,
-      min=rep(1L, times = n),
-      max=rep(n, times = n),
+      lower=rep(1L, times = n),
+      upper=rep(n, times = n),
       selection = control$selection,
       mutation = control$mutation,
       crossover = control$crossover,
@@ -82,7 +77,7 @@ register_GA <- function() {
       parallel = control$parallel,
       maxiter = control$maxiter,
       run = control$run,
-      maxfitness = Inf,
+      maxFitness = Inf,
       popSize = control$popSize
     )
 
@@ -90,5 +85,5 @@ register_GA <- function() {
   }
 
   set_seriation_method("dist", "GA",
-    GA_helper, "Genetic Algorithm")
+    GA_helper, "Use a genetic algorithm to optimize for various criteria.", .ga_contr)
 }
