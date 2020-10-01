@@ -7,16 +7,7 @@
 Visualizes a dissimilarity matrix using seriation and matrix shading
 using the method developed by Hahsler and Hornik (2011).
 Entries with lower dissimilarities (higher similarity) are plotted darker.
-Such a plot can be used to uncover hidden structure in the data.
-
-The plot can also be used to visualize cluster quality (see Ling 1973).
-Objects belonging to the same cluster are displayed in consecutive order. The
-placement of clusters and the within cluster order is obtained by a seriation
-algorithm which tries to place large similarities/small dissimilarities close to
-the diagonal. Compact clusters are visible as dark squares (low dissimilarity)
-on the diagonal of the plot. Additionally, a Silhouette plot (Rousseeuw 1987)
-is added. This visualization is similar to CLUSION (see Strehl and Ghosh 2002),
-however, allows for using arbitrary seriating algorithms.
+Dissimilarity plots can be used to uncover hidden structure in the data and judge cluster quality.
 }
 \usage{
 dissplot(x, labels = NULL, method = "Spectral",
@@ -108,6 +99,21 @@ dissplot(x, labels = NULL, method = "Spectral",
   }
   \item{\ldots}{further arguments are added to \code{options}.}
 }
+\details{
+The plot can also be used to visualize cluster quality (see Ling 1973).
+Objects belonging to the same cluster are displayed in consecutive order. The
+placement of clusters and the within cluster order is obtained by a seriation
+algorithm which tries to place large similarities/small dissimilarities close to
+the diagonal. Compact clusters are visible as dark squares (low dissimilarity)
+on the diagonal of the plot. Additionally, a Silhouette plot (Rousseeuw 1987)
+is added. This visualization is similar to CLUSION (see Strehl and Ghosh 2002),
+however, allows for using arbitrary seriating algorithms.
+
+\bold{Note:} Since \code{pimage} uses \pkg{grid}, it should not be mixed with base R primitive plotting
+  functions, but the appropriate functions in \code{\link[grid]{grid-package}}.
+}
+
+
 \value{
 An invisible object of class \code{cluster_proximity_matrix} with the following
 elements:
@@ -129,27 +135,28 @@ object and \code{options} contains a list with plotting options (see above).
 }
 \references{
 Hahsler, M. and Hornik, K. (2011):
- Dissimilarity plots: A visual exploration tool for partitional clustering. \emph{Journal of Computational and Graphical Statistics,} \bold{10}(2):335--354.
+ Dissimilarity plots: A visual exploration tool for partitional clustering. \emph{Journal of Computational and Graphical Statistics,} \bold{10}(2):335--354. \doi{10.1198/jcgs.2010.09139}
 
 Ling, R.F. (1973):
 A computer generated aid for cluster analysis.
 \emph{Communications of the ACM,}
-\bold{16}(6), 355--361.
+\bold{16}(6), 355--361. \doi{10.1145/362248.362263}
 
 Rousseeuw, P.J. (1987):
 Silhouettes: A graphical aid to the interpretation and
 validation of cluster analysis.
 \emph{Journal of Computational and Applied Mathematics,}
-\bold{20}(1), 53--65.
+\bold{20}(1), 53--65. \doi{10.1016/0377-0427(87)90125-7}
 
 Strehl, A. and Ghosh, J. (2003):
 Relationship-based clustering and
 visualization for high-dimensional data mining.
 \emph{INFORMS Journal on Computing,}
-\bold{15}(2), 208--230.
+\bold{15}(2), 208--230. \doi{10.1287/ijoc.15.2.208.14448}
 
 }
 \seealso{
+  \code{\link[grid]{grid-package}},
   \code{\link[stats]{dist}},
   \code{\link{seriate}},
   \code{\link{pimage}} and
