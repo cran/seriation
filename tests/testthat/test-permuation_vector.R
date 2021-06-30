@@ -1,4 +1,7 @@
+library(testthat)
 library(seriation)
+library(dendextend) ## Needed because it redefined all.equal for dendrograms
+
 set.seed(0)
 
 context("ser_permutation_vector")
@@ -28,20 +31,31 @@ expect_identical(length(ser_permutation(ser_permutation(sp), 1:10)), 2L)
 context("permute")
 
 ## vector
-expect_identical(permute(1:10, ser_permutation(1:10)), 1:10)
+v <- structure(1:10, names = LETTERS[1:10])
+expect_identical(permute(v, ser_permutation(1:10)), v[1:10])
 expect_identical(permute(LETTERS[1:10], ser_permutation(1:10)), LETTERS[1:10])
-expect_identical(permute(1:10, ser_permutation(10:1)), 10:1)
+expect_identical(permute(v, ser_permutation(10:1)), v[10:1])
 expect_identical(permute(LETTERS[1:10], ser_permutation(10:1)), LETTERS[10:1])
 
-expect_error(permute(1:10, ser_permutation(1:11)))
+expect_error(permute(v, ser_permutation(1:11)))
 
 ## matrix
-m <- matrix(runif(9), ncol=3)
+m <- matrix(runif(9), ncol=3, dimnames = list(1:3, LETTERS[1:3]))
 expect_identical(permute(m, ser_permutation(1:3, 3:1)), m[,3:1])
 expect_identical(permute(m, ser_permutation(3:1, 3:1)), m[3:1,3:1])
 
 expect_error(permute(m, ser_permutation(1:10, 1:9)))
 expect_error(permute(m, ser_permutation(1:9, 1:11)))
+
+expect_identical(permute(m, ser_permutation(3:1, 3:1), margin = 1), m[3:1, ])
+expect_identical(permute(m, ser_permutation(3:1, 3:1), margin = 2), m[ , 3:1])
+expect_identical(permute(m, ser_permutation(3:1), margin = 1), m[3:1, ])
+expect_identical(permute(m, ser_permutation(3:1), margin = 2), m[, 3:1])
+
+## data.frame
+df <- as.data.frame(m)
+expect_identical(permute(df, ser_permutation(1:3, 3:1)), df[,3:1])
+expect_identical(permute(df, ser_permutation(3:1, 3:1)), df[3:1,3:1])
 
 ## dist
 d <- dist(matrix(runif(25), ncol=5))
@@ -57,9 +71,17 @@ l <- list(a = 1:10, b = letters[1:5], 25)
 expect_identical(permute(l, 3:1), rev(l))
 
 ## dendrogram
+## FIXME: order.dendrogram in stats adds attribute value so I use
+## check.attributes = FALSE, but dendrograms use attributes a lot so
+## the check may be pointless
 dend <- as.dendrogram(hclust(d))
-expect_equal(dend, permute(dend, order.dendrogram(dend)))
-expect_equal(rev(dend), permute(dend, rev(order.dendrogram(dend))))
+
+expect_equal(dend, permute(dend, get_order(dend)))
+#,
+#  check.attributes = FALSE)
+expect_equal(rev(dend), permute(dend, rev(get_order(dend))))
+#,
+#  check.attributes = FALSE)
 
 # chances are that a random order will not be perfect
 o <- sample(5)
@@ -68,10 +90,10 @@ expect_warning(permute(dend, o))
 ## hclust
 hc <- hclust(d)
 expect_equal(hc, permute(hc, get_order(hc)))
-
-### Note: rev for hclust adds labels! (So we only compare merge, height and order)
+## Note: rev for hclust adds labels! (So we only compare merge, height and order)
 #expect_equal(rev(hc), permute(hc, rev(get_order(hc))))
-expect_equal(rev(hc)[1:3], permute(hc, rev(get_order(hc)))[1:3])
+expect_equal(as.hclust(rev(as.dendrogram(hc)))[1:3],
+  permute(hc, rev(get_order(hc)))[1:3])
 
 expect_warning(permute(hc, o))
 

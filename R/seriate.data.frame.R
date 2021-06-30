@@ -1,6 +1,6 @@
 #######################################################################
-# Helper for using optional packages
-# Copyrigth (C) 2015 Michael Hahsler
+# seriation - Infrastructure for seriation
+# Copyright (C) 2011 Michael Hahsler, Christian Buchta and Kurt Hornik
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,6 +16,16 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+## seriate data.frame
 
-.installed <- function(pkg) !inherits(try(utils::installed.packages()[pkg,],
-  silent=TRUE), "try-error")
+seriate.data.frame <- function(x,
+  method = "Heatmap",
+  control = NULL,
+  margin = c(1, 2),
+  ...)
+  .seriate_array_helper(as.matrix(x),
+    method,
+    control,
+    margin,
+    datatype = "matrix",
+    ...)

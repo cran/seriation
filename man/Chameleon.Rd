@@ -8,7 +8,7 @@
 \docType{data}
 \title{2D Data Sets used for the CHAMELEON Clustering Algorithm}
 \description{
-Several 2D data sets used to evaluate the CHAMELEON clustering alogrithm
+Several 2D data sets used to evaluate the CHAMELEON clustering algorithm
 in the paper by Karypis et al (1999) and used
 by iVAT, an ordering-based tool to asses cluster tendency (Havens and Bezdek,
 2012).
@@ -43,6 +43,6 @@ An Efficient Formulation of the Improved Visual Assessment of Cluster Tendency (
 \examples{
 data(Chameleon)
 
-plot(chameleon_ds4, cex=.1)
+plot(chameleon_ds4, cex = .1)
 }
 \keyword{datasets}

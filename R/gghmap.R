@@ -1,6 +1,6 @@
 #######################################################################
 # seriation - Infrastructure for seriation
-# Copyrigth (C) 2011 Michael Hahsler, Christian Buchta and Kurt Hornik
+# Copyright (C) 2011 Michael Hahsler, Christian Buchta and Kurt Hornik
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,20 +15,38 @@
 # You should have received a copy of the GNU General Public License along
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-    
-greenred <- function(n, bias = 1)
-  grDevices::colorRampPalette(c("green", "black", "red"), bias = bias, space = "Lab")(n)
 
-### Lab looks a little purple here!
-bluered <- function(n, bias = 1) 
-  grDevices::colorRampPalette(c("blue", "white", "red"), bias = bias)(n)
+gghmap <- function(x,
+  distfun = dist,
+  method = "OLO",
+  control = NULL,
+  scale = c("none", "row", "column"),
+  prop = FALSE,
+  ...) {
 
-grays <- function(n, power = 1)
-  colorspace::sequential_hcl(n, c.=c(0), l=c(95, 40), power = power)
+  scale <- match.arg(scale)
 
-greys <- grays
+  if (inherits(x, "dist")) {
+    # scale and distFun are ignored!
+    o <- seriate(x, method = method, control = control)
+  } else {
+    x <- as.matrix(x)
 
+    contr <- list(
+      dist_fun = distfun,
+      seriation_method = method,
+      seriation_control = control,
+      scale = scale
+      )
 
-## define default colors
-.sequential_pal <- function(n=100, power=1) greys(n, power)
-.diverge_pal <- function(n=100, bias=1) bluered(n, bias)
+    o <-
+      seriate(
+        x,
+        method = "heatmap",
+        control = contr
+      )
+  }
+
+  ggpimage(x, o, prop = prop, ...)
+
+}
