@@ -1,3 +1,13 @@
+# seriation 1.3-1 (10/15/2021)
+
+## New Features
+* added seriation based on 1D t-SNE embedding.
+* added seriation based on 1D UMAP embedding.
+* added seriation based on OPTICS.
+
+# Changes
+* VAT plots now default to upper_tri = TRUE to show the whole matrix.
+
 # seriation 1.3-0 (06/29/2021)
 
 ## Changes

@@ -1,6 +1,6 @@
 #######################################################################
 # seriation - Infrastructure for seriation
-# Copyright (C) 2011 Michael Hahsler, Christian Buchta and Kurt Hornik
+# Copyright (C) 2015 Michael Hahsler, Christian Buchta and Kurt Hornik
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,16 +16,27 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+## register seriation based on OPTICS
 
-ggVAT <- function(x, upper_tri = TRUE, lower_tri = TRUE, ...) {
-  if (!inherits(x, "dist"))
-    stop("x needs to be of class 'dist'!")
-  ggpimage(x, seriate(x, "VAT"), upper_tri = upper_tri, lower_tri = lower_tri, ...)
-}
+register_optics <- function() {
+  check_installed("dbscan")
 
-ggiVAT <- function(x, upper_tri = TRUE, lower_tri = TRUE, ...) {
-  if (!inherits(x, "dist"))
-    stop("x needs to be of class 'dist'!")
-  x <- path_dist(x)
-  ggpimage(x, seriate(x, "VAT"), upper_tri = upper_tri, lower_tri = lower_tri, ...)
+  .contr <- list(
+    eps = NULL,
+    minPts = 5
+  )
+
+  optics_order <- function(x, control) {
+    control <- .get_parameters(control, .contr)
+
+    dbscan::optics(x, eps = control$eps, minPts = control$minPts)$order
+  }
+
+  set_seriation_method(
+    "dist",
+    "optics",
+    optics_order,
+    "Use ordering points to identify the clustering structure (OPTICS) to create an order",
+    .contr
+  )
 }
