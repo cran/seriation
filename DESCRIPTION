@@ -1,8 +1,8 @@
 Package: seriation
 Type: Package
 Title: Infrastructure for Ordering Objects Using Seriation
-Version: 1.3.1
-Date: 2021-10-15
+Version: 1.3.2
+Date: 2022-02-10
 Authors@R: c(
 	person("Michael", "Hahsler", role = c("aut", "cre", "cph"),
 	    email = "mhahsler@lyle.smu.edu"),
@@ -32,7 +32,7 @@ Copyright: The code in src/bea.f is Copyright (C) 1991 F. Murtagh;
         Copyright (C) Michael Hahsler, Christian Buchta, and Kurt
         Hornik.
 NeedsCompilation: yes
-Packaged: 2021-10-16 03:03:57 UTC; hahsler
+Packaged: 2022-02-10 16:44:11 UTC; hahsler
 Author: Michael Hahsler [aut, cre, cph],
   Christian Buchta [aut, cph],
   Kurt Hornik [aut, cph],
@@ -42,4 +42,4 @@ Author: Michael Hahsler [aut, cre, cph],
   Hans-Friedrich Koehn [ctb, cph]
 Maintainer: Michael Hahsler <mhahsler@lyle.smu.edu>
 Repository: CRAN
-Date/Publication: 2021-10-16 04:50:01 UTC
+Date/Publication: 2022-02-10 18:20:02 UTC

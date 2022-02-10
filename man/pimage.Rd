@@ -8,7 +8,7 @@
 \title{Permutation Image Plot}
 \description{
   Provides methods for matrix shading, i.e., displaying a color image for
-  matrix and \code{dist} objects given an optional permutation.
+  matrix (including correlation matrices) and \code{dist} objects given an optional permutation.
   The plot arranges colored rectangles to
   represent the matrix value. Columns and rows appear in the order in the matrix.
   This visualization is also know asi a heatmap.
@@ -98,12 +98,6 @@ pimage(x, row_labels = TRUE, col_labels = TRUE, reverse_columns = TRUE)
 pimage(x, order = seriate(x), row_labels = TRUE, col_labels = TRUE,
   col = c("white", "red"), main = "Random Data (Reordered)")
 
-# Show reordered correlation (between column vectors). For matrices with negative values,
-# a diverging color scheme is  used automatically. The aspect ratio is fixed to 1:1 and only
-# the lower triangle is shown.
-corr <- cor(x)
-pimage(corr, order = seriate(corr), upper_tri = FALSE, main = "Random Data (Correlation)")
-
 # Show a reordered distance matrix (distances between rows).
 # Dark means low distance. The aspect ratio is automatically fixed to 1:1.
 # The upper triangle is suppressed triangle
@@ -177,15 +171,10 @@ if (require("ggplot2")) {
   # Reorder matrix, use custom colors, add a title,
   # and hide colorkey.
   ggpimage(x, order = seriate(x), row_labels = TRUE, col_labels = TRUE) +
-    scale_fill_manual(values = c("white", "red")) +
+    scale_fill_manual(values = c("grey90", "red")) +
     theme(legend.position = "none") +
     labs(title = "Random Data")
 
-  # Show reordered correlation (between column vectors). For matrices with negative values,
-  # a diverging color scheme is  used automatically. We show onlt the lower triangle.
-  corr <- cor(x)
-  ggpimage(corr, order = seriate(corr), upper_tri = FALSE) +
-    labs(title = "Random Data", subtitle = "Correlation")
 
   # Show a reordered distance matrix (distances between rows).
   # Dark means low distance.
@@ -197,11 +186,11 @@ if (require("ggplot2")) {
   ggpimage(d, order = seriate(d), upper_tri = TRUE) +
     labs(title = "Random Data", subtitle = "Distances")
 
-
   # Show only distances that are smaller than .5 using limits on fill.
   ggpimage(d,  order = seriate(d)) +
     labs(title = "Random Data (Distances + Theshold)") +
-    scale_fill_gradient(low = "darkblue", high = "lightgray", limit = c(0, .5), na.value = "white")
+    scale_fill_gradient(low = "darkblue", high = "lightgray",
+      limit = c(0, .5), na.value = "white")
 
   # Use ggplot2 themes with theme_set
   old_theme <- theme_set(theme_linedraw())

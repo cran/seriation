@@ -1,3 +1,9 @@
+# seriation 1.3-2 (2/10/2022)
+
+## Changes
+* Improved argument checking for ser_permutation_vector().
+* ggplot uses now standard ggplot2 color palettes.
+
 # seriation 1.3-1 (10/15/2021)
 
 ## New Features
