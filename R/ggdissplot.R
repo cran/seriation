@@ -16,16 +16,15 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-
-
-## Cluster visualization by proximity matrix shading
-
+#' @rdname dissplot
+#' @export
 ggdissplot <- function(x,
   labels = NULL,
   method = "Spectral",
   control = NULL,
   lower_tri = TRUE,
   upper_tri = "average",
+  diag = TRUE,
   cluster_labels = TRUE,
   cluster_lines = TRUE,
   reverse_columns = FALSE,
@@ -47,7 +46,8 @@ ggdissplot <- function(x,
 
   m  <- .average_tri(x,
     lower_tri = lower_tri,
-    upper_tri = upper_tri)
+    upper_tri = upper_tri,
+    diag = diag)
 
   k       <- x$k
   dim     <- attr(x$x_reordered, "Size")
@@ -150,10 +150,8 @@ ggdissplot <- function(x,
   }
 
   # reverse color
-  suppressMessages(
-    g <-
-      g + .gg_sequential_pal(dist = TRUE)
-  )
+  suppressMessages(g <-
+      g + .gg_sequential_pal(dist = TRUE))
 
   g
 }

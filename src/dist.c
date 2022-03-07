@@ -23,34 +23,34 @@
 
 #include "lt.h"
 
-/* 
+/*
  * Reorder a dist object with a given order
  * Beware: all checking and attribute stuff has to be done in the R wrapper
  */
 
 SEXP reorder_dist(SEXP R_dist, SEXP R_order) {
 
-    SEXP R_dist_out;
-     
-    int n = INTEGER(getAttrib(R_dist, install("Size")))[0];
-    int n_out = LENGTH(R_order);
-    int *o = INTEGER(R_order);
+  SEXP R_dist_out;
 
-    PROTECT(R_dist_out = allocVector(REALSXP, n_out*(n_out-1)/2));
+  int n = INTEGER(getAttrib(R_dist, install("Size")))[0];
+  R_xlen_t n_out = LENGTH(R_order);
+  int *o = INTEGER(R_order);
 
-    double *dist = REAL(R_dist);
-    double *dist_out = REAL(R_dist_out);
+  PROTECT(R_dist_out = allocVector(REALSXP, n_out*(n_out-1)/2));
 
-    for (int i = 1; i <= n_out; i++) {		
-        for (int j = (i+1); j <=n_out; j++) {
+  double *dist = REAL(R_dist);
+  double *dist_out = REAL(R_dist_out);
 
-            if(o[i-1] == o[j-1]) dist_out[LT_POS(n_out, i, j)] = 0.0;	
-            else dist_out[LT_POS(n_out, i, j)] = 
-                dist[LT_POS(n, o[i-1], o[j-1])];
-        }
+  for (int i = 1; i <= n_out; i++) {
+    for (int j = (i+1); j <=n_out; j++) {
+
+      if(o[i-1] == o[j-1]) dist_out[LT_POS(n_out, i, j)] = 0.0;
+      else dist_out[LT_POS(n_out, i, j)] =
+        dist[LT_POS(n, o[i-1], o[j-1])];
     }
+  }
 
-    UNPROTECT(1);
-    return R_dist_out;
+  UNPROTECT(1);
+  return R_dist_out;
 }
 

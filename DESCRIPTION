@@ -1,8 +1,8 @@
 Package: seriation
 Type: Package
 Title: Infrastructure for Ordering Objects Using Seriation
-Version: 1.3.2
-Date: 2022-02-10
+Version: 1.3.3
+Date: 2022-03-02
 Authors@R: c(
 	person("Michael", "Hahsler", role = c("aut", "cre", "cph"),
 	    email = "mhahsler@lyle.smu.edu"),
@@ -25,14 +25,36 @@ Imports: stats, grDevices, grid, TSP, qap, cluster, gclus, colorspace,
         MASS, registry
 Suggests: DendSer, GA, Rtsne, dbscan, umap, testthat, dendextend,
         ggplot2, scales
+Encoding: UTF-8
+RoxygenNote: 7.1.2.9000
 License: GPL-3
 Copyright: The code in src/bea.f is Copyright (C) 1991 F. Murtagh;
         src/bbwrcg.f, src/arsa.f and src/bburcg.f are Copyright (C)
         2005 M. Brusco, H.F. Koehn, and S. Stahl. All other code is
         Copyright (C) Michael Hahsler, Christian Buchta, and Kurt
         Hornik.
+Collate: 'AAA_check_installed.R' 'AAA_color_palette.R' 'AAA_map.R'
+        'AAA_parameters.R' 'AAA_registry_criterion.R'
+        'AAA_registry_seriate.R' 'AAA_seriation-package.R'
+        'Chameleon.R' 'Irish.R' 'Munsingen.R' 'Psych24.R'
+        'SupremeCourt.R' 'Townships.R' 'VAT.R' 'Wood.R' 'Zoo.R' 'bea.R'
+        'bertinplot.R' 'criterion.R' 'criterion.array.R'
+        'criterion.dist.R' 'criterion.matrix.R' 'dissplot.R'
+        'get_order.R' 'ggVAT.R' 'ggbertinplot.R' 'ggdissplot.R'
+        'hmap.R' 'gghmap.R' 'pimage.R' 'ggpimage.R' 'grid_helpers.R'
+        'hclust_greedy.R' 'lines_and_ordered_data.R' 'permute.R'
+        'register_DendSer.R' 'register_GA.R' 'register_optics.R'
+        'register_tsne.R' 'register_umap.R' 'reorder.hclust.R'
+        'robinson.R' 'ser_dist.R' 'ser_permutation.R'
+        'ser_permutation_vector.R' 'ser_permutation_vector2matrix.R'
+        'seriate.R' 'seriate.array.R' 'seriate.data.frame.R'
+        'seriate.dist.R' 'seriate.matrix.R'
+        'seriate_ARSA_Branch-Bound.R' 'seriate_BEA.R' 'seriate_HC.R'
+        'seriate_MDS.R' 'seriate_PCA.R' 'seriate_QAP.R' 'seriate_R2E.R'
+        'seriate_SA.R' 'seriate_SPIN.R' 'seriate_TSP.R' 'seriate_VAT.R'
+        'seriate_heatmap.R' 'seriate_spectral.R' 'uniscale.R'
 NeedsCompilation: yes
-Packaged: 2022-02-10 16:44:11 UTC; hahsler
+Packaged: 2022-03-03 16:03:24 UTC; hahsler
 Author: Michael Hahsler [aut, cre, cph],
   Christian Buchta [aut, cph],
   Kurt Hornik [aut, cph],
@@ -42,4 +64,4 @@ Author: Michael Hahsler [aut, cre, cph],
   Hans-Friedrich Koehn [ctb, cph]
 Maintainer: Michael Hahsler <mhahsler@lyle.smu.edu>
 Repository: CRAN
-Date/Publication: 2022-02-10 18:20:02 UTC
+Date/Publication: 2022-03-07 08:00:02 UTC
