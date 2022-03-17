@@ -1,6 +1,6 @@
 /*
  * seriation - Infrastructure for seriation
- * Copyrigth (C) 2011 Michael Hahsler, Christian Buchta and Kurt Hornik
+ * Copyright (C) 2011 Michael Hahsler, Christian Buchta and Kurt Hornik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,13 +66,10 @@ SEXP order_length(SEXP R_dist, SEXP R_order) {
 
     SEXP R_obj;
 
-    n = 1 + (R_xlen_t) sqrt(2 * LENGTH(R_dist));
+    n = LENGTH(R_order);
 
-    if (LENGTH(R_dist) < 1 || LENGTH(R_dist) != n / 2 * (n-1))
-       error("order_cost: invalid length");
-
-    if (LENGTH(R_order) != n)
-       error("order_length: \"dist\" and \"order\" do not match");
+    if (LENGTH(R_dist) != n * (n - 1) / 2)
+       error("order_length: length of \"dist\" and \"order\" do not match");
 
     o = Calloc(n, int);
 
