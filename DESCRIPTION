@@ -1,8 +1,8 @@
 Package: seriation
 Type: Package
 Title: Infrastructure for Ordering Objects Using Seriation
-Version: 1.3.4
-Date: 2022-03-16
+Version: 1.3.5
+Date: 2022-03-28
 Authors@R: c(
 	person("Michael", "Hahsler", role = c("aut", "cre", "cph"),
 	    email = "mhahsler@lyle.smu.edu"),
@@ -54,7 +54,7 @@ Collate: 'AAA_check_installed.R' 'AAA_color_palette.R' 'AAA_map.R'
         'seriate_SA.R' 'seriate_SPIN.R' 'seriate_TSP.R' 'seriate_VAT.R'
         'seriate_heatmap.R' 'seriate_spectral.R' 'uniscale.R'
 NeedsCompilation: yes
-Packaged: 2022-03-17 02:23:17 UTC; hahsler
+Packaged: 2022-03-28 15:18:00 UTC; hahsler
 Author: Michael Hahsler [aut, cre, cph],
   Christian Buchta [aut, cph],
   Kurt Hornik [aut, cph],
@@ -64,4 +64,4 @@ Author: Michael Hahsler [aut, cre, cph],
   Hans-Friedrich Koehn [ctb, cph]
 Maintainer: Michael Hahsler <mhahsler@lyle.smu.edu>
 Repository: CRAN
-Date/Publication: 2022-03-17 15:30:02 UTC
+Date/Publication: 2022-03-28 16:40:04 UTC

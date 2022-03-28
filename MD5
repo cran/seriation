@@ -1,6 +1,6 @@
-c8324b45deeefc16f93088c91d762671 *DESCRIPTION
-0b59d866b0e12c85398ddf54abf6a959 *NAMESPACE
-f7b885a8a44a3447b1447bcd246c6de6 *NEWS.md
+90ac67fb7229be98c255fff9e3a3b0d9 *DESCRIPTION
+fd75b118b615fe7da56790b5a1512388 *NAMESPACE
+265b1c720f05722b8ea7ead8e758663d *NEWS.md
 e8488223eb244ac6fc647b85602bb676 *R/AAA_check_installed.R
 836223cebbfb772cef0ad5268e81dcd2 *R/AAA_color_palette.R
 2a5188bd32cc14b9af961474326c2c7f *R/AAA_map.R
@@ -36,11 +36,11 @@ b63629583ebce0ff0879a61b5096d5b5 *R/hmap.R
 b8bd048c460da85ca0b2424ec2d9d713 *R/lines_and_ordered_data.R
 6c31d21e2751e8d187d503f4df6f057c *R/permute.R
 44ea99a34693d0ad00de53228df17094 *R/pimage.R
-03488dc3db55e255ef983f0390d174a6 *R/register_DendSer.R
+c3a2ee78d84262bc08e279f6bd004ad1 *R/register_DendSer.R
 7e445f4f523630fb3f4f2af83b861add *R/register_GA.R
-b0e14e3afb4dea9473cd3ee4fbb2093a *R/register_optics.R
-f3bab89c8dd9078fc013d583dfd85a4a *R/register_tsne.R
-f49e6956c26f2e098c45919f6ca64f03 *R/register_umap.R
+36796fd0eb14a210124e0237f5cd39b8 *R/register_optics.R
+eb2012e4b06fc3547a5a972a75381d8d *R/register_tsne.R
+839deafea7c703f388c3e6d6cc8670c1 *R/register_umap.R
 504c17da715ed1d7368c03a37c498201 *R/reorder.hclust.R
 571ca55960c12111fb8438b522d7522f *R/robinson.R
 805ae15ab77195b5a3fd8ee00e0be106 *R/ser_dist.R
@@ -67,8 +67,8 @@ ca018f4a9b47eccff38635dd2be9fe2e *R/seriate_heatmap.R
 101c3591535b624d3ae59d8ad5449d61 *R/seriate_spectral.R
 f927485b38ff5bf6ae4e02f79147f038 *R/uniscale.R
 8b1c874334b21126fbe5c2da58c467ee *README.md
-9d225e72f5ba19da8715c2e94ebe4ffe *build/partial.rdb
-ee1384274a4ef7c8d7ab3364278347e2 *build/vignette.rds
+fcefb209fc71da845ca988a03d39a0e1 *build/partial.rdb
+b4301c27fbf3dca8f229743d23e7bb40 *build/vignette.rds
 4f812e82bf45b34f8864e5cbbdd899e3 *data/Chameleon.rda
 906d0bca2aedd0b37beaadb7a72e0e27 *data/Irish.rda
 af710936ee1f7dfa741e92b3a4db299f *data/Munsingen.rda
@@ -80,7 +80,7 @@ e4ee428e26e80ce891fc72b1e3c41a54 *data/SupremeCourt.rda
 90d7ad2e5eb547ca59c0aef98b1990ff *inst/CITATION
 cd09534925b14bfc5ca2a4998404129f *inst/doc/seriation.R
 2089805811e1869148e3b180337e9fe2 *inst/doc/seriation.Rnw
-afc2f2f33b1c131e19f40afcc3025a73 *inst/doc/seriation.pdf
+dbf5eea5a81c79560e3e00f16f2e610c *inst/doc/seriation.pdf
 daf192fb4f4012f6b20ce886856220d7 *man/Chameleon.Rd
 4732680046cd6bd1b2a9f603fde69af2 *man/Irish.Rd
 94967c3688bf4c04439eeae59aee43ea *man/LS.Rd
