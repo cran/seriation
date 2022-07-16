@@ -18,13 +18,24 @@
 #' @examples
 #' data("SupremeCourt")
 #'
+#' # joint probability of disagreement
 #' SupremeCourt
 #'
 #' d <- as.dist(SupremeCourt)
 #' o <- seriate(d)
+#' o
 #'
-#' pimage(d, o)
+#' # judges in original alphabetical order
+#' pimage(d, diag = TRUE, upper = TRUE)
 #'
-#' plot(hclust(as.dist(SupremeCourt)))
+#' # judges reordered by seriation based on similar decisions
+#' pimage(d, o, diag = TRUE, upper = TRUE)
+#'
+#' # Use optimal leaf ordering (hierarchical clustering with reordering)
+#' # which uses a dendrogram
+#' o <- seriate(d, method = "OLO")
+#' o
+#'
+#' plot(o[[1]])
 #' @keywords datasets
 NULL
