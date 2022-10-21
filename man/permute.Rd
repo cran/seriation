@@ -5,6 +5,7 @@
 \alias{permute.array}
 \alias{permute.matrix}
 \alias{permute.data.frame}
+\alias{permute.table}
 \alias{permute.numeric}
 \alias{permute.character}
 \alias{permute.list}
@@ -15,11 +16,13 @@
 \usage{
 permute(x, order, ...)
 
-\method{permute}{array}(x, order, ...)
+\method{permute}{array}(x, order, margin = NULL, ...)
 
-\method{permute}{matrix}(x, order, ...)
+\method{permute}{matrix}(x, order, margin = NULL, ...)
 
-\method{permute}{data.frame}(x, order, ...)
+\method{permute}{data.frame}(x, order, margin = NULL, ...)
+
+\method{permute}{table}(x, order, margin = NULL, ...)
 
 \method{permute}{numeric}(x, order, ...)
 
@@ -39,9 +42,18 @@ array or any other object which provides \code{dim} and standard subsetting
 with \code{"["}).}
 
 \item{order}{an object of class \link{ser_permutation} which contains
-suitable permutation vectors for \code{x}.}
+suitable permutation vectors for \code{x}. Alternatively, a character string with the
+name of a seriation method appropriate for \code{x} can be specified (see \code{\link[=seriate]{seriate()}}).
+This will perform seriation and permute \code{x}.}
 
-\item{...}{additional arguments for the permutation function.}
+\item{...}{if \code{order} is the name of a seriation method, then additional arguments are
+passed on to \code{\link[=seriate]{seriate()}}.}
+
+\item{margin}{specifies the dimensions to be permuted as a vector with dimension indices.
+If \code{NULL}, \code{order} needs to contain a permutation for all dimensions.
+If a single margin is specified, then \code{order} can also contain
+a single permutation vector.
+\code{margin} are ignored.}
 }
 \value{
 A permuted object of the same class as \code{x}.
@@ -64,12 +76,6 @@ also be a single permutation vector of class \link{ser_permutation_vector}
 or data which can be automatically coerced to this class (e.g. a numeric
 vector).
 
-For matrix-like objects, the additional parameter \code{margin} can be
-specified to permute only a single dimension. In this case, \code{order} can
-be a single permutation vector or a complete liis with pemutations for all
-dimensions. In the latter case, all permutations but the one specified in
-\code{margin} are ignored.
-
 For \code{dendrogram} and \code{hclust}, subtrees are rotated to represent
 the order best possible. If the order is not achieved perfectly then the
 user is warned. This behavior can be changed with the extra parameter
@@ -77,7 +83,6 @@ user is warned. This behavior can be changed with the extra parameter
 \code{"stop"} or \code{"ignore"}.
 }
 \examples{
-
 # List data types for permute
 methods("permute")
 
@@ -87,10 +92,20 @@ m
 
 # Permute rows and columns
 o <- ser_permutation(5:1, 2:1)
+o
+
 permute(m, o)
+
 ## permute only columns
 permute(m, o, margin = 2)
 
+## permute using PCA seriation
+permute(m, "PCA")
+
+## permute only rows using PCA
+permute(m, o, margin = 1)
+
+# Permute data.frames
 df <- as.data.frame(m)
 permute(df, o)
 
@@ -98,13 +113,15 @@ permute(df, o)
 d <- dist(m)
 d
 
-permute(d, ser_permutation(c(3,2,1,4,5)))
+permute(d, c(3, 2, 1, 4, 5))
+
+permute(d, "Spectral")
 
 # Permute a list
-l <- list(a=1:5, b=letters[1:3], c=0)
+l <- list(a = 1:5, b = letters[1:3], c = 0)
 l
 
-permute(l, c(2,3,1))
+permute(l, c(2, 3, 1))
 
 # Permute a dendrogram
 hc <- hclust(d)

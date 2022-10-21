@@ -1,3 +1,18 @@
+# seriation 1.4.0 (10/21/2022)
+
+## New Features
+-   seriate for arrays (including matrices) now returns a complete ser_permutation for all
+    dimensions even if margins are specified. For not specified margins, identity permutations
+    are returned.
+-   added support for table (cross tabulation).
+-   added new seriation method CA (correspondence analysis) contributed by Michael Friendly.
+-   permute now accepts more than one margin.
+-   permute now accepts a seriation method instead of only orders.
+
+## Bug Fixes
+
+-   seriate.dist now throws correct error upon encountering NAs (by david-barnett)
+
 # seriation 1.3.6 (07/14/2022)
 
 ## New Features

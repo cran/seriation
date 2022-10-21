@@ -27,6 +27,16 @@ expect_true(all(sapply(os, length) == nrow(x)))
 # TODO: check labels
 #get_order(os$Identity)
 
+# check seriate errors for bad dist objects
+test_that("negative distances and NAs prompt correct seriate.dist errors", {
+  dNeg <- d
+  dNeg[1] <- -1
+  expect_error(seriate(dNeg), "Negative distances not supported")
+
+  dNA <- d
+  dNA[1] <- NA
+  expect_error(seriate(dNA), "NAs not allowed in distance matrix x")
+})
 
 ### Stress test to find memory access problems with randomized algorithms
 #context("memory stress test")
@@ -65,11 +75,13 @@ os <- sapply(methods, function(m) {
   cat("took ", tm[3],"s.\n")
   o
 }, simplify = FALSE)
-expect_true(all(sapply(os, length) == 1L))
-expect_true(all(sapply(os, FUN = function(o2) sapply(o2, length)) == c(5L)))
+
+expect_true(all(sapply(os, length) == 2L))
+expect_true(all(sapply(os, FUN = function(o2) o2[[1]]) == 1:4))
+expect_true(all(sapply(os, FUN = function(o2) length(o2[[2]]) == 5L)))
 
 x_p <- permute(x, os[[1]], margin = 2)
-expect_equal(x_p, x[, get_order(os[[1]])])
+expect_equal(x_p, x[, get_order(os[[1]], 2)])
 
 context("seriate data.frame")
 df <- as.data.frame(x)
@@ -80,6 +92,6 @@ seriate(df, method = "PCA")
 
 o <- seriate(df, margin = 1)
 ## DEPRECATED: results in a message
-permute(df, o)
+permute(df, o[1])
 
-permute(df, o, margin = 1)
+permute(df, o)

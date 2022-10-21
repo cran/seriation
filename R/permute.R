@@ -39,12 +39,6 @@ ndim <- function(x)
 #' or data which can be automatically coerced to this class (e.g. a numeric
 #' vector).
 #'
-#' For matrix-like objects, the additional parameter \code{margin} can be
-#' specified to permute only a single dimension. In this case, \code{order} can
-#' be a single permutation vector or a complete liis with pemutations for all
-#' dimensions. In the latter case, all permutations but the one specified in
-#' \code{margin} are ignored.
-#'
 #' For \code{dendrogram} and \code{hclust}, subtrees are rotated to represent
 #' the order best possible. If the order is not achieved perfectly then the
 #' user is warned. This behavior can be changed with the extra parameter
@@ -57,13 +51,20 @@ ndim <- function(x)
 #' array or any other object which provides \code{dim} and standard subsetting
 #' with \code{"["}).
 #' @param order an object of class [ser_permutation] which contains
-#' suitable permutation vectors for \code{x}.
-#' @param ...  additional arguments for the permutation function.
+#' suitable permutation vectors for \code{x}. Alternatively, a character string with the
+#' name of a seriation method appropriate for `x` can be specified (see [seriate()]).
+#' This will perform seriation and permute `x`.
+#' @param margin specifies the dimensions to be permuted as a vector with dimension indices.
+#' If `NULL`, \code{order} needs to contain a permutation for all dimensions.
+#' If a single margin is specified, then \code{order} can also contain
+#' a single permutation vector.
+#' \code{margin} are ignored.
+#' @param ...  if `order` is the name of a seriation method, then additional arguments are
+#' passed on to [seriate()].
 #' @returns A permuted object of the same class as `x`.
 #' @author Michael Hahsler
 #' @keywords manip
 #' @examples
-#'
 #' # List data types for permute
 #' methods("permute")
 #'
@@ -73,10 +74,20 @@ ndim <- function(x)
 #'
 #' # Permute rows and columns
 #' o <- ser_permutation(5:1, 2:1)
+#' o
+#'
 #' permute(m, o)
+#'
 #' ## permute only columns
 #' permute(m, o, margin = 2)
 #'
+#' ## permute using PCA seriation
+#' permute(m, "PCA")
+#'
+#' ## permute only rows using PCA
+#' permute(m, o, margin = 1)
+#'
+#' # Permute data.frames
 #' df <- as.data.frame(m)
 #' permute(df, o)
 #'
@@ -84,13 +95,15 @@ ndim <- function(x)
 #' d <- dist(m)
 #' d
 #'
-#' permute(d, ser_permutation(c(3,2,1,4,5)))
+#' permute(d, c(3, 2, 1, 4, 5))
+#'
+#' permute(d, "Spectral")
 #'
 #' # Permute a list
-#' l <- list(a=1:5, b=letters[1:3], c=0)
+#' l <- list(a = 1:5, b = letters[1:3], c = 0)
 #' l
 #'
-#' permute(l, c(2,3,1))
+#' permute(l, c(2, 3, 1))
 #'
 #' # Permute a dendrogram
 #' hc <- hclust(d)
@@ -105,18 +118,23 @@ permute.default <- function(x, order, ...)
 
 #' @rdname permute
 #' @export
-permute.array <- function(x, order, ...)
-  .permute_kd(x, order, ...)
+permute.array <- function(x, order, margin = NULL, ...)
+  .permute_kd(x, order, margin = margin, ...)
 
 #' @rdname permute
 #' @export
-permute.matrix <- function(x, order, ...)
-  .permute_kd(x, order, ...)
+permute.matrix <- function(x, order, margin = NULL, ...)
+  .permute_kd(x, order, margin = margin, ...)
 
 #' @rdname permute
 #' @export
-permute.data.frame <- function(x, order, ...)
-  .permute_kd(x, order, ...)
+permute.data.frame <- function(x, order, margin = NULL, ...)
+  .permute_kd(x, order, margin = margin, ...)
+
+#' @rdname permute
+#' @export
+permute.table <- function(x, order, margin = NULL, ...)
+  .permute_kd(x, order, margin = margin, ...)
 
 #' @rdname permute
 #' @export
@@ -137,6 +155,9 @@ permute.list <- function(x, order, ...)
 #' @rdname permute
 #' @export
 permute.dist <- function(x, order, ...) {
+  if (is.character(order))
+    order <- seriate(x, method = order, ...)
+
   .nodots(...)
 
   if (!inherits(order, "ser_permutation"))
@@ -225,52 +246,55 @@ permute.hclust <- function(x, order, ...) {
 }
 
 .permute_kd <- function(x, order, margin = NULL, ...) {
-  .nodots(...)
-
-  if (!inherits(order, "ser_permutation"))
-    order <- ser_permutation(order)
 
   # DEPRECATED: Compatibility with old permutation for data.frame
-  if (is.data.frame(x) && is.null(margin) && length(order) == 1) {
+  if (is.data.frame(x) && is.null(margin) && length(order) == 1 && !is.character(order)) {
     message(
       "permute for data.frames with a single seriation order is now deprecated. Specify the margin as follows: 'permute(x, order, margin = 1)'"
     )
     margin <- 1
   }
 
-  # create complete order object for margin
-  if (!is.null(margin)) {
-    if (length(margin) != 1 || !(margin %in% seq(ndim(x))))
-      stop("margin needs to be a single integer index indicating the dimension to permute.")
-
+  if (is.null(margin))
+    margin <- seq(ndim(x))
+  else {
     margin <- as.integer(margin)
-
-    if (length(order) != 1 && length(order) != ndim(x))
-      stop(
-        "order needs to contain either orders for all dimensions or just a single order for the selected margin."
-      )
-
-    if (length(order) == 1) {
-      length(order) <- ndim(x)
-      order[[margin]] <- order[[1]]
-    }
-
-    # set all other dimensions to identity.
-    for (i in seq(ndim(x))) {
-      if (i != margin)
-        order[[i]] <- ser_permutation_vector(NA)
-    }
+    if (!all(margin %in% seq(ndim(x))))
+      stop("all margins need to specify a valid dimension in x")
   }
 
-  # expand identity permutations
-  todo <- which(sapply(order, .is_identity_permutation))
-  for (i in todo)
-    order[[i]] <- ser_permutation_vector(seq(dim(x)[i]))
 
-  .check_matrix_perm(x, order)
-  perm <- lapply(order, get_order)
+  if (is.character(order))
+    order <- seriate(x, method = order, margin = margin, ...)
+
+  .nodots(...)
+
+  if (!inherits(order, "ser_permutation"))
+    order <- ser_permutation(order)
+
+  if (length(order) != ndim(x) && length(order) != length(margin))
+    stop(
+      "order needs to contain either orders for all dimensions of x or just orders for the selected margin."
+    )
+
+  # set margins not to be permuted to identity and copy the rest
+  o <- seriate(x, method = "identity")
+  if (length(order) <  ndim(x)) ### we only have order for specified margins
+    for(i in seq(length(order)))
+      o[[margin[i]]] <- order[[i]]
+  else
+    for (i in margin)
+      o[[i]] <- order[[i]]
+
+  # expand identity manual permutations (if any)
+  for (i in which(sapply(o, .is_identity_permutation)))
+    o[[i]] <- ser_permutation_vector(seq(dim(x)[i]))
+
+  # check
+  .check_matrix_perm(x, o)
+
+  perm <- lapply(o, get_order)
   do.call("[", c(list(x), perm, drop = FALSE))
-
 }
 
 .permute_1d <- function(x, order, ...) {

@@ -51,8 +51,8 @@
 #' @family plots
 #'
 #' @param x a matrix or an object of class \code{dist}.
-#' @param order an object of class \code{ser_permutation}. If \code{NULL} the
-#' order in \code{x} is plotted.
+#' @param order an object of class \code{ser_permutation} or the name of a seriation method.
+#'   If \code{NULL} the order in \code{x} is plotted.
 #' @param col a list of colors used. If \code{NULL}, a gray scale is used (for
 #' matrix larger values are displayed darker and for \code{dist} smaller
 #' distances are darker). For matrices containing logical data, black and white
@@ -87,6 +87,8 @@
 #' @author Christian Buchta and Michael Hahsler
 #' @keywords hplot
 #' @examples
+#' set.seed(1234)
+#'
 #' ## Example: Logical Matrix
 #' x <- matrix(sample(c(FALSE, TRUE), 300, rep = TRUE), ncol = 10,
 #'   dimnames = list(1:30, LETTERS[1:10]))
@@ -505,6 +507,16 @@ pimage.matrix <-
   }
 
 pimage.default <- pimage.matrix
+
+
+# as.matrix does not work for table!
+table2matrix <- function(M)
+  matrix(M, ncol = ncol(M), dimnames = dimnames(M))
+
+#' @rdname pimage
+#' @export
+pimage.table <- function(x, order = NULL, ...)
+  pimage.matrix(table2matrix(x), order = order, ...)
 
 ## small values are dark
 #' @rdname pimage
