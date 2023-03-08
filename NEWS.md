@@ -1,3 +1,9 @@
+# seriation 1.4.2 (03/07/2023)
+
+## Bug Fixes
+-   pimage: ... is now passed on to the seriation method.
+-   added missing S3 method registrations.
+
 # seriation 1.4.1 (12/27/2022)
 
 ## New Features
