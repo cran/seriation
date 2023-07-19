@@ -22,25 +22,28 @@
 #' Register the DendSer dendrogram seriation method and the ARc criterion
 #' (Earle and Hurley, 2015) for use with [seriate()].
 #'
-#' Registers the method \code{"DendSer"} for [seriate()]. DendSer is a fast
+#' Registers the method `"DendSer"` for seriate. DendSer is a fast
 #' heuristic for reordering dendrograms developed by Earle and Hurley (2015)
 #' able to use different criteria.
 #'
-#' \code{control} for \code{seriate} with
-#' method \code{"DendSer"} accepts the following parameters:
+#' `control` for [`seriate()`] with
+#' method `"DendSer"` accepts the following parameters:
 #'
-#' - "h" or "method" A dendrogram or a method for hierarchical clustering
-#'   (see \code{hclust}). Default: complete-link.
-#' - "criterion" A seriation criterion to optimize (see
-#'   \code{list_criterion_methods("dist")}). Default: \code{"BAR"} (Banded
-#'   anti-Robinson from with 20\% band width).}
-#' - "verbose" a logical; print progress information?
-#' - "DendSer_args" additional arguments for \code{DendSer}.
+#' - `"h"` or `"method"`: A dendrogram or a method for hierarchical clustering
+#'   (see [hclust]). Default: complete-link.
+#' - `"criterion"`: A seriation criterion to optimize (see
+#'   `list_criterion_methods("dist")`. Default: `"BAR"` (Banded
+#'   anti-Robinson from with 20% band width).
+#' - `"verbose"`: a logical; print progress information?
+#' - `"DendSer_args"`: additional arguments for [`DendSer::DendSer()`].
 #'
 #' For convenience, the following methods (for different cost functions) are
-#' also provided: \code{"DendSer_ARc"} (anti-robinson form),
-#' \code{"DendSer_BAR"} (banded anti-Robinson form), \code{"DendSer_LS"} (leaf
-#' seriation), \code{"DendSer_PL"} (path length).
+#' also provided:
+#'
+#' - `"DendSer_ARc"` (anti-robinson form),
+#' - `"DendSer_BAR"` (banded anti-Robinson form),
+#' - `"DendSer_LPL"` (lazy path length),
+#' - `"DendSer_PL"` (path length).
 #'
 #' Note: Package \pkg{DendSer} needs to be installed.
 #'
@@ -84,13 +87,21 @@ register_DendSer <- function() {
   # h (default is NULL -> complete)
 
 
-  .DendSer_control <- list(
-    h = NULL,
-    method = "complete",
-    criterion = NULL,
-    cost = DendSer::costBAR,
-    DendSer_args = NULL,
-    verbose = FALSE
+  .DendSer_control <- structure(
+    list(
+      h = NULL,
+      method = "complete",
+      criterion = NULL,
+      DendSer_args = NULL,
+      verbose = FALSE
+    ),
+    help = list(
+      h = "an hclust object (optional)",
+      method = "hclust linkage method",
+      criterion = "criterion to optimize the dendrogram for",
+      DendSer_args = "more arguments are passed on to DendSer (? DendSer)"
+    )
+
   )
 
   DendSer_helper <- function(x, control) {
@@ -98,16 +109,14 @@ register_DendSer <- function() {
 
     control <- .get_parameters(control, .DendSer_control)
 
-    ## fix cost if it is a criterion from seriation
-    if (!is.null(control$criterion))
-      control$cost <- DendSer::crit2cost(crit = control$criterion)
+    control$cost <- DendSer::crit2cost(crit = control$criterion)
+    control$criterion <- NULL
 
     ## produce hclust
     if (is.null(control$h))
       control$h <- hclust(x, control$method)
-
     control$method <- NULL
-    control$criterion <- NULL
+
     control$ser_weight <- x
 
     if (!is.null(control$DendSer_args)) {
@@ -115,26 +124,28 @@ register_DendSer <- function() {
       control$DendSer_args <- NULL
     }
 
-    do.call(DendSer::DendSer, control)
+    permute(control$h, do.call(DendSer::DendSer, control))
   }
 
 
-  DendSer_BAR <- DendSer_helper
+  DendSer_BAR <-  function(x, control) {
+    control$criterion <- "BAR"
+    DendSer_helper(x, control)
+  }
+
 
   DendSer_PL <- function(x, control) {
-    #control$cost <- DendSer::costPL
     control$criterion <- "Path_length"
     DendSer_helper(x, control)
   }
 
   DendSer_LPL <- function(x, control) {
-    #control$cost <- DendSer::costLPL
     control$criterion <- "Lazy_path_length"
     DendSer_helper(x, control)
   }
 
   DendSer_ARc <- function(x, control) {
-    control$cost <- DendSer::costARc
+    control$criterion <- "Arc"
     DendSer_helper(x, control)
   }
 
@@ -149,40 +160,54 @@ register_DendSer <- function() {
   seriation::set_seriation_method(
     "dist",
     "DendSer",
-    DendSer_helper,
+    DendSer_BAR,
     "Dendrogram seriation (Earle and Hurley, 2015).",
-    .DendSer_control
+    .DendSer_control,
+    optimizes = "Anti-robinson form (BAR) restricted by dendrogram",
+    verbose = TRUE
   )
 
   seriation::set_seriation_method(
     "dist",
     "DendSer_BAR",
     DendSer_BAR,
-    "Dendrogram seriation  with BAR (Earle and Hurley, 2015).",
-    .DendSer_control
+    "Dendrogram seriation with BAR (Earle and Hurley, 2015).",
+    .DendSer_control,
+    optimizes = "Anti-robinson form (BAR) restricted by dendrogram",
+    verbose = TRUE
   )
+
   seriation::set_seriation_method(
     "dist",
     "DendSer_PL",
     DendSer_PL,
     "Dendrogram seriation (Path length)",
-    .DendSer_control
+    .DendSer_control,
+    optimizes = "Path length restricted by dendrogram",
+    verbose = TRUE
   )
+
   seriation::set_seriation_method(
     "dist",
     "DendSer_LPL",
-    DendSer_PL,
+    DendSer_LPL,
     "Dendrogram seriation (Lazy path length)",
-    .DendSer_control
+    .DendSer_control,
+    optimizes = "Path length restricted by dendrogram",
+    verbose = TRUE
   )
-  seriation::set_seriation_method("dist",
+
+  seriation::set_seriation_method(
+    "dist",
     "DendSer_ARc",
     DendSer_ARc,
     "Dendrogram seriation (ARc)",
-    .DendSer_control)
+    .DendSer_control,
+    verbose = TRUE
+  )
+
   #  seriation::set_seriation_method("dist", "DendSer_LS",
   #    DendSer_LS, "Dendrogram seriation (Leaf sort)")
-
 
   ## criteria
 
@@ -196,7 +221,7 @@ register_DendSer <- function() {
   }
 
   seriation::set_criterion_method("dist", "ARc", DendSer_crit_ARc,
-    "AR cost", FALSE)
+                                  "AR cost", FALSE, verbose = TRUE)
 
   ## Already in seriation
   #  DendSer_crit_BAR <- function(x, order, ...) {

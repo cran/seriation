@@ -24,18 +24,21 @@ criterion.dist <- function(x,
   method = NULL,
   force_loss = FALSE,
   ...) {
-  ## check order and x
-  if (!is.null(order)) {
-    if (!inherits(order, "ser_permutation"))
-      order <- ser_permutation(order)
-    .check_dist_perm(x, order)
-  }
-
   ## check dist (most C code only works with lower-triangle version)
   if (attr(x, "Diag") || attr(x, "Upper"))
     x <- as.dist(x, diag = FALSE, upper = FALSE)
   if (!is.double(x))
     mode(x) <- "double"
+
+  ## check order
+  if (!is.null(order)) {
+    if (!inherits(order, "ser_permutation"))
+      order <- ser_permutation(order)
+    .check_dist_perm(x, order)
+  } else
+    order <- ser_permutation(seq(attr(x, "Size")))
+
+
 
   ## get methods
   if (is.null(method))
@@ -129,7 +132,7 @@ criterion_rgar <-
   function(x,
     order,
     w = NULL,
-    pct = NULL,
+    pct = 100,
     relative = TRUE,
     ...) {
     if (is.null(order))
@@ -137,10 +140,7 @@ criterion_rgar <-
     else
       order <- get_order(order)
 
-    ### default is to take all
-    if (is.null(w) && is.null(pct))
-      w <- length(order) - 1L
-    else if (is.null(w)) {
+    if (is.null(w)) {
       w <- floor((length(order) - 3L) * pct / 100) + 2L
       if (w < 1)
         w <- 1
@@ -148,7 +148,7 @@ criterion_rgar <-
 
     if (w < 2 ||
         w >= length(order))
-      stop("Window w needs to be 2<=w<length(order)!")
+      stop("Window w needs to be 2 <= w < length(order) or pct needs to be 0 < pct <= 100!")
     .Call("rgar",
       x,
       order,
@@ -225,6 +225,9 @@ criterion_LS <- function(x, order, ...) {
   qap::qap.obj(.A_LS(attr(x, "Size")), as.matrix(x), order)
 }
 
+# Spearman rank correlation between distances and rank differences of the order
+criterion_R_dist  <- function(x, order, ...)
+  abs(stats::cor(x, stats::dist(get_rank(order), "manhattan"), method = "spearman"))
 
 ### these measures are calculated on similarity matrices
 criterion_ME_dist <- function(x, order, ...)
@@ -235,8 +238,7 @@ criterion_Moore_stress_dist  <- function(x, order, ...)
 criterion_Neumann_stress_dist  <- function(x, order, ...)
   criterion(1 / (1 + as.matrix(x)), c(order, order),
     "Neumann_stress")
-criterion_R_dist  <- function(x, order, ...)
-  criterion(1 / (1 + as.matrix(x)), c(order, order), "Cor_R")
+
 
 
 ### register methods
@@ -257,6 +259,7 @@ set_criterion_method("dist",
   criterion_rgar,
   "Relative generalized anti-Robinson events",
   FALSE)
+
 set_criterion_method("dist", "BAR", criterion_bar,
   "Banded Anti-Robinson Form", FALSE)
 
@@ -265,6 +268,7 @@ set_criterion_method("dist",
   criterion_gradient_raw,
   "Gradient measure",
   TRUE)
+
 set_criterion_method(
   "dist",
   "Gradient_weighted",
@@ -278,6 +282,7 @@ set_criterion_method("dist",
   criterion_path_length,
   "Hamiltonian path length",
   FALSE)
+
 set_criterion_method("dist",
   "Lazy_path_length",
   criterion_lazy_path_length,
@@ -286,20 +291,23 @@ set_criterion_method("dist",
 
 set_criterion_method("dist", "Inertia", criterion_inertia,
   "Inertia criterion", TRUE)
+
 set_criterion_method("dist",
   "Least_squares",
   criterion_least_squares,
   "Least squares criterion",
   FALSE)
+
 set_criterion_method("dist",
   "ME",
   criterion_ME_dist,
   "Measure of effectiveness",
   TRUE)
+
 set_criterion_method("dist",
-  "Cor_R",
+  "Rho",
   criterion_R_dist,
-  "Correlation coefficient R",
+  "Absolute value of the Spearman rank correlation between original distances and rank differences of the order",
   TRUE)
 
 set_criterion_method(
@@ -309,6 +317,7 @@ set_criterion_method(
   "Stress (Moore neighborhood)",
   FALSE
 )
+
 set_criterion_method(
   "dist",
   "Neumann_stress",
@@ -322,6 +331,7 @@ set_criterion_method("dist",
   criterion_2SUM,
   "2-SUM objective value (QAP)",
   FALSE)
+
 set_criterion_method("dist",
   "LS",
   criterion_LS,

@@ -4,36 +4,14 @@
 \alias{pimage}
 \alias{pimage.matrix}
 \alias{pimage.table}
+\alias{pimage.data.frame}
 \alias{pimage.dist}
 \alias{ggpimage}
 \alias{ggpimage.matrix}
 \alias{ggpimage.dist}
 \title{Permutation Image Plot}
 \usage{
-pimage(
-  x,
-  order = NULL,
-  col = NULL,
-  main = "",
-  xlab = "",
-  ylab = "",
-  zlim = NULL,
-  key = TRUE,
-  keylab = "",
-  symkey = TRUE,
-  upper_tri = TRUE,
-  lower_tri = TRUE,
-  diag = TRUE,
-  row_labels = NULL,
-  col_labels = NULL,
-  prop = TRUE,
-  flip_axes = FALSE,
-  reverse_columns = FALSE,
-  ...,
-  newpage = TRUE,
-  pop = TRUE,
-  gp = NULL
-)
+pimage(x, order = NULL, ...)
 
 \method{pimage}{matrix}(
   x,
@@ -51,7 +29,7 @@ pimage(
   diag = TRUE,
   row_labels = NULL,
   col_labels = NULL,
-  prop = TRUE,
+  prop = FALSE,
   flip_axes = FALSE,
   reverse_columns = FALSE,
   ...,
@@ -61,6 +39,8 @@ pimage(
 )
 
 \method{pimage}{table}(x, order = NULL, ...)
+
+\method{pimage}{data.frame}(x, order = NULL, ...)
 
 \method{pimage}{dist}(
   x,
@@ -73,9 +53,9 @@ pimage(
   key = TRUE,
   keylab = "",
   symkey = TRUE,
-  upper_tri = FALSE,
+  upper_tri = TRUE,
   lower_tri = TRUE,
-  diag = FALSE,
+  diag = TRUE,
   row_labels = NULL,
   col_labels = NULL,
   prop = TRUE,
@@ -87,19 +67,7 @@ pimage(
   gp = NULL
 )
 
-ggpimage(
-  x,
-  order = NULL,
-  zlim = NULL,
-  upper_tri = TRUE,
-  lower_tri = TRUE,
-  diag = TRUE,
-  row_labels = NULL,
-  col_labels = NULL,
-  prop = TRUE,
-  flip_axes = FALSE,
-  reverse_columns = FALSE
-)
+ggpimage(x, order = NULL, ...)
 
 \method{ggpimage}{matrix}(
   x,
@@ -110,23 +78,25 @@ ggpimage(
   diag = TRUE,
   row_labels = NULL,
   col_labels = NULL,
-  prop = TRUE,
+  prop = FALSE,
   flip_axes = FALSE,
-  reverse_columns = FALSE
+  reverse_columns = FALSE,
+  ...
 )
 
 \method{ggpimage}{dist}(
   x,
   order = NULL,
   zlim = NULL,
-  upper_tri = FALSE,
+  upper_tri = TRUE,
   lower_tri = TRUE,
-  diag = FALSE,
+  diag = TRUE,
   row_labels = NULL,
   col_labels = NULL,
   prop = TRUE,
   flip_axes = FALSE,
-  reverse_columns = FALSE
+  reverse_columns = FALSE,
+  ...
 )
 }
 \arguments{
@@ -134,6 +104,9 @@ ggpimage(
 
 \item{order}{an object of class \code{ser_permutation} or the name of a seriation method.
 If \code{NULL} the order in \code{x} is plotted.}
+
+\item{\dots}{if \code{order} is the name of a seriation method then further arguments are  passed
+on to the seriatation method, otherwise they are ignored.}
 
 \item{col}{a list of colors used. If \code{NULL}, a gray scale is used (for
 matrix larger values are displayed darker and for \code{dist} smaller
@@ -172,9 +145,6 @@ equal width and height.}
 
 \item{reverse_columns}{logical; revers the order of how the columns are
 displayed.}
-
-\item{\dots}{if \code{order} is the name of a seriation method then further arguments are  passed
-on to the seriatation method, otherwise they are ignored.}
 
 \item{newpage, pop, gp}{Start plot on a new page, pop the viewports after
 plotting, and use the supplied \code{gpar} object (see \pkg{grid}).}
@@ -231,20 +201,23 @@ pimage(x, order = seriate(x), row_labels = TRUE, col_labels = TRUE,
 x <- matrix(runif(100), ncol = 10,
   dimnames = list(LETTERS[1:10], paste0("X", 1:10)))
 
-pimage(x)
+pimage(x, prop = TRUE)
 
 ## Example: Pos/Neg. Matrix
 x <- matrix(rnorm(100), ncol = 10,
   dimnames = list(LETTERS[1:10], paste0("X", 1:10)))
 
-pimage(x)
+pimage(x, prop = TRUE)
 
 ## Example: Distance Matrix
 # Show a reordered distance matrix (distances between rows).
 # Dark means low distance. The aspect ratio is automatically fixed to 1:1.
-# The upper triangle is suppressed triangle
 d <- dist(x)
 pimage(d,  order = seriate(d),
+  main = "Random Data (Distances)")
+
+# Supress the upper triangle and diagonal
+pimage(d,  order = seriate(d), upper = FALSE, diag = FALSE,
   main = "Random Data (Distances)")
 
 # Show only distances that are smaller than 4 using limits on z.
@@ -293,13 +266,13 @@ pushViewport(splot)
 
 seekViewport("col1_vp")
 o <- seriate(x)
-pimage(x, o, labCol = FALSE, main = "Random Data",
+pimage(x, o, col_labels = FALSE, main = "Random Data",
   newpage = FALSE)
 
 seekViewport("col2_vp")
 ## add the reordered dissimilarity matrix for rows
 d <- dist(x)
-pimage(d, o[[1]], labCol = FALSE, main = "Random Data",
+pimage(d, o[[1]], main = "Random Data",
   newpage = FALSE)
 
 popViewport(0)
@@ -356,8 +329,8 @@ d <- dist(x)
 ggpimage(d, order = seriate(d)) +
   labs(title = "Random Data", subtitle = "Distances")
 
-# Show also upper triangle and diagonal
-ggpimage(d, order = seriate(d), upper_tri = TRUE, diag = TRUE) +
+# Hide upper triangle and diagonal
+ggpimage(d, order = seriate(d), upper_tri = FALSE, diag = FALSE) +
   labs(title = "Random Data", subtitle = "Distances")
 
 # Show only distances that are smaller than 4 using limits on fill.

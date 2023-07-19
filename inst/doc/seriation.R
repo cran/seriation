@@ -133,15 +133,18 @@ get_seriation_method("dist", name = "ARSA")
 
 
 ###################################################
-### code chunk number 19: seriation.Rnw:1332-1335
+### code chunk number 19: seriation.Rnw:1333-1339
 ###################################################
-seriation_method_reverse <- function(x, control = NULL) {
-           lapply(dim(x), function(n) rev(seq(n)))
+seriation_method_reverse <- function(x, control = NULL,
+                                     margin = seq_along(dim(x))) {
+          lapply(seq_along(dim(x)), function(i)
+            if (i %in% margin) rev(seq(dim(x)[i]))
+            else NA)
 }
 
 
 ###################################################
-### code chunk number 20: seriation.Rnw:1343-1348
+### code chunk number 20: seriation.Rnw:1347-1352
 ###################################################
 set_seriation_method("matrix", "New_Reverse", seriation_method_reverse,
     "Reverse identity order")
@@ -151,11 +154,11 @@ set_seriation_method("array", "New_Reverse", seriation_method_reverse,
 
 
 ###################################################
-### code chunk number 21: seriation.Rnw:1353-1360
+### code chunk number 21: seriation.Rnw:1357-1364
 ###################################################
 list_seriation_methods("matrix")
 
-o <- seriate(matrix(1, ncol=3, nrow=4), "New_Reverse")
+o <- seriate(matrix(1, ncol = 3, nrow = 4), "New_Reverse")
 o
 
 get_order(o, 1)
@@ -163,25 +166,25 @@ get_order(o, 2)
 
 
 ###################################################
-### code chunk number 22: seriation.Rnw:1394-1395
+### code chunk number 22: seriation.Rnw:1398-1399
 ###################################################
 x <- scale(x, center = FALSE)
 
 
 ###################################################
-### code chunk number 23: seriation.Rnw:1402-1403 (eval = FALSE)
+### code chunk number 23: seriation.Rnw:1406-1407 (eval = FALSE)
 ###################################################
 ## hmap(x, margin = c(7, 4), cexCol = 1, row_labels = FALSE)
 
 
 ###################################################
-### code chunk number 24: seriation.Rnw:1413-1414 (eval = FALSE)
+### code chunk number 24: seriation.Rnw:1417-1418 (eval = FALSE)
 ###################################################
 ## hmap(x, method = "MDS")
 
 
 ###################################################
-### code chunk number 25: seriation.Rnw:1424-1429
+### code chunk number 25: seriation.Rnw:1428-1433
 ###################################################
 #bitmap(file = "seriation-heatmap1.png", type = "pnggray",
 #    height = 6, width = 6, res = 300, pointsize=14)
@@ -191,7 +194,7 @@ tmp <- dev.off()
 
 
 ###################################################
-### code chunk number 26: seriation.Rnw:1431-1434
+### code chunk number 26: seriation.Rnw:1435-1438
 ###################################################
 pdf(file = "seriation-heatmap2.pdf")
 hmap(x, method="MDS")
@@ -199,14 +202,14 @@ tmp <- dev.off()
 
 
 ###################################################
-### code chunk number 27: seriation.Rnw:1500-1502
+### code chunk number 27: seriation.Rnw:1504-1506
 ###################################################
 data("Irish")
 orig_matrix <- apply(Irish[,-6], 2, rank)
 
 
 ###################################################
-### code chunk number 28: seriation.Rnw:1512-1517
+### code chunk number 28: seriation.Rnw:1516-1521
 ###################################################
 o <- c(
     seriate(dist(orig_matrix, "minkowski", p = 1), method = "TSP"),
@@ -216,7 +219,7 @@ o
 
 
 ###################################################
-### code chunk number 29: seriation.Rnw:1521-1526
+### code chunk number 29: seriation.Rnw:1525-1530
 ###################################################
 get_seriation_method("matrix", name = "heatmap")
 
@@ -226,7 +229,7 @@ o
 
 
 ###################################################
-### code chunk number 30: seriation.Rnw:1531-1533 (eval = FALSE)
+### code chunk number 30: seriation.Rnw:1535-1537 (eval = FALSE)
 ###################################################
 ## bertinplot(orig_matrix)
 ## bertinplot(orig_matrix, o)
@@ -253,7 +256,7 @@ bertinplot(Townships, panel = panel.tiles)
 
 
 ###################################################
-### code chunk number 34: seriation.Rnw:1610-1612
+### code chunk number 34: seriation.Rnw:1614-1616
 ###################################################
 ## to get consistent results
 set.seed(5)
@@ -267,7 +270,7 @@ bertinplot(Townships, o, panel = panel.tiles)
 
 
 ###################################################
-### code chunk number 36: seriation.Rnw:1651-1655
+### code chunk number 36: seriation.Rnw:1655-1659
 ###################################################
 rbind(
   original = criterion(Townships),
@@ -276,7 +279,7 @@ rbind(
 
 
 ###################################################
-### code chunk number 37: seriation.Rnw:1722-1726
+### code chunk number 37: seriation.Rnw:1726-1730
 ###################################################
 data("iris")
 iris <- iris[sample(seq_len(nrow(iris))), ]
@@ -299,7 +302,7 @@ d_iris <- dist(x_iris, method = "euclidean")
 
 
 ###################################################
-### code chunk number 40: seriation.Rnw:1748-1754
+### code chunk number 40: seriation.Rnw:1752-1758
 ###################################################
 pdf(file = "seriation-dissplot1.pdf")
 ## plot original matrix
@@ -312,13 +315,13 @@ tmp <- dev.off()
 
 
 ###################################################
-### code chunk number 41: seriation.Rnw:1781-1782
+### code chunk number 41: seriation.Rnw:1785-1786
 ###################################################
 set.seed(1234)
 
 
 ###################################################
-### code chunk number 42: seriation.Rnw:1784-1786
+### code chunk number 42: seriation.Rnw:1788-1790
 ###################################################
 l <- kmeans(x_iris, 10)$cluster
 #$
@@ -332,7 +335,7 @@ l <- kmeans(x_iris, 10)$cluster
 
 
 ###################################################
-### code chunk number 44: seriation.Rnw:1799-1812
+### code chunk number 44: seriation.Rnw:1803-1816
 ###################################################
 pdf(file = "seriation-dissplot3.pdf")
 
@@ -351,20 +354,20 @@ tmp <- dev.off()
 
 
 ###################################################
-### code chunk number 45: seriation.Rnw:1827-1828
+### code chunk number 45: seriation.Rnw:1831-1832
 ###################################################
 res
 
 
 ###################################################
-### code chunk number 46: seriation.Rnw:1847-1849 (eval = FALSE)
+### code chunk number 46: seriation.Rnw:1851-1853 (eval = FALSE)
 ###################################################
 ## plot(res, options = list(main = "Seriation - threshold",
 ##     threshold = 3))
 
 
 ###################################################
-### code chunk number 47: seriation.Rnw:1863-1866
+### code chunk number 47: seriation.Rnw:1867-1870
 ###################################################
 #names(res)
 table(iris[res$order, 5], res$label)[,res$cluster_order]

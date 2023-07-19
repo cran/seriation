@@ -16,42 +16,106 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+# MDS: cmdscale
+.mds_control <- list(add = FALSE)
+attr(.mds_control, "help") <- list(add = "make the distances Euclidean using an additive constant (see ? cmdscale)")
 
-.mds_control <- list(method = "cmdscale")
-
-## Multidimensional scaling
 seriate_dist_mds <- function(x, control = NULL) {
+  ### accept deprecated method
+  if (!is.null(control$method)) {
+    control$method <- NULL
+    warning("seriation method mds: control parameter method is deprecated and ignored!")
+  }
+
   control <- .get_parameters(control, .mds_control)
 
-  if (control$method == "cmdscale") {
-    sc <- stats::cmdscale(x, k = 1)
-    return(order(sc[, 1]))
-
-  } else if (control$method == "isoMDS") {
-    sc <- MASS::isoMDS(x + 1e-6, trace = FALSE, k = 1)
-    return(order(sc$points[, 1]))
-
-  } else if (control$method == "sammon") {
-    sc <- MASS::sammon(x + 1e-6, trace = FALSE, k = 1)
-    return(order(sc$points[, 1]))
-
-  } else
-    stop("unknown method")
-
+  # eig = TRUE makes sure we get a list back
+  sc <- stats::cmdscale(x, k = 1,  eig = TRUE, add = control$add)
+  sc <- drop(sc$points)
+  o <- order(sc)
+  attr(o, "configuration") <- sc
+  o
 }
 
-seriate_dist_mds_metric <- function(x, control = NULL)
-  seriate_dist_mds(x, control = list(method = "cmdscale"))
+# isoMDS: MASS::isoMDS
+.mds_isoMDS_control <- list(
+  add = 1e-9,
+  # to avoid 0 distances
+  maxit = 50,
+  trace = FALSE,
+  tol = 1e-3,
+  p = 2
+)
+attr(.mds_isoMDS_control, "help") <- list(
+  add = "small constant to avoid 0 distances",
+  maxit = "maximum number of iterations",
+  trace = "trace optimization",
+  tol = "convergence tolerance",
+  p = "power for Minkowski distance in the configuration space"
+)
 
-seriate_dist_mds_nonmetric <- function(x, control = NULL)
-  seriate_dist_mds(x, control = list(method = "isoMDS"))
+seriate_dist_mds_isoMDS <- function(x, control = NULL) {
+  control <- .get_parameters(control, .mds_isoMDS_control)
 
-## Angle between the first 2 PCS. Fiendly (2002)
+  sc <-
+    MASS::isoMDS(
+      x + control$add,
+      k = 1,
+      maxit = control$maxit,
+      trace = control$trace,
+      tol = control$tol,
+      p = control$p
+    )
+  o <- order(sc$points[, 1])
+  attr(o, "configuration") <- sc$points[, 1]
+  o
+}
+
+# Sammon mapping: MDS::sammon
+.mds_sammon_control <- list(
+  add = 1e-9,
+  # to avoid 0 distances
+  niter = 100,
+  trace = FALSE,
+  magic = 0.2,
+  tol = 1e-4
+)
+attr(.mds_sammon_control, "help") <- list(
+  add = "small constant to avoid 0 distances",
+  niter = "maximum number of iterations",
+  trace = "trace optimization",
+  magic = "initial value of the step size constant in diagonal Newton method",
+  tol = "tolerance for stopping in units of stress"
+)
+
+seriate_dist_mds_sammon <- function(x, control = NULL) {
+  control <- .get_parameters(control, .mds_sammon_control)
+
+  sc <- MASS::sammon(
+    x + control$add,
+    y = jitter(stats::cmdscale(x, k = 1)),
+    ### fixes issue with duplicates
+    k = 1,
+    niter = control$niter,
+    trace = control$trace,
+    magic = control$magic,
+    tol = control$tol
+  )
+
+  o <- order(sc$points[, 1])
+  attr(o, "configuration") <- sc$points[, 1]
+  o
+}
+
+## Angle between the first 2 PCS. Friendly (2002)
 seriate_dist_angle <- function(x, control = NULL) {
-  .get_parameters(control, NULL)
+  control <- .get_parameters(control, .mds_control)
 
-  sc <- stats::cmdscale(x, k = 2)
-  .order_angle(sc)
+  sc <- stats::cmdscale(x, k = 2, eig = TRUE, add = control$add)
+  sc <- sc$points
+  o <- .order_angle(sc)
+  attr(o, "configuration") <- sc
+  o
 }
 
 
@@ -59,24 +123,34 @@ set_seriation_method(
   "dist",
   "MDS",
   seriate_dist_mds,
-  "Order using the first component found by multidimensional scaling. Element method in control can be \"cmdscale\", \"isoMDS\" or \"sammon\".",
-  .mds_control
+  "Order along the 1D classical metric multidimensional scaling",
+  control = .mds_control,
+  optimizes = "Other (MDS strain)"
 )
-set_seriation_method(
-  "dist",
-  "MDS_metric",
-  seriate_dist_mds_metric,
-  "Order using the first component found by metric multidimensional scaling (cmdscsale)."
-)
-set_seriation_method(
-  "dist",
-  "MDS_nonmetric",
-  seriate_dist_mds_nonmetric,
-  "Order using the first component found by non-metric multidimensional scaling (isoMDS)."
-)
+
 set_seriation_method(
   "dist",
   "MDS_angle",
   seriate_dist_angle,
-  "Order by the angle in this space given by the first two components found by MDS (Friendly, 2002)."
+  "Order by the angle in this space given by 2D metric MDS.",
+  control = .mds_control
 )
+
+set_seriation_method(
+  "dist",
+  "isoMDS",
+  seriate_dist_mds_isoMDS,
+  "Order along the 1D Kruskal's non-metric multidimensional scaling",
+  control = .mds_isoMDS_control,
+  optimizes = "Other (MDS stress with monotonic transformation)"
+)
+
+set_seriation_method(
+  "dist",
+  "Sammon_mapping",
+  seriate_dist_mds_sammon,
+  "Order along the 1D Sammon's non-linear mapping",
+  control = .mds_sammon_control,
+  optimizes = "Other (scale free, weighted MDS stress called Sammon's error)"
+)
+

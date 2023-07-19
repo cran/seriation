@@ -40,17 +40,21 @@
 #' additional information for the method passed on from [criterion()]. The
 #' implementation has to return the criterion value as a scalar.
 #'
+#' @name registry_for_criterion_methods
 #' @family criterion
 #'
 #' @param kind the data type the method works on. For example, `"dist"`,
 #' `"matrix"` or `"array"`.
 #' @param name the name for the method used to refer to the method in the
 #' function [criterion()].
+#' @param names_only logical; return only the method name. `FALSE` returns
+#'    also the method descriptions.
 #' @param fun a function containing the method's code.
 #' @param description a description of the method. For example, a long name.
 #' @param merit a boolean indicating if the criterion measure is a merit
 #' (`TRUE`) or a loss (`FALSE`) measure.
 #' @param x an object of class "criterion_method" to be printed.
+#' @param verbose logical; print a message when a new method is registered.
 #' @param ... further information that is stored for the method in the
 #' registry.
 #' @returns
@@ -71,7 +75,11 @@
 #' # List methods for matrix
 #' list_criterion_methods("matrix")
 #'
-#' get_criterion_method("dist", "AR_d")
+#' # get more description
+#' list_criterion_methods("matrix", names_only = FALSE)
+#'
+#' # get a specific method
+#' get_criterion_method(kind = "dist", name = "AR_d")
 #'
 #' # Define a new method (sum of the diagonal elements)
 #'
@@ -93,26 +101,30 @@
 #' @export
 registry_criterion <-
   registry(registry_class = "criterion_registry",
-    entry_class = "criterion_method")
+           entry_class = "criterion_method")
 
 registry_criterion$set_field("kind",
-  type = "character",
-  is_key = TRUE,
-  index_FUN = match_partial_ignorecase)
-registry_criterion$set_field("name",
-  type = "character",
-  is_key = TRUE,
-  index_FUN = match_partial_ignorecase)
-registry_criterion$set_field("fun", type = "function",
-  is_key = FALSE)
-registry_criterion$set_field("description", type = "character",
-  is_key = FALSE)
-registry_criterion$set_field("merit", type = "logical",
-  is_key = FALSE)
+                             type = "character",
+                             is_key = TRUE,
+                             index_FUN = match_partial_ignorecase)
 
-#' @rdname registry_criterion
+registry_criterion$set_field("name",
+                             type = "character",
+                             is_key = TRUE,
+                             index_FUN = match_partial_ignorecase)
+
+registry_criterion$set_field("fun", type = "function",
+                             is_key = FALSE)
+
+registry_criterion$set_field("description", type = "character",
+                             is_key = FALSE)
+
+registry_criterion$set_field("merit", type = "logical",
+                             is_key = FALSE)
+
+#' @rdname registry_for_criterion_methods
 #' @export
-list_criterion_methods <- function(kind) {
+list_criterion_methods <- function(kind, names_only = TRUE) {
   if (missing(kind)) {
     kinds <- unique(sort(as.vector(
       sapply(registry_criterion$get_entries(), "[[", "kind")
@@ -121,24 +133,33 @@ list_criterion_methods <- function(kind) {
     sapply(
       kinds,
       FUN = function(k)
-        list_criterion_methods(k)
+        list_criterion_methods(k, names_only = names_only)
     )
 
   } else{
-    sort(as.vector(sapply(
-      registry_criterion$get_entries(kind = kind), "[[", "name"
-    )))
+    if (names_only)
+
+      sort(as.vector(sapply(
+        registry_criterion$get_entries(kind = kind), "[[", "name"
+      )))
+    else {
+      l <- registry_criterion$get_entries(kind = kind)
+      l[order(names(l))]
+    }
   }
 }
 
-#' @rdname registry_criterion
+
+#' @rdname registry_for_criterion_methods
 #' @export
 get_criterion_method <- function(kind, name) {
-  method <- registry_criterion$get_entry(kind = kind, name = name)
+  if (missing(kind))
+    method <- registry_criterion$get_entry(name = name)
+  else
+    method <- registry_criterion$get_entry(kind = kind, name = name)
+
   if (is.null(method))
-    stop("Unknown criterion. Check list_criterion_methods(\"",
-      kind,
-      "\")")
+    stop("Unknown criterion. Check list_criterion_methods()")
 
   method
 }
@@ -150,14 +171,15 @@ get_criterion_method <- function(kind, name) {
 ## registry, and a setter for single methods.
 ## </NOTE>
 
-#' @rdname registry_criterion
+#' @rdname registry_for_criterion_methods
 #' @export
 set_criterion_method <- function(kind,
-  name,
-  fun,
-  description = NULL,
-  merit = NA,
-  ...) {
+                                 name,
+                                 fun,
+                                 description = NULL,
+                                 merit = NA,
+                                 verbose = FALSE,
+                                 ...) {
   ## check formals
   ##if(!identical(names(formals(definition)),
   ##              c("x", "order", "...")))
@@ -184,18 +206,32 @@ set_criterion_method <- function(kind,
     )
   }
 
+  if (verbose)
+    message("Registering new seriation criteron ",
+        sQuote(name),
+        " for ",
+        sQuote(kind))
+
 }
 
-#' @rdname registry_criterion
+#' @rdname registry_for_criterion_methods
 #' @export
 print.criterion_method <- function(x, ...) {
+  extra_param <- setdiff(names(as.list(args(x$fun))), c("x", "order", "...", ""))
+
   writeLines(c(
     gettextf("name:        %s", x$name),
     gettextf("kind:        %s", x$kind),
-    gettextf("description: %s", x$description),
+    strwrap(
+      gettextf("description: %s", x$description),
+      prefix = "             ",
+      initial = ""
+    ),
     gettextf("merit:       %s", x$merit)
   ))
+
+  if (length(extra_param) > 0L)
+    cat("parameters: ", paste(extra_param, collapse = ", "), "\n")
+
   invisible(x)
 }
-
-

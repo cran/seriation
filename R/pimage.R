@@ -110,20 +110,23 @@
 #' x <- matrix(runif(100), ncol = 10,
 #'   dimnames = list(LETTERS[1:10], paste0("X", 1:10)))
 #'
-#' pimage(x)
+#' pimage(x, prop = TRUE)
 #'
 #' ## Example: Pos/Neg. Matrix
 #' x <- matrix(rnorm(100), ncol = 10,
 #'   dimnames = list(LETTERS[1:10], paste0("X", 1:10)))
 #'
-#' pimage(x)
+#' pimage(x, prop = TRUE)
 #'
 #' ## Example: Distance Matrix
 #' # Show a reordered distance matrix (distances between rows).
 #' # Dark means low distance. The aspect ratio is automatically fixed to 1:1.
-#' # The upper triangle is suppressed triangle
 #' d <- dist(x)
 #' pimage(d,  order = seriate(d),
+#'   main = "Random Data (Distances)")
+#'
+#' # Supress the upper triangle and diagonal
+#' pimage(d,  order = seriate(d), upper = FALSE, diag = FALSE,
 #'   main = "Random Data (Distances)")
 #'
 #' # Show only distances that are smaller than 4 using limits on z.
@@ -172,13 +175,13 @@
 #'
 #' seekViewport("col1_vp")
 #' o <- seriate(x)
-#' pimage(x, o, labCol = FALSE, main = "Random Data",
+#' pimage(x, o, col_labels = FALSE, main = "Random Data",
 #'   newpage = FALSE)
 #'
 #' seekViewport("col2_vp")
 #' ## add the reordered dissimilarity matrix for rows
 #' d <- dist(x)
-#' pimage(d, o[[1]], labCol = FALSE, main = "Random Data",
+#' pimage(d, o[[1]], main = "Random Data",
 #'   newpage = FALSE)
 #'
 #' popViewport(0)
@@ -235,8 +238,8 @@
 #' ggpimage(d, order = seriate(d)) +
 #'   labs(title = "Random Data", subtitle = "Distances")
 #'
-#' # Show also upper triangle and diagonal
-#' ggpimage(d, order = seriate(d), upper_tri = TRUE, diag = TRUE) +
+#' # Hide upper triangle and diagonal
+#' ggpimage(d, order = seriate(d), upper_tri = FALSE, diag = FALSE) +
 #'   labs(title = "Random Data", subtitle = "Distances")
 #'
 #' # Show only distances that are smaller than 4 using limits on fill.
@@ -272,26 +275,7 @@
 pimage <-
   function(x,
     order = NULL,
-    col = NULL,
-    main = "",
-    xlab = "",
-    ylab = "",
-    zlim = NULL,
-    key = TRUE,
-    keylab = "",
-    symkey = TRUE,
-    upper_tri = TRUE,
-    lower_tri = TRUE,
-    diag = TRUE,
-    row_labels = NULL,
-    col_labels = NULL,
-    prop = TRUE,
-    flip_axes = FALSE,
-    reverse_columns = FALSE,
-    ...,
-    newpage = TRUE,
-    pop = TRUE,
-    gp = NULL)
+    ...)
 UseMethod("pimage")
 
 ### Note for matrix large values are dark, for dist large values are light!
@@ -313,7 +297,7 @@ pimage.matrix <-
     diag = TRUE,
     row_labels = NULL,
     col_labels = NULL,
-    prop = TRUE,
+    prop = FALSE,
     flip_axes = FALSE,
     reverse_columns = FALSE,
     ...,
@@ -519,6 +503,12 @@ table2matrix <- function(M)
 pimage.table <- function(x, order = NULL, ...)
   pimage.matrix(table2matrix(x), order = order, ...)
 
+#' @rdname pimage
+#' @export
+pimage.data.frame <- function(x, order = NULL, ...)
+  pimage.matrix(as.matrix(x), order = order, ...)
+
+
 ## small values are dark
 #' @rdname pimage
 #' @export
@@ -533,9 +523,9 @@ pimage.dist <-
     key = TRUE,
     keylab = "",
     symkey = TRUE,
-    upper_tri = FALSE,
+    upper_tri = TRUE,
     lower_tri = TRUE,
-    diag = FALSE,
+    diag = TRUE,
     row_labels = NULL,
     col_labels = NULL,
     prop = TRUE,

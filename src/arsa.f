@@ -26,7 +26,7 @@ C     Initialize R RNG
 
       DO I = 1,N-1
         DO J = I+1,N
-          D(I,J) = DFLOAT(J-I)
+          D(I,J) = DBLE(J-I)
           D(J,I) = D(I,J)
         END DO
       END DO
@@ -102,8 +102,8 @@ C        TMAX = Z
         ILOOP = INT(TRYMULT*N)
         NLOOP = INT((LOG(TMIN)-LOG(TMAX))/LOG(COOL))
         IF (IVERB == 1) THEN
+            CALL realpr('Found tmax', -1, TMAX, 1)
             CALL intpr('Steps needed', -1, NLOOP, 1)
-            CALL intpr('Temp', -1, NLOOP, 0)
         ENDIF
         TEMP = TMAX
         DO I = 1,N
@@ -112,7 +112,8 @@ C        TMAX = Z
 C
         DO 2000 IJK = 1,NLOOP
         IF (IVERB == 1) THEN
-            CALL dblepr('', -1, DBLE(TEMP), 1)
+            CALL intpr('Step', -1, IJK, 1)
+            CALL dblepr('TEMP', -1, DBLE(TEMP), 1)
         ENDIF
 
 C   R interrupt
@@ -180,7 +181,7 @@ C 599        S1 = rand()
             K = S(I1)
             DELTA = 0.0D0
             IF(J1.GT.I1) THEN
-              SPAN = DFLOAT(J1-I1)
+              SPAN = DBLE(J1-I1)
               DO L = I1+1,J1
                 Q = S(L)
                 DO I = J1+1,N
@@ -207,7 +208,7 @@ C 599        S1 = rand()
                 DELTA = DELTA + SPAN2*A(K,M)
               END DO
             ELSE
-              SPAN = DFLOAT(I1-J1)
+              SPAN = DBLE(I1-J1)
               DO L = J1,I1-1
                 Q = S(L)
                 DO I = I1+1,N
@@ -277,6 +278,7 @@ C
             END IF
  2001     CONTINUE
           TEMP = TEMP*COOL
+
  2000   CONTINUE
 
         IF(ZBEST.LT.ZMIN) ZMIN = ZBEST

@@ -2,63 +2,127 @@
 % Please edit documentation in R/uniscale.R
 \name{uniscale}
 \alias{uniscale}
-\alias{orderplot}
+\alias{MDS_stress}
+\alias{get_config}
+\alias{plot_config}
 \title{Unidimensional Scaling from Seriation Results}
 \usage{
-uniscale(d, order = NULL, method = "QAP_LS", rep = 10, ...)
+uniscale(d, order, accept_reorder = FALSE, warn = TRUE, ...)
 
-orderplot(x, main, pch = 19, ...)
+MDS_stress(d, order, refit = TRUE, warn = FALSE)
+
+get_config(x, dim = 1L, ...)
+
+plot_config(x, main, pch = 19, labels = TRUE, pos = 1, cex = 1, ...)
 }
 \arguments{
 \item{d}{a dissimilarity matrix.}
 
-\item{order}{a precomputed permutation (configuration) order.  If
-\code{NULL}, then seriation is performed using the method specified in
-\code{method}.}
+\item{order}{a precomputed permutation (configuration) order.}
 
-\item{method}{seriation method used if \code{o} is \code{NULL}.}
+\item{accept_reorder}{logical; accept a configuration that does not preserve
+the requested order. If \code{FALSE}, the initial configuration stored in \code{order}
+or, an equally spaced configuration is returned.}
 
-\item{rep}{Number of repetitions of the seriation heuristic.}
+\item{warn}{logical; produce a warning if the 1D MDS fit does not preserve the
+given order.}
 
 \item{\dots}{additional arguments are passed on to the seriation method.}
 
-\item{x}{a scaling returned by \code{uniscale()}.}
+\item{refit}{logical; forces to refit a minimum-stress MDS configuration,
+even if \code{order} contains a configuration.}
+
+\item{x}{a scaling returned by \code{uniscale()} or a
+\code{ser_permutation} with a configuration attribute.}
+
+\item{dim}{The dimension if \code{x} is a \code{ser_permutation} object.}
 
 \item{main}{main plot label}
 
 \item{pch}{print character}
+
+\item{labels}{add the object names to the plot}
+
+\item{pos}{label position for 2D plot (see \code{\link[=text]{text()}}).}
+
+\item{cex}{label expansion factor.}
 }
 \value{
 A vector with the fitted configuration.
 }
 \description{
-Performs (approximate) unidimensional scaling by first performing seriation
-to obtain a permutation and the using the permutation to calculate the
-configuration.
+Calculates an (approximate) unidimensional scaling configuration given an order.
 }
 \details{
-Uses the method describes in Maier and De Leeuw (2015) to calculate the
-minimum stress configuration for either a given
-configuration/permutation/order or for a permutation computed via a
-seriation method.
+This implementation uses the method describes in Maier and De Leeuw (2015) to calculate the
+minimum stress configuration for a given (seriation) order by performing a 1D MDS fit.
+If the 1D MDS fit does not preserve the given order perfectly, then a warning is
+produced indicating
+for how many positions order could not be preserved.
+The seriation method which is consistent to uniscale is \code{"MDS_smacof"}
+which needs to be registered with \code{\link[=register_smacof]{register_smacof()}}.
 
-The code is similar to \code{uniscale()} in \pkg{smacof}, but scales to larger
-datasets since it does not check all permutations.
+The code is similar to \code{uniscale()} in \pkg{smacof} (de Leeuw, 2090), but scales to larger
+datasets since it only uses the permutation given by  \code{order}.
+
+\code{MDS_stress} calculates the normalized stress of a configuration given by a seriation order.
+If the order does not contain a configuration, then a minimum-stress configuration if calculates
+for the given order.
+
+All distances are first normalized to an average distance of close to 1 using
+\eqn{d_{ij} \frac{\sqrt{n(n-1)/2}}{\sqrt{\sum_{i<j}{d_{ij}}^2}}}.
+
+Some seriation methods produce a MDS configuration (a 1D or 2D embedding). \code{get_config()}
+retrieved the configuration attribute from the \code{ser_permutation_vector}. \code{NULL}
+is returned if the seriation did not produce a configuration.
+
+\code{plot_config()} plots 1D and 2D configurations. \code{...} is passed on
+to \code{\link{plot.default}} and accepts \code{col}, \code{labels}, etc.
 }
 \examples{
 data(SupremeCourt)
-
 d <- as.dist(SupremeCourt)
+d
 
-sc <- uniscale(d)
+# embedding-based methods return "configuration" attribute
+# plot_config visualizes the configuration
+o <- seriate(d, method = "sammon")
+get_order(o)
+plot_config(o)
+
+# the configuration (Note: objects are in the original order in d)
+get_config(o)
+
+# angle methods return a 2D configuration
+o <- seriate(d, method = "MDS_angle")
+get_order(o)
+get_config(o)
+plot_config(o, )
+
+
+# calculate a configuration for a seriation method that does not
+# create a configuration
+o <- seriate(d, method = "ARSA")
+get_order(o)
+get_config(o)
+
+# find the minimum-stress configuration for the ARSA order
+sc <- uniscale(d, o)
 sc
 
-orderplot(sc)
+plot_config(sc)
 }
 \references{
 Mair P., De Leeuw J. (2015). Unidimensional scaling. In
 \emph{Wiley StatsRef: Statistics Reference Online,} Wiley, New York.
 \doi{10.1002/9781118445112.stat06462.pub2}
+
+Jan de Leeuw, Patrick Mair (2009). Multidimensional Scaling Using Majorization:
+SMACOF in R. Journal of Statistical Software, 31(3), 1-30.
+\doi{10.18637/jss.v031.i03}
+}
+\seealso{
+\code{\link[=register_smacof]{register_smacof()}}
 }
 \author{
 Michael Hahsler with code from Patrick Mair (from \pkg{smacof}).

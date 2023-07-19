@@ -20,14 +20,20 @@
 #'
 #' Use t-distributed stochastic neighbor embedding (t-SNE) for [seriate()].
 #'
-#' Registers the method \code{"tsne"} for [seriate()]. This method applies
-#' 1D t-SNE to data represented by a distance matrix and extracts the order
+#' Registers the method `"tsne"` for [seriate()]. This method applies
+#' 1D t-SNE to a data matrix or a distance matrix and extracts the order
 #' from the 1D embedding. To speed up the process, an initial embedding is
-#' created using multi-dimensional scaling (MDS) which is improved by t-SNE.
+#' created using 1D multi-dimensional scaling (MDS) or principal
+#' comonents analysis (PCA) which is improved by t-SNE.
 #'
-#' The \code{control} parameter \code{mds} controls if MDS is used to create an
+#' The `control` parameter `"mds"` or `"pca"` controls if MDS (for distances)
+#' or PCA (for data matrices) is used to create an
 #' initial embedding. See [Rtsne::Rtsne()] to learn about the other
-#' available \code{control} parameters.
+#' available `control` parameters.
+#'
+#' Perplexity is automatically set as the minimum between 30 and the number of
+#' observations. It can be also specified using the control parameter
+#' `"preplexity"`.
 #'
 #' \bold{Note:} Package \pkg{Rtsne} needs to be installed.
 #'
@@ -44,47 +50,183 @@
 #'
 #' \dontrun{
 #' register_tsne()
+#'
+#' # distances
 #' get_seriation_method("dist", "tsne")
 #'
-#' d <- dist(random.robinson(50, pre=TRUE, noise=.1))
+#' data(SupremeCourt)
+#' d <- as.dist(SupremeCourt)
 #'
-#' o <- seriate(d, method = "tsne")
+#' o <- seriate(d, method = "tsne", verbose = TRUE)
 #' pimage(d, o)
+#'
+#' # look at the returned configuration and plot it
+#' attr(o[[1]], "configuration")
+#' plot_config(o)
+#'
+#' # the t-SNE results are also available as an attribute (see ? Rtsne::Rtsne)
+#' attr(o[[1]], "model")
+#'
+#' ## matrix
+#' get_seriation_method("matrix", "tsne")
+#'
+#' data("Zoo")
+#' x <- Zoo
+#'
+#' x[,"legs"] <- (x[,"legs"] > 0)
+#'
+#' # t-SNE does not allow duplicates
+#' x <- x[!duplicated(x), , drop = FALSE]
+#'
+#' class <- x$class
+#' label <- rownames(x)
+#' x <- as.matrix(x[,-17])
+#'
+#' o <- seriate(x, method = "tsne", eta = 10, verbose = TRUE)
+#' pimage(x, o, prop = FALSE, row_labels = TRUE, col_labels = TRUE)
+#'
+#' # look at the row embedding
+#' plot_config(o[[1]], col = class)
 #' }
 #'
 #' @export
 register_tsne <- function() {
   check_installed("Rtsne")
 
-  .contr <- list(
-    max_iter = 1000,
-    theta = 0,
-    perplexity = 30,
-    eta = 200,
-    mds = TRUE
+  .contr <- structure(
+    list(
+      max_iter = 1000,
+      theta = 0.5,
+      perplexity = NULL,
+      eta = 100,
+      mds = TRUE,
+      verbose = FALSE
+    ),
+    help = list(
+      max_iter = "number of iterations",
+      theta = "speed/accuracy trade-off (increase for less accuracy)",
+      perplexity = "perplexity parameter (calculated as n - 1 / 3)",
+      eta = "learning rate",
+      mds = "start from a classical MDS solution"
+    )
   )
 
   tsne_order <- function(x, control) {
     control <- .get_parameters(control, .contr)
 
     # start with MDS
-    if(control$mds) Y_init <- stats::cmdscale(x, k = 1)
-    else Y_init <- NULL
+    if (control$mds)
+      Y_init <- stats::cmdscale(x, k = 1)
+    else
+      Y_init <- NULL
 
-    # calculate the maximal value for perplexity
-    perplexity <- min(control$perplexity, floor(attr(x, "Size") / 3) - 1)
+    # default is 30 (reduced for low n)
+    if (is.null(control$preplexity))
+      control$perplexity <- 30
 
-    embedding <- Rtsne::Rtsne(x, dims = 1, is_distance = TRUE,
-      max_iter = control$max_iter, theta = control$theta, eta = control$eta,
-      perplexity = perplexity, Y_init = Y_init)
-    order(embedding$Y)
+    control$perplexity <-
+      max(min(control$perplexity, floor(attr(x, "Size") / 3) - 1), 1)
+
+    embedding <- Rtsne::Rtsne(
+      x,
+      dims = 1,
+      is_distance = TRUE,
+      max_iter = control$max_iter,
+      theta = control$theta,
+      eta = control$eta,
+      perplexity = control$perplexity,
+      Y_init = Y_init,
+      verbose = control$verbose
+    )
+
+    o <- order(embedding$Y)
+
+    attr(o, "configuration") <-
+      structure(drop(embedding$Y), names = attr(x, "Labels"))
+    attr(o, "model") <-  embedding
+
+    o
   }
 
-  set_seriation_method(
-    "dist",
-    "tsne",
-    tsne_order,
-    "Use 1D  t-distributed stochastic neighbor embedding (t-SNE) to one dimension to create an order",
-    .contr
-  )
+  .contr_matrix <- structure(
+    list(
+      max_iter = 1000,
+      theta = 0.5,
+      perplexity = NULL,
+      eta = 100,
+      pca = TRUE
+    ),
+    help = list(max_iter = "number of iterations",
+    theta = "speed/accuracy trade-off (increase for less accuracy)",
+    perplexity = "perplexity parameter (calculated as n - 1 / 3)",
+    eta = "learning rate",
+    pca = "start the PCA solution"
+  ))
+
+tsne_order_matrix <- function(x, control) {
+  control <- .get_parameters(control, .contr_matrix)
+
+  # default is 30 (reduced for low n)
+  if (is.null(control$preplexity))
+    control$perplexity <- 30
+
+  control$perplexity <-
+    max(min(control$perplexity, floor(nrow(x) / 3) - 1), 1)
+
+  embedding <-
+    Rtsne::Rtsne(
+      x,
+      dims = 1,
+      is_distance = FALSE,
+      pca = control$pca,
+      max_iter = control$max_iter,
+      theta = control$theta,
+      eta = control$eta,
+      perplexity = control$perplexity,
+      verbose = control$verbose
+    )
+
+  o <- order(embedding$Y)
+
+  attr(o, "configuration") <-
+    structure(drop(embedding$Y), names = rownames(x))
+  attr(o, "model") <-  embedding
+
+  o
+}
+
+tsne_order_matrix_2 <-
+  function(x, control, margin = seq_along(dim(x))) {
+    if (1L %in% margin)
+      row <- tsne_order_matrix(x, control)
+    else
+      row <- NA
+
+    if (2L %in% margin)
+      col <- tsne_order_matrix(t(x), control)
+    else
+      col <- NA
+
+    list(row, col)
+  }
+
+set_seriation_method(
+  "dist",
+  "tsne",
+  tsne_order,
+  "Use 1D t-distributed stochastic neighbor embedding (t-SNE) a distance matrix to create an order.",
+  .contr,
+  randomized = TRUE,
+  verbose = TRUE
+)
+
+set_seriation_method(
+  "matrix",
+  "tsne",
+  tsne_order_matrix_2,
+  "Use 1D t-distributed stochastic neighbor embedding (t-SNE) of the rows of a matrix to create an order.",
+  .contr_matrix,
+  randomized = TRUE,
+  verbose = TRUE
+)
 }

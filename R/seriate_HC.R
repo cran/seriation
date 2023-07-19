@@ -19,28 +19,38 @@
 
 ## Hierarchical clustering related seriations
 .hc_control <- list(hclust = NULL,
-  method = "complete")
+                    linkage = "complete")
+
+attr(.hc_control, "help") <- list(hclust = "a precomputed hclust object (optional)",
+                    linkage = "hclust method")
 
 .hclust_helper <- function(d, control = NULL) {
+
+  # Deprecated method control argument
+  if (!is.null(control$method)) {
+    warning("control parameter method is deprecated. Use linkage instead!")
+    control$linkage <- control$method
+    control$method <- NULL
+  }
+
   control <- .get_parameters(control, .hc_control)
 
   if (!is.null(control$hclust))
     return(control$hclust)
-  return(hclust(d, method = control$method))
+  return(hclust(d, method = control$linkage))
 }
 
 seriate_dist_hc <- function(x, control = NULL)
   .hclust_helper(x, control)
 seriate_dist_hc_single <- function(x, control = NULL)
-  .hclust_helper(x, control = list(method = "single"))
+  .hclust_helper(x, control = list(linkage = "single"))
 seriate_dist_hc_average <- function(x, control = NULL)
-  .hclust_helper(x, control = list(method = "average"))
+  .hclust_helper(x, control = list(linkage = "average"))
 seriate_dist_hc_complete <- function(x, control = NULL)
-  .hclust_helper(x, control = list(method = "complete"))
+  .hclust_helper(x, control = list(linkage = "complete"))
 seriate_dist_hc_ward <- function(x, control = NULL)
-  .hclust_helper(x, control = list(method = "ward.D2"))
+  .hclust_helper(x, control = list(linkage = "ward.D2"))
 
-## workhorses are in seriation.hclust
 seriate_dist_gw <- function(x, control = NULL)
   reorder(seriate_dist_hc(x, control), x, method = "GW")
 seriate_dist_gw_single <- function(x, control = NULL)
@@ -51,7 +61,6 @@ seriate_dist_gw_complete <- function(x, control = NULL)
   reorder(seriate_dist_hc_complete(x, control), x, method = "GW")
 seriate_dist_gw_ward <- function(x, control = NULL)
   reorder(seriate_dist_hc_ward(x, control), x, method = "GW")
-
 
 seriate_dist_olo <- function(x, control = NULL)
   reorder(seriate_dist_hc(x, control), x, method = "OLO")
@@ -67,12 +76,15 @@ seriate_dist_olo_ward <- function(x, control = NULL)
 
 .hc_desc <-
   "Using the order of the leaf nodes in a dendrogram obtained by hierarchical clustering"
+
 set_seriation_method("dist", "HC", seriate_dist_hc,
-  .hc_desc, .hc_control)
+                     .hc_desc, .hc_control)
+
 set_seriation_method("dist",
-  "HC_single",
-  seriate_dist_hc_single,
-  paste(.hc_desc, "(single link)"))
+                     "HC_single",
+                     seriate_dist_hc_single,
+                     paste(.hc_desc, "(single link)"))
+
 set_seriation_method(
   "dist",
   "HC_complete",
@@ -81,65 +93,95 @@ set_seriation_method(
 )
 
 set_seriation_method("dist",
-  "HC_average",
-  seriate_dist_hc_average,
-  paste(.hc_desc, "(avg. link)."))
+                     "HC_average",
+                     seriate_dist_hc_average,
+                     paste(.hc_desc, "(avg. link)."))
 
 set_seriation_method("dist",
-  "HC_ward",
-  seriate_dist_hc_ward,
-  paste(.hc_desc, "(Ward's method)."))
+                     "HC_ward",
+                     seriate_dist_hc_ward,
+                     paste(.hc_desc, "(Ward's method)."))
 
 .gw_desc <-
   "Using the order of the leaf nodes in a dendrogram obtained by hierarchical clustering and reordered by the Gruvaeus and Wainer (1972) heuristic"
 
-set_seriation_method("dist", "GW", seriate_dist_gw,
-  .gw_desc, .hc_control)
-
 set_seriation_method("dist",
+                     "GW",
+                     seriate_dist_gw,
+                     .gw_desc,
+                     .hc_control,
+                     optimizes = "Path length restricted by dendrogram")
+
+set_seriation_method(
+  "dist",
   "GW_single",
   seriate_dist_gw_single,
-  paste(.gw_desc, "(single link)"))
+  paste(.gw_desc, "(single link)"),
+  optimizes = "Path length restricted by dendrogram"
+)
 
-set_seriation_method("dist",
+set_seriation_method(
+  "dist",
   "GW_average",
   seriate_dist_gw_average,
-  paste(.gw_desc, "(avg.link)"))
+  paste(.gw_desc, "(avg.link)"),
+  optimizes = "Path length restricted by dendrogram"
+)
 
-set_seriation_method("dist",
+set_seriation_method(
+  "dist",
   "GW_complete",
   seriate_dist_gw_complete,
-  paste(.gw_desc, "(complete link)"))
+  paste(.gw_desc, "(complete link)"),
+  optimizes = "Path length restricted by dendrogram"
+)
 
-set_seriation_method("dist",
+set_seriation_method(
+  "dist",
   "GW_ward",
   seriate_dist_gw_ward,
-  paste(.gw_desc, "(Ward's method)"))
+  paste(.gw_desc, "(Ward's method)"),
+  optimizes = "Path length restricted by dendrogram"
+)
 
 .olo_desc <-
   "Using the order of the leaf nodes in a dendrogram obtained by hierarchical clustering and reordered by with optimal leaf ordering (Bar-Joseph et al., 2001)"
 
-set_seriation_method("dist", "OLO", seriate_dist_olo,
-  .olo_desc, .hc_control)
-
 set_seriation_method("dist",
+                     "OLO",
+                     seriate_dist_olo,
+                     .olo_desc,
+                     .hc_control,
+                     optimizes = "Path length restricted by dendrogram")
+
+set_seriation_method(
+  "dist",
   "OLO_single",
   seriate_dist_olo_single,
-  paste(.olo_desc, "(single link)"))
+  paste(.olo_desc, "(single link)"),
+  optimizes = "Path length restricted by dendrogram"
+)
 
-set_seriation_method("dist",
+set_seriation_method(
+  "dist",
   "OLO_average",
   seriate_dist_olo_average,
-  paste(.olo_desc, "(avg. link)"))
+  paste(.olo_desc, "(avg. link)"),
+  optimizes = "Path length restricted by dendrogram"
+)
 
 set_seriation_method(
   "dist",
   "OLO_complete",
   seriate_dist_olo_complete,
-  paste(.olo_desc, "(complete link)")
+  paste(.olo_desc, "(complete link)"),
+  optimizes = "Path length restricted by dendrogram"
 )
 
-set_seriation_method("dist",
+set_seriation_method(
+  "dist",
   "OLO_ward",
   seriate_dist_olo_ward,
-  paste(.olo_desc, "(Ward's method)"))
+  paste(.olo_desc, "(Ward's method)"),
+  optimizes = "Path length restricted by dendrogram"
+)

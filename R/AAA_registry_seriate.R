@@ -38,14 +38,18 @@
 #'
 #' With \code{set_seriation_method()} new seriation methods can be added by the
 #' user. The implementing function (\code{definition}) needs to have the formal
-#' arguments \code{x, control}, where \code{x} is the data object and
+#' arguments \code{x, control} and, for arrays and matrices \code{margin},
+#' where \code{x} is the data object and
 #' \code{control} contains a list with additional information for the method
-#' passed on from \code{seriate()}.  The implementation has to return a list of
+#' passed on from \code{seriate()}, and \code{margin} is a vector specifying
+#' what dimensions should be seriated.
+#' The implementation has to return a list of
 #' objects which can be coerced into \code{ser_permutation_vector} objects
 #' (e.g., integer vectors). The elements in the list have to be in
 #' corresponding order to the dimensions of \code{x}.
 #'
 #' @import registry
+#' @name registry_for_seriaiton_methods
 #' @family seriation
 #'
 #' @param kind the data type the method works on. For example, \code{"dist"},
@@ -53,10 +57,17 @@
 #' shown.
 #' @param name the name for the method used to refer to the method in
 #' [seriate()].
+#' @param names_only logical; return only the method name. `FALSE` returns
+#'    also the method descriptions.
 #' @param definition a function containing the method's code.
 #' @param description a description of the method. For example, a long name.
 #' @param control a list with control arguments and default values.
+#' @param randomized logical; does the algorithm use randomization and re-running
+#'   the algorithm several times will lead to different results (see: [seriate_rep()]).
+#' @param optimizes what criterion does the algorithm try to optimize
+#'   (see: [list_criterion_methods()]).
 #' @param x an object of class  "seriation_method" to be printed.
+#' @param verbose logical; print a message when a new method is registered.
 #' @param ... further information that is stored for the method in the
 #' registry.
 #' @returns
@@ -83,10 +94,13 @@
 #' # Example for defining a new seriation method (reverse identity function for matrix)
 #'
 #' # 1. Create the seriation method
-#' seriation_method_reverse <- function(x, control) {
-#'    # return a list of order vectors, one for each dimension
-#'    list(seq(nrow(x), 1), seq(ncol(x), 1))
-#' }
+#' #    (with margin since it is for arrays; NA means no seriation is applied)
+#' seriation_method_reverse <- function(x, control = NULL,
+#'                                      margin = seq_along(dim(x))) {
+#'  lapply(seq_along(dim(x)), function(i)
+#'    if (i %in% margin) rev(seq(dim(x)[i]))
+#'    else NA)
+#'}
 #'
 #' # 2. Register new method
 #' set_seriation_method("matrix", "Reverse", seriation_method_reverse,
@@ -99,26 +113,36 @@
 #' seriate(matrix(1:12, ncol=3), "reverse")
 #' @export
 registry_seriate <- registry(registry_class = "seriation_registry",
-  entry_class = "seriation_method")
+                             entry_class = "seriation_method")
 
 registry_seriate$set_field("kind",
-  type = "character",
-  is_key = TRUE,
-  index_FUN = match_partial_ignorecase)
-registry_seriate$set_field("name",
-  type = "character",
-  is_key = TRUE,
-  index_FUN = match_partial_ignorecase)
-registry_seriate$set_field("fun", type = "function",
-  is_key = FALSE)
-registry_seriate$set_field("description", type = "character",
-  is_key = FALSE)
-registry_seriate$set_field("control", type = "list",
-  is_key = FALSE)
+                           type = "character",
+                           is_key = TRUE,
+                           index_FUN = match_partial_ignorecase)
 
-#' @rdname registry_seriate
+registry_seriate$set_field("name",
+                           type = "character",
+                           is_key = TRUE,
+                           index_FUN = match_partial_ignorecase)
+
+registry_seriate$set_field("fun", type = "function",
+                           is_key = FALSE)
+
+registry_seriate$set_field("description", type = "character",
+                           is_key = FALSE)
+
+registry_seriate$set_field("control", type = "list",
+                           is_key = FALSE)
+
+registry_seriate$set_field("randomized", type = "logical",
+                           is_key = FALSE)
+
+registry_seriate$set_field("optimizes", type = "character",
+                           is_key = FALSE)
+
+#' @rdname registry_for_seriaiton_methods
 #' @export
-list_seriation_methods <- function(kind) {
+list_seriation_methods <- function(kind, names_only = TRUE) {
   if (missing(kind)) {
     kinds <- unique(sort(as.vector(
       sapply(registry_seriate$get_entries(), "[[", "kind")
@@ -127,19 +151,38 @@ list_seriation_methods <- function(kind) {
     sapply(
       kinds,
       FUN = function(k)
-        list_seriation_methods(k)
+        list_seriation_methods(k, names_only = names_only)
     )
 
   } else{
-    sort(as.vector(sapply(
-      registry_seriate$get_entries(kind = kind), "[[", "name"
-    )))
+    if (names_only)
+
+      sort(as.vector(sapply(
+        registry_seriate$get_entries(kind = kind), "[[", "name"
+      )))
+    else {
+      l <- registry_seriate$get_entries(kind = kind)
+      l[order(names(l))]
+    }
   }
 }
 
-#' @rdname registry_seriate
+#' @rdname registry_for_seriaiton_methods
 #' @export
 get_seriation_method <- function(kind, name) {
+
+  ## catch deprecated methods
+  if (tolower(name) == "mds_nonmetric") {
+    name <- "isoMDS"
+    warning("seriation method 'MDS_nonmetric' is now deprecated and will be removed in future releases. Using `isoMDS`")
+  }
+
+  if (tolower(name) == "mds_metric") {
+    name <- "MDS"
+    warning("seriation method 'MDS_metric' is now deprecated and will be removed in future releases. Using `MDS`")
+  }
+
+
   if (missing(kind))
     method <- registry_seriate$get_entry(name = name)
   else
@@ -151,26 +194,30 @@ get_seriation_method <- function(kind, name) {
       name,
       " for data type ",
       kind,
-      ". Check list_seriation_methods(\"",
-      kind,
-      "\")"
+      ". Maybe the method has not been registered yet. ",
+      "Check list_seriation_methods()."
     )
 
   method
 }
 
-#' @rdname registry_seriate
+#' @rdname registry_for_seriaiton_methods
 #' @export
 set_seriation_method <- function(kind,
-  name,
-  definition,
-  description = NULL,
-  control = list(),
-  ...) {
+                                 name,
+                                 definition,
+                                 description = NULL,
+                                 control = list(),
+                                 randomized = FALSE,
+                                 optimizes = "Unspecified",
+                                 verbose = FALSE,
+                                 ...) {
   ## check formals
   if (!identical(names(formals(definition)),
-    c("x", "control")))
-    stop("Seriation methods must have formals 'x' and 'control'.")
+                 c("x", "control")) &&
+      !identical(names(formals(definition)),
+                 c("x", "control", "margin")))
+    stop("Seriation methods must have formals 'x', 'control' and optionally 'margin'.")
 
   ## check if entry already exists
   r <- registry_seriate$get_entry(kind = kind, name = name)
@@ -183,11 +230,13 @@ set_seriation_method <- function(kind,
     #   "\" already exists! Modifying entry."
     # )
     registry_seriate$modify_entry(
-      kind = kind,
       name = name,
+      kind = kind,
       fun = definition,
       description = description,
-      control = control
+      control = control,
+      randomized = randomized,
+      optimizes = optimizes
     )
   } else {
     registry_seriate$set_entry(
@@ -195,34 +244,68 @@ set_seriation_method <- function(kind,
       kind = kind,
       fun = definition,
       description = description,
-      control = control
+      control = control,
+      randomized = randomized,
+      optimizes = optimizes
     )
   }
+
+  if (verbose)
+    message("Registering new seriation method ",
+        sQuote(name),
+        " for ",
+        sQuote(kind))
 }
 
 
-#' @rdname registry_seriate
+#' @rdname registry_for_seriaiton_methods
 #' @export
 print.seriation_method <- function(x, ...) {
   writeLines(c(
     gettextf("name:        %s", x$name),
     gettextf("kind:        %s", x$kind),
-    gettextf("description: %s", x$description)
+    strwrap(
+      gettextf("description: %s", x$description),
+      prefix = "             ",
+      initial = ""
+    ),
+    gettextf("optimizes:   %s", x$optimizes),
+    gettextf("randomized:  %s", x$randomized)
   ))
 
-  if (length(x$control) > 0) {
-    writeLines("control (default values):")
-
-    contr <- lapply(
-      x$control,
-      FUN =
-        function(p)
-          utils::capture.output(dput(p, control = list()))[1]
-    )
-
-    print(as.data.frame(contr))
-  } else
-    writeLines("control: no parameters registered.")
+  writeLines("control:")
+  .print_control(x$control)
 
   invisible(x)
+}
+
+
+.print_control <- function(control,
+                           label = "default values",
+                           help = TRUE,
+                           trim_values = 30L) {
+  if (length(control) < 1L) {
+    writeLines("no parameters")
+  } else{
+    contr <- lapply(
+      control,
+      FUN = function(x)
+        strtrim(paste(deparse(x), collapse = ""), trim_values)
+    )
+
+    contr <- as.data.frame(t(as.data.frame(contr)))
+    colnames(contr) <- c(label)
+
+    contr <- cbind(contr, help = "N/A")
+    if (!is.null(attr(control, "help")))
+      for (i in seq(nrow(contr))) {
+        hlp <- attr(control, "help")[[rownames(contr)[i]]]
+        if (!is.null(hlp))
+        contr[["help"]][i] <- hlp
+      }
+
+    print(contr, quote = FALSE)
+  }
+
+  cat("\n")
 }

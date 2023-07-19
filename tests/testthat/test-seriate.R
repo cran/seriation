@@ -4,6 +4,21 @@
 library(seriation)
 library(testthat)
 
+extra_integer <- NULL
+extra_hclust <- NULL
+
+if(seriation:::check_installed("DendSer", "check")) {
+  register_DendSer()
+  extra_hclust <- append(extra_hclust, c("DendSer", "DendSer_ARc",
+                                           "DendSer_BAR", "DendSer_LPL",
+                                           "DendSer_PL"))
+  }
+
+if(seriation:::check_installed("umap", "check")) {
+  extra_integer <- append(extra_integer, "umap")
+  register_umap()
+}
+
 x <- matrix(
   c(1, 1, 0, 0, 0,
     1, 1, 1, 0, 0,
@@ -16,11 +31,14 @@ x <- matrix(
 
 d <- dist(x)
 
-test_that("seriate.dist returns expected results", {
-  #local_edition(3) # for snapshot testing
+test_that("test if seriate.dist returns expected results", {
 
-  cat("\n") # for cleaner testthat output
+  cat("\n      dist\n") # for cleaner testthat output
   methods <- list_seriation_methods(kind = "dist")
+
+  ### insufficient data for metaMDS
+  methods <- setdiff(methods, "metaMDS")
+
   os <- sapply(methods, function(m) {
     cat("   -> testing", format(m, width = 13), "... ")
     tm <- system.time(o <- seriate(d, method = m))
@@ -50,7 +68,8 @@ test_that("seriate.dist returns expected results", {
       "OLO_average",
       "OLO_complete",
       "OLO_single",
-      "OLO_ward"
+      "OLO_ward",
+      extra_hclust
     )
   )
   integers <- os[sapply(os, is.integer)]
@@ -58,26 +77,33 @@ test_that("seriate.dist returns expected results", {
     object = names(integers),
     expected = c(
       "ARSA",
+      "Enumerate",
       "BBURCG",
       "BBWRCG",
       "Identity",
       "MDS",
       "MDS_angle",
-      "MDS_metric",
-      "MDS_nonmetric",
+      # "metaMDS",
+      "monoMDS",
+      "isomap",
+      "isoMDS",
+      "Sammon_mapping",
       "QAP_2SUM",
       "QAP_BAR",
       "QAP_Inertia",
       "QAP_LS",
       "R2E",
       "Random",
-      "SA",
+      "Reverse",
+      "GSA",
+      "SGD",
       "Spectral",
       "Spectral_norm",
       "SPIN_NH",
       "SPIN_STS",
       "TSP",
-      "VAT"
+      "VAT",
+      extra_integer
     )
   )
   expect_setequal(c(names(hclusts), names(integers)), expected = names(os))
@@ -90,31 +116,26 @@ test_that("seriate.dist returns expected results", {
       dim = 1,
       simplify = FALSE
     )
-  for (n in names(ORDERS))
-    expect_type(ORDERS[[!!n]], "integer") # see ?testthat::quasi_label RE "!!"
 
-  # check names - first sanity check before more comprehensive checks
-  expect_equal(names(get_order(os$Identity)), letters[1:4])
-
-  # check names of integer seriation vectors correspond to correct integers
-  for (n in names(integers)) {
-    expect_type(names(ORDERS[[!!n]]), "character") # i.e. not NULL
-    expect_mapequal(ORDERS[[!!n]], expected = c(
+  for (o in ORDERS) {
+    expect_type(o, "integer")
+    expect_mapequal(o, expected = c(
       a = 1,
       b = 2,
       c = 3,
       d = 4
     ))
+    expect_type(names(o), "character")
   }
 
   # check $labels of hclust seriation vectors remain in original input order
   for (n in names(hclusts)) {
-    expect_equal(hclusts[[!!n]][["labels"]], expected = letters[1:4])
+    expect_equal(hclusts[[n]][["labels"]], expected = letters[1:4])
   }
 
   # check names of get_order(<hclust seriation vector>) equal to ordered labels
   for (n in names(hclusts)) {
-    expect_equal(object = names(ORDERS[[!!n]]),
+    expect_equal(object = names(ORDERS[[n]]),
       expected = hclusts[[n]][["labels"]][hclusts[[n]][["order"]]])
   }
 
@@ -134,20 +155,37 @@ test_that("seriate.dist returns expected results", {
     "HC_ward",
     "Identity",
     "MDS",
+    "isoMDS",
+    "Sammon_mapping",
     "MDS_angle",
-    "MDS_metric",
     "R2E",
     "Spectral",
     "Spectral_norm",
     "VAT"
   )
 
-  #expect_snapshot(str(os[deterMethods]))
+  # recreate with dput(sapply(os[deterMethods], get_order))
+  correct <- structure(
+    c(1L, 2L, 4L, 3L, 1L, 2L, 4L, 3L, 1L, 2L, 4L, 3L, 1L,
+      2L, 4L, 3L, 1L, 2L, 4L, 3L, 1L, 2L, 4L, 3L, 1L, 2L, 4L, 3L, 1L,
+      2L, 3L, 4L, 1L, 2L, 3L, 4L, 1L, 2L, 3L, 4L, 1L, 2L, 3L, 4L, 1L,
+      2L, 3L, 4L, 1L, 2L, 3L, 4L, 1L, 2L, 4L, 3L, 1L, 2L, 4L, 3L, 1L,
+      2L, 4L, 3L, 1L, 2L, 4L, 3L, 3L, 4L, 2L, 1L, 3L, 4L, 2L, 1L, 3L,
+      4L, 2L, 1L, 3L, 4L, 2L, 1L),
+    dim = c(4L, 21L),
+    dimnames = list(
+      c("a", "b", "d", "c"),
+      c("BBURCG", "BBWRCG", "GW", "GW_average",
+        "GW_complete", "GW_single", "GW_ward", "HC", "HC_average",
+        "HC_complete", "HC_single", "HC_ward", "Identity", "MDS",
+        "isoMDS", "Sammon_mapping", "MDS_angle", "R2E", "Spectral",
+        "Spectral_norm", "VAT")))
 
+  expect_identical(correct, sapply(os[deterMethods], get_order))
 })
 
 # check seriate errors for bad dist objects
-test_that("negative distances and NAs prompt correct seriate.dist errors", {
+test_that("test if negative distances and NAs prompt correct seriate.dist errors", {
   dNeg <- d
   dNeg[1] <- -1
   expect_error(seriate(dNeg), "Negative distances not supported")
@@ -157,7 +195,7 @@ test_that("negative distances and NAs prompt correct seriate.dist errors", {
   expect_error(seriate(dNA), "NAs not allowed in distance matrix x")
 })
 
-test_that("dist objects without Diag or Upper attributes can be permuted", {
+test_that("test if dist objects without Diag or Upper attributes can be permuted", {
   # eurodist is an object of class dist from built in R package "datasets"
   expect_s3_class(eurodist, "dist")
   expect_identical(attr(eurodist, "Diag"), NULL)
@@ -175,10 +213,10 @@ test_that("dist objects without Diag or Upper attributes can be permuted", {
 #replicate(1000, seriate(d, method="bbwrcg"))
 #replicate(1000, seriate(d, method="arsa"))
 
-test_that("seriate.matrix returns expected results", {
+test_that("test if seriate.matrix returns expected results", {
   #local_edition(3) # for snapshot testing
 
-  cat("\n") # for cleaner testthat output
+  cat("\n      matrix\n") # for cleaner testthat output
   methods <- list_seriation_methods(kind = "matrix")
   os <- sapply(methods, function(m) {
     cat("   -> testing", format(m, width = 13), "... ")
@@ -223,13 +261,12 @@ test_that("seriate.matrix returns expected results", {
   # check snapshot of some deterministic methods
   #deterMethods <- c("CA", "Identity", "PCA", "PCA_angle", "Reverse")
   #expect_snapshot(str(os[deterMethods]))
-
 })
 
-test_that("seriate.matrix with margin returns expected results", {
+test_that("test if seriate.matrix with margin returns expected results", {
   #local_edition(3) # for snapshot testing
 
-  cat("\n") # for cleaner testthat output
+  cat("\n     matrix with margin\n") # for cleaner testthat output
   methods <- list_seriation_methods(kind = "matrix")
   os <- sapply(methods, function(m) {
     cat("   -> testing", format(m, width = 13), "... ")
@@ -254,7 +291,7 @@ test_that("seriate.matrix with margin returns expected results", {
   expect_equal(x_p, x[, get_order(os[[1]], 2)])
 })
 
-test_that("data.frame seriation works as expected", {
+test_that("test if data.frame seriation works as expected", {
   #local_edition(3) # for snapshot testing
 
   df <- as.data.frame(x)
@@ -273,3 +310,4 @@ test_that("data.frame seriation works as expected", {
   oPCA <- seriate(df, method = "PCA")
   #expect_snapshot(permute(df, oPCA))
 })
+

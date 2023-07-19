@@ -52,13 +52,17 @@
 register_optics <- function() {
   check_installed("dbscan")
 
-  .contr <- list(
-    eps = NULL,
-    minPts = 5
+  .contr <- structure(
+    list(eps = NULL,
+         minPts = 5),
+    help = list(eps = "upper limit of the size of the epsilon neighborhood (see ? optics)" ,
+                minPts = "minimum density for dense neighborhoods")
   )
 
   optics_order <- function(x, control) {
     control <- .get_parameters(control, .contr)
+
+    control$minPts <- min(control$minPts, attr(x, "Size"))
 
     dbscan::optics(x, eps = control$eps, minPts = control$minPts)$order
   }
@@ -68,6 +72,7 @@ register_optics <- function() {
     "optics",
     optics_order,
     "Use ordering points to identify the clustering structure (OPTICS) to create an order",
-    .contr
+    .contr,
+    verbose = TRUE
   )
 }

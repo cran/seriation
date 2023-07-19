@@ -35,43 +35,58 @@
 #    list(row = row, col = col)
 #}
 
-seriate_matrix_bea_tsp <- function(x, control) {
-  if (any(x < 0))
-    stop("Requires a nonnegative matrix.")
 
-  criterion <- as.dist(tcrossprod(x))
-  row <- seriate(max(criterion) - criterion,
-    method = "TSP",
-    control = control)[[1]]
+#' @include seriate_TSP.R
+.bea_tsp_contr <- .tsp_control
 
-  criterion <- as.dist(crossprod(x))
-  col <- seriate(max(criterion) - criterion,
-    method = "TSP",
-    control = control)[[1]]
+seriate_matrix_bea_tsp <-
+  function(x, control, margin = seq_along(dim(x))) {
+    if (any(x < 0))
+      stop("Requires a nonnegative matrix.")
 
-  attr(row, "method") <- "BEA_TSP"
-  attr(col, "method") <- "BEA_TSP"
+    if (1L %in% margin) {
+      criterion <- as.dist(tcrossprod(x))
+      row <- seriate(max(criterion) - criterion,
+                     method = "TSP",
+                     control = control)[[1]]
+      attr(row, "method") <- "BEA_TSP"
+    } else
+      row <- NA
 
-  list(row = row, col = col)
-}
+    if (2L %in% margin) {
+      criterion <- as.dist(crossprod(x))
+      col <- seriate(max(criterion) - criterion,
+                     method = "TSP",
+                     control = control)[[1]]
+      attr(col, "method") <- "BEA_TSP"
+    } else
+      col <- NA
 
+    list(row = row, col = col)
+  }
 
 ## Bond Energy Algorithm (McCormick 1972)
 .bea_contr <- list(istart = 0,
-  jstart = 0,
-  rep = 1)
+                   jstart = 0
+)
 
-seriate_matrix_bea <- function(x, control = NULL) {
+attr(.bea_contr, "help") <- list(istart = "index of 1st row to be placed (0 = random)",
+                                 jstart = "index of 1st column to be placed (0 = random)"
+)
+
+# BEA always does rows and columns so margin is ignored
+seriate_matrix_bea <- function(x, control = NULL, margin = NULL) {
   control <- .get_parameters(control, .bea_contr)
 
   if (any(x < 0))
     stop("Requires a nonnegative matrix.")
   istart <- control$istart
   jstart <- control$jstart
-  rep  <- control$rep
+  #rep  <- control$rep
+  rep  <- 1L
 
   res <- replicate(rep, bea(x, istart = istart, jstart = jstart),
-    simplify = FALSE)
+                   simplify = FALSE)
 
   best <- which.max(sapply(res, "[[", "e"))
   res <- res[[best]]
@@ -91,11 +106,16 @@ set_seriation_method(
   "BEA",
   seriate_matrix_bea,
   "Bond Energy Algorithm (BEA; McCormick 1972) to maximize the Measure of Effectiveness of a non-negative matrix.",
-  .bea_contr
+  .bea_contr,
+  optimizes = "Measure of effectiveness (ME)"
 )
+
 set_seriation_method(
   "matrix",
   "BEA_TSP",
   seriate_matrix_bea_tsp,
-  "Use a TSP to optimize the Measure of Effectiveness (Lenstra 1974). Control is passed on to the seriation method TSP."
+  "Use a TSP to optimize the Measure of Effectiveness (Lenstra 1974).",
+  .bea_tsp_contr,
+  optimizes = "Measure of effectiveness (ME)",
+  randomized = TRUE
 )

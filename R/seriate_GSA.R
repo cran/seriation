@@ -60,76 +60,121 @@ LS_reverse <- function(o, pos = sample.int(length(o), 2)) {
 #' @export
 LS_mixed <- function(o, pos = sample.int(length(o), 2)) {
   switch(sample.int(3, 1),
-    LS_swap(o, pos),
-    LS_insert(o, pos),
-    LS_reverse(o, pos))
+         LS_swap(o, pos),
+         LS_insert(o, pos),
+         LS_reverse(o, pos))
 }
 
 .sa_contr <- list(
   criterion = "Gradient_raw",
-  init = "Spectral",
-  ## use "Random" for random init.
-  localsearch = LS_insert,
   cool = 0.5,
-  tmin = 0.0001,
-  nlocal = 10,
-  ## try nlocal x n local search steps
+  t_min = 1e-7,
+  localsearch = "LS_insert",
+  try_multiplier = 5,
+  t0 = NA,
+  p_initial_accept = .01,
+  warmstart = "Random",
+  ## use "Random" for random init.
+  ## try try_multiplier x n local search steps
   verbose = FALSE
 )
+
+attr(.sa_contr, "help") <- list(
+  criterion = "Criterion measure to optimize",
+  cool = "cooling factor (smaller means faster cooling)",
+  t_min = "stopping temperature",
+  localsearch = "used local search move function",
+  try_multiplier = "number of local move tries per object",
+  t0 = "initial temperature (if NA then it is estimated)",
+  p_initial_accept = "Probability to accept a bad move at time 0 (used for t0 estimation)",
+  warmstart = "permutation or seriation method for warmstart"
+  )
+
 
 seriate_sa <- function(x, control = NULL) {
   param <- .get_parameters(control, .sa_contr)
   n <- attr(x, "Size")
 
-  if (is.numeric(param$init)) {
-    .check_dist_perm(x, order = param$init)
+  localsearch <- get(param$localsearch)
+  if (!is.function(localsearch))
+    localsearch <- get(localsearch)
+
+  crit <- param$crit
+
+  if (is.ser_permutation(param$warmstart)) {
+    .check_dist_perm(x, order = param$warmstart)
+    o <- get_order(param$warmstart)
   } else{
     if (param$verbose)
-      cat("\nObtaining initial solution via:",
-        param$init, "\n")
-    o <- get_order(seriate(x, method = param$init))
+      cat("Obtaining initial solution via:",
+          param$warmstart, "\n")
+    o <- get_order(seriate(x, method = param$warmstart))
   }
 
   z <- criterion(x, o, method = param$criterion, force_loss = TRUE)
   if (param$verbose)
     cat("Initial z =", z,
-      "(converted into loss if necessary)\n")
+        "(minimize)\n")
 
-  iloop <- param$nlocal * n
+  iloop <- param$try_multiplier * n
 
-  # find tmax (largest change for a move)
-  znew <- replicate(iloop, expr = {
-    criterion(x,
-      param$localsearch(o),
-      method = param$criterion,
-      force_loss = TRUE)
-  })
+  t0 <- param$t0
+  if (is.na(t0)) {
+    # find the starting temperature. Set the probability of the average
+    # (we use median) uphill move to pinitaccept.
+    o_rand <- sample(n)
+    z_rand <-  criterion(x,
+                         o_rand,
+                         method = param$criterion,
+                         force_loss = TRUE)
+    z_new <- replicate(iloop, expr = {
+      criterion(
+        x,
+        localsearch(o_rand),
+        method = param$criterion,
+        force_loss = TRUE
+      )
+    })
 
-  tmax <- max(z - znew)
-  if (tmax < 0)
+    deltas <- (z_rand - z_new)
+    deltas[deltas > 0] <- NA
+    avg_delta <- stats::median(deltas, na.rm = TRUE)
+    t0 <- avg_delta / log(param$p_initial_accept)
+  }
+
+  nloop <- as.integer((log(param$t_min) - log(t0)) / log(param$cool))
+
+  if (t0 <= 0) {
+    t0 <- 0
     nloop <- 1L
-  else
-    nloop <- as.integer((log(param$tmin) - log(tmax)) / log(param$cool))
+  }
 
   if (param$verbose)
-    cat("Found tmax = ", tmax, "using", nloop, "iterations\n")
+    cat("Use t0 =",
+        t0,
+        "resulting in",
+        nloop,
+        "iterations with",
+        iloop,
+        "tries each\n\n")
 
   zbest <- z
-  temp <- tmax
+  temp <- t0
 
   for (i in 1:nloop) {
     m <- 0L
 
     for (j in 1:iloop) {
-      onew <- param$localsearch(o)
+      onew <- localsearch(o)
       znew <-
         criterion(x,
-          onew,
-          method = param$criterion,
-          force_loss = TRUE)
+                  onew,
+                  method = crit,
+                  force_loss = TRUE)
       delta <- z - znew
 
-      if (delta > 0 || runif(1) < exp(delta / temp)) {
+      # we minimize, delta < 0 is a bad move
+      if (delta > 0 || temp > 0 && runif(1) < exp(delta / temp)) {
         o <- onew
         z <- znew
         m <- m + 1L
@@ -137,15 +182,20 @@ seriate_sa <- function(x, control = NULL) {
     }
 
     if (param$verbose) {
-      cat("temp = ",
-        round(temp, 4),
+      cat(
+        i,
+        "/",
+        nloop,
+        "\ttemp =",
+        signif(temp, 3),
         "\tz =",
         z,
-        "\t performed moves = ",
+        "\t accepted moves =",
         m,
         "/",
         iloop,
-        "\n")
+        "\n"
+      )
     }
 
     temp <- temp * param$cool
@@ -156,18 +206,9 @@ seriate_sa <- function(x, control = NULL) {
 
 set_seriation_method(
   "dist",
-  "SA",
+  "GSA",
   seriate_sa,
-  paste0(
-    "Minimize a specified seriation measure (criterion) using simulated annealing.\n",
-    "Control parameters:\n",
-    " - criterion to optimize\n",
-    " - init (initial order; use \"Random\" for no warm start\n",
-    " - localsearch (neighborhood function; Built-in functions are LS_insert, LS_swap, LS_reverse, and LS_mix (1/3 insertion, 1/3 swap and 1/3 reverse)\n",
-    " - cool (cooling rate)\n",
-    " - tmin (minimum temperature)\n",
-    " - swap_to_inversion (proportion of swaps to inversions)\n",
-    " - nlocal (number of objects times nlocal is the number of search tries per temperature\n"
-  ),
-  .sa_contr
+  "Minimize a specified seriation measure (criterion) using simulated annealing.",
+  .sa_contr,
+  randomized = TRUE
 )
