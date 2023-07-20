@@ -259,13 +259,13 @@ bertinplot(Townships, panel = panel.tiles)
 ### code chunk number 34: seriation.Rnw:1614-1616
 ###################################################
 ## to get consistent results
-set.seed(5)
+set.seed(10)
 
 
 ###################################################
 ### code chunk number 35: binary2
 ###################################################
-o <- seriate(Townships, method = "BEA", control = list(rep = 10))
+o <- seriate_rep(Townships, method = "BEA", criterion = "ME", rep = 10)
 bertinplot(Townships, o, panel = panel.tiles)
 
 
