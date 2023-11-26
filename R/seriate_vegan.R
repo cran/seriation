@@ -42,7 +42,8 @@ set_seriation_method(
   seriate_dist_monoMDS,
   "Kruskal's (1964a,b) non-metric multidimensional scaling (NMDS) using monotone regression.",
   control = .monoMDS_control,
-  optimizes = "Other (MDS strain)"
+  randomized = TRUE,
+  optimizes = .opt("MDS_stress", "Kruskal's monotone regression stress")
 )
 
 
@@ -73,7 +74,7 @@ set_seriation_method(
   seriate_dist_isomap,
   "Isometric feature mapping ordination",
   control = .isomap_control,
-  optimizes = "Other (Stress on shortest path distances)"
+  optimizes = .opt(NA, "Stress on shortest path distances")
 )
 
 .metaMDS_control <- structure({
@@ -113,5 +114,6 @@ set_seriation_method(
   seriate_dist_metaMDS,
   "Nonmetric Multidimensional Scaling with Stable Solution from Random Starts.",
   control = .metaMDS_control,
-  optimizes = "Other (MDS strain)"
+  randomized = FALSE,          ### it is randomized, but internally does replication
+  optimizes = .opt("MDS_stress", "Kruskal's monotone regression stress")
 )

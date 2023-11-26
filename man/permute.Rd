@@ -32,9 +32,9 @@ permute(x, order, ...)
 
 \method{permute}{dist}(x, order, ...)
 
-\method{permute}{dendrogram}(x, order, ...)
+\method{permute}{dendrogram}(x, order, dist = NULL, ...)
 
-\method{permute}{hclust}(x, order, ...)
+\method{permute}{hclust}(x, order, dist = NULL, ...)
 }
 \arguments{
 \item{x}{an object (a list, a vector, a \code{dist} object, a matrix, an
@@ -55,6 +55,9 @@ If \code{NULL}, \code{order} needs to contain a permutation for all dimensions.
 If a single margin is specified, then \code{order} can also contain
 a single permutation vector.
 \code{margin} are ignored.}
+
+\item{dist}{the distance matrix used to create the dendrogram. Only needed if
+order is the name of a seriation method.}
 }
 \value{
 A permuted object of the same class as \code{x}.
@@ -79,9 +82,8 @@ vector).
 
 For \code{dendrogram} and \code{hclust}, subtrees are rotated to represent
 the order best possible. If the order is not achieved perfectly then the
-user is warned. This behavior can be changed with the extra parameter
-\code{incompatible} which can take the values \code{"warn"} (default),
-\code{"stop"} or \code{"ignore"}.
+user is warned. See also \code{\link[=reorder.hclust]{reorder.hclust()}} for
+reordering \code{hclust} objects.
 }
 \examples{
 # List data types for permute
@@ -106,9 +108,10 @@ permute(m, "PCA")
 ## permute only rows using PCA
 permute(m, "PCA", margin = 1)
 
-# Permute data.frames
+# Permute data.frames using heatmap seration (= hierarchical
+#  clustering + optimal leaf ordering)
 df <- as.data.frame(m)
-permute(df, o)
+permute(df, "Heatmap")
 
 # Permute objects in a dist object
 d <- dist(m)
@@ -124,10 +127,17 @@ l
 
 permute(l, c(2, 3, 1))
 
-# Permute a dendrogram
+# Permute to reorder dendrogram (see also reorder.hclust)
 hc <- hclust(d)
 plot(hc)
+
 plot(permute(hc, 5:1))
+plot(permute(hc, 5:1, incompartible = "stop"))
+
+plot(permute(hc, "OLO", dist = d))
+plot(permute(hc, "GW", dist = d))
+plot(permute(hc, "MDS", dist = d))
+plot(permute(hc, "TSP", dist = d))
 }
 \seealso{
 Other permutation: 

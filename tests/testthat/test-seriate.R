@@ -158,7 +158,7 @@ test_that("test if seriate.dist returns expected results", {
     "isoMDS",
     "Sammon_mapping",
     "MDS_angle",
-    "R2E",
+    #"R2E", # eigen seems to give a slightly different result for MacOS on ARM
     "Spectral",
     "Spectral_norm",
     "VAT"
@@ -243,12 +243,12 @@ test_that("test if seriate.dist returns expected results", {
         d = 4L,
         c = 3L
       ),
-      R2E = c(
-        c = 3L,
-        d = 4L,
-        b = 2L,
-        a = 1L
-      ),
+      # R2E = c(
+      #   c = 3L,
+      #   d = 4L,
+      #   b = 2L,
+      #   a = 1L
+      # ),
       Spectral = c(
         c = 3L,
         d = 4L,
@@ -301,6 +301,10 @@ test_that("test if seriate.matrix returns expected results", {
 
   cat("\n      matrix\n") # for cleaner testthat output
   methods <- list_seriation_methods(kind = "matrix")
+
+  ### AOE is for symmetric correlation matrices
+  methods <- setdiff(methods, "AOE")
+
   os <- sapply(methods, function(m) {
     cat("   -> testing", format(m, width = 13), "... ")
     tm <- system.time(o <- seriate(x, method = m))
@@ -351,6 +355,10 @@ test_that("test if seriate.matrix with margin returns expected results", {
 
   cat("\n     matrix with margin\n") # for cleaner testthat output
   methods <- list_seriation_methods(kind = "matrix")
+
+  ### AOE is for symmetric correlation matrices
+  methods <- setdiff(methods, "AOE")
+
   os <- sapply(methods, function(m) {
     cat("   -> testing", format(m, width = 13), "... ")
     tm <- system.time(o <- seriate(x, method = m, margin = 2))
@@ -392,5 +400,16 @@ test_that("test if data.frame seriation works as expected", {
 
   oPCA <- seriate(df, method = "PCA")
   #expect_snapshot(permute(df, oPCA))
+})
+
+
+test_that("test if optimizes in registry is a valid criterion", {
+  methods <- list_seriation_methods(names_only = FALSE)
+  expect_no_error({
+    for (kind in names(methods))
+      for (m in methods[[kind]])
+        if (!is.na(m$optimizes))
+          get_criterion_method(kind, name = m$optimizes)
+  })
 })
 
