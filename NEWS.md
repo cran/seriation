@@ -1,4 +1,4 @@
-# seriation 1.5.2 (11/26/2023)
+# seriation 1.5.3 (11/28/2023)
 
 ## New Features
 - permute for dendrograms gained parameter dist and accepts now seriation 
@@ -11,8 +11,7 @@
 
 ## Bug Fixes
 - optimal.c: use now the correct data type for Rprintf
-- R2E: MacOS with ARM seems to give a different result for eigen. 
-  Removed the deterministic test. 
+- Skip deterministic tests on Mac M1 becasue of numerical differences. 
 
 # seriation 1.5.1 (07/20/2023)
 

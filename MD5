@@ -1,6 +1,6 @@
-78a6e1ebaa6efac26957997666e2e71e *DESCRIPTION
+5f8b3473925a13dc74f31fce5a5dac01 *DESCRIPTION
 aba60632f470eb6961688c20862a7d08 *NAMESPACE
-8f7710a67097bc8d2abcff64af1e984b *NEWS.md
+0a5731c735ca351a6d74a453367052e7 *NEWS.md
 e8488223eb244ac6fc647b85602bb676 *R/AAA_check_installed.R
 5f060bf719b942a1670926f258feb9e4 *R/AAA_color_palette.R
 356dd4c05eeda14cb5d82c0363775f11 *R/AAA_defaults.R
@@ -97,7 +97,7 @@ b83c5e09150106563331fc90f3e357e9 *inst/README_files/configuration-1.png
 ee3d67c2bb3264414a8799483157eccf *inst/README_files/seriation-2.png
 f1e76996d5bf0d0442cf16387ed5a260 *inst/doc/seriation.R
 11f977c31fa790c334dade242f12d37c *inst/doc/seriation.Rnw
-9ea84b14a8c691978a0372495183af76 *inst/doc/seriation.pdf
+8473845f583629191a0b58e088f2f313 *inst/doc/seriation.pdf
 85c4ee55d2dcf18a8d791eb59c3981e1 *man/Chameleon.Rd
 4732680046cd6bd1b2a9f603fde69af2 *man/Irish.Rd
 3156e2ddf2eea5a3d7ea496a4368b463 *man/LS.Rd
@@ -141,7 +141,7 @@ dd4b979a72ea89fe013a9361bbab8526 *src/RNG_wrapper.c
 26855e39732a907da8f87a8ea6fa101d *src/arsa.f
 821afcc7f36b26b120cde12188f4e42e *src/bburcg.f
 ce5578e725f57ca6638efa034ce7f7b4 *src/bbwrcg.f
-eb11154b81026bf077d266da2f022e45 *src/bea.f
+d48cfac08c73dda60c654eaf0b3f351e *src/bea.f
 bb3b548134274012860e6bc98cdd45fe *src/criterion.c
 59eb3efe0648038f9e743410df42e4eb *src/dist.c
 f73fe1a41d63dfe04f5ea5c17c563401 *src/init.c
@@ -155,7 +155,7 @@ f7c31d257e9ee204a1f7413a0a9d3f9c *src/optimal.c
 f8db49b2ece831c6ce453b62e23b91ef *tests/testthat/test-dissimilarity.R
 864f3f7170c4b5a0c45de4aad8a90234 *tests/testthat/test-map.R
 c9d38611954c03ce316aafd6d38c8f59 *tests/testthat/test-permuation_vector.R
-b7c9740703d997fc8154fe9e99d2987b *tests/testthat/test-seriate.R
+b3b442419b0fd4f8e26638b003ebb197 *tests/testthat/test-seriate.R
 88552ddaf279d53c4e78695f61a81528 *tests/testthat/test-zzz_seriate_extra.R
 b59872d48cf446767be0c79dae8900f8 *vignettes/classes.odg
 7f67ca8c5483222bc0a154258388db86 *vignettes/classes.pdf
