@@ -1,8 +1,8 @@
 Package: seriation
 Type: Package
 Title: Infrastructure for Ordering Objects Using Seriation
-Version: 1.5.4
-Date: 2023-12-11
+Version: 1.5.5
+Date: 2024-04-17
 Authors@R: c(
 	person("Michael", "Hahsler", role = c("aut", "cre", "cph"),
 	  email = "mhahsler@lyle.smu.edu",
@@ -30,7 +30,7 @@ Imports: ca, cluster, colorspace, foreach, gclus, grDevices, grid,
 Suggests: dbscan, DendSer, dendextend, doParallel, GA, ggplot2, keras,
         Rtsne, scales, smacof, tensorflow, testthat, umap
 Encoding: UTF-8
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 License: GPL-3
 Copyright: The code in src/bea.f is Copyright (C) 1991 F. Murtagh;
         src/bbwrcg.f, src/arsa.f and src/bburcg.f are Copyright (C)
@@ -62,7 +62,7 @@ Collate: 'AAA_check_installed.R' 'AAA_color_palette.R' 'AAA_defaults.R'
         'seriate_random.R' 'seriate_reverse.R' 'seriate_spectral.R'
         'seriate_vegan.R' 'uniscale.R'
 NeedsCompilation: yes
-Packaged: 2023-12-12 00:56:33 UTC; hahsler
+Packaged: 2024-04-17 21:36:23 UTC; hahsler
 Author: Michael Hahsler [aut, cre, cph]
     (<https://orcid.org/0000-0003-2716-1405>),
   Christian Buchta [aut, cph],
@@ -75,4 +75,4 @@ Author: Michael Hahsler [aut, cre, cph]
   Stephanie Stahl [ctb, cph]
 Maintainer: Michael Hahsler <mhahsler@lyle.smu.edu>
 Repository: CRAN
-Date/Publication: 2023-12-12 11:00:02 UTC
+Date/Publication: 2024-04-17 22:10:02 UTC
