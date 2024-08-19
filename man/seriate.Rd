@@ -392,33 +392,47 @@ The algorithm tries to maximize a non-negative matrix's
 Due to the definition of this measure, the tasks of
 ordering rows and columns are separable and can be solved independently.
 
-A row is arbitrarily placed; then, rows are positioned one by one. When this
-is completed, the columns are treated similarly. The overall procedure
-amounts to two approximate traveling salesperson problems (TSP), one on the
-rows and one on the columns. The so-called `best insertion strategy' is
-used: rows (or columns) are inserted into the current permuted list of rows
-(or columns). Several consecutive runs of the algorithm might improve the
-energy.
+BEA consists of the following three steps:
+\enumerate{
+\item Place one randomly chosen column.
+\item Try to place each remaining column at each possible position left,
+right and between the already placed columns and
+calculate every time the increase in ME. Choose the column and
+position which gives the largest increase in ME and place the column.
+Repeat till all columns are placed.
+\item Repeat procedure with rows.
+}
+
+The overall procedure
+amounts to two approximate traveling salesperson problems (TSP)
+where the distance is the -1 times the ME increase. The BEA algorithm
+is equivalent to a simple suboptimal TSP heuristic called
+'cheapest insertion'.
+Several consecutive runs of the algorithm might improve the
+energy if a better initial column/row is chosen.
 
 Arabie and Hubert (1990) question its use with non-binary data if
 the objective is to find a seriation or one-dimensional orderings of rows
 and columns.
-
-Fionn Murtagh implemented the BEA code used in this package.
 \item \strong{TSP to optimize the Measure of Effectiveness}: \code{"BEA_TSP"} (Lenstra 1974).
 
+Since BEA is equivalent to a simple TSP heuristic, we can use better TSP
+solvers to get better results.
 Distances between rows are calculated for a \eqn{M \times N} data matrix as
-\eqn{d_{jk} = - \sum_{i=1}^{i=M} x_{ij}x_{ik}\ (j,k=0,1,...,N)}. Distances
+\deqn{d_{jk} = - \sum_{i=1}^{i=M} x_{ij}x_{ik}\ (j,k=0,1,...,N).}
+
+Distances
 between columns are calculated the same way from the transposed data matrix.
 
 Solving the two TSP using these distances optimizes the measure of
-effectiveness. BEA can be seen as a simple, suboptimal TSP method.
+effectiveness. With an exact TSP solver, the optimal solution
+can be found.
 
 \code{control} parameter:
 \itemize{
 \item \code{"method"}: a TSP solver method (see \code{\link[TSP:solve_TSP]{TSP::solve_TSP()}}).
 }
-\item \strong{Correspondence analysis} \code{"CA"}
+\item \strong{Correspondence analysis} \code{"CA"} (Friendly, 2023)
 
 This function is designed to help simplify a mosaic plot or other displays of a
 matrix of frequencies.  It calculates a correspondence analysis of the matrix and
@@ -640,6 +654,9 @@ for application to visualization.
 Friendly, M. (2002): Corrgrams: Exploratory Displays for Correlation
 Matrices. \emph{The American Statistician,} \strong{56}(4), 316--324.
 \doi{10.1198/000313002533}
+
+Friendly, M. (2023). \emph{vcdExtra: 'vcd' Extensions and Additions}. R
+package version 0.8-5, \url{https://CRAN.R-project.org/package=vcdExtra}.
 
 Gruvaeus, G. and Wainer, H. (1972): Two Additions to Hierarchical Cluster
 Analysis, \emph{British Journal of Mathematical and Statistical Psychology,}

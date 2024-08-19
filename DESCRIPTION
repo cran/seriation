@@ -1,8 +1,8 @@
 Package: seriation
 Type: Package
 Title: Infrastructure for Ordering Objects Using Seriation
-Version: 1.5.5
-Date: 2024-04-17
+Version: 1.5.6
+Date: 2024-08-19
 Authors@R: c(
 	person("Michael", "Hahsler", role = c("aut", "cre", "cph"),
 	  email = "mhahsler@lyle.smu.edu",
@@ -30,18 +30,17 @@ Imports: ca, cluster, colorspace, foreach, gclus, grDevices, grid,
 Suggests: dbscan, DendSer, dendextend, doParallel, GA, ggplot2, keras,
         Rtsne, scales, smacof, tensorflow, testthat, umap
 Encoding: UTF-8
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 License: GPL-3
-Copyright: The code in src/bea.f is Copyright (C) 1991 F. Murtagh;
-        src/bbwrcg.f, src/arsa.f and src/bburcg.f are Copyright (C)
-        2005 M. Brusco, H.F. Koehn, and S. Stahl. All other code is
-        Copyright (C) Michael Hahsler, Christian Buchta, and Kurt
-        Hornik.
+Copyright: The code in src/bbwrcg.f, src/arsa.f and src/bburcg.f are
+        Copyright (C) 2005 M. Brusco, H.F. Koehn, and S. Stahl. All
+        other code is Copyright (C) Michael Hahsler, Christian Buchta,
+        and Kurt Hornik.
 Collate: 'AAA_check_installed.R' 'AAA_color_palette.R' 'AAA_defaults.R'
         'AAA_map.R' 'AAA_parameters.R' 'AAA_registry_criterion.R'
         'AAA_registry_seriate.R' 'AAA_seriation-package.R'
         'Chameleon.R' 'Irish.R' 'Munsingen.R' 'Psych24.R'
-        'SupremeCourt.R' 'Townships.R' 'VAT.R' 'Wood.R' 'Zoo.R' 'bea.R'
+        'SupremeCourt.R' 'Townships.R' 'VAT.R' 'Wood.R' 'Zoo.R'
         'bertinplot.R' 'criterion.R' 'criterion.array.R'
         'criterion.dist.R' 'criterion.matrix.R' 'dissplot.R'
         'get_order.R' 'ggVAT.R' 'ggbertinplot.R' 'ggdissplot.R'
@@ -62,7 +61,7 @@ Collate: 'AAA_check_installed.R' 'AAA_color_palette.R' 'AAA_defaults.R'
         'seriate_random.R' 'seriate_reverse.R' 'seriate_spectral.R'
         'seriate_vegan.R' 'uniscale.R'
 NeedsCompilation: yes
-Packaged: 2024-04-17 21:36:23 UTC; hahsler
+Packaged: 2024-08-19 15:46:46 UTC; hahsler
 Author: Michael Hahsler [aut, cre, cph]
     (<https://orcid.org/0000-0003-2716-1405>),
   Christian Buchta [aut, cph],
@@ -75,4 +74,4 @@ Author: Michael Hahsler [aut, cre, cph]
   Stephanie Stahl [ctb, cph]
 Maintainer: Michael Hahsler <mhahsler@lyle.smu.edu>
 Repository: CRAN
-Date/Publication: 2024-04-17 22:10:02 UTC
+Date/Publication: 2024-08-19 16:50:02 UTC

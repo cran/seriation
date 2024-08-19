@@ -1,5 +1,21 @@
+# seriation 1.5.6 (08/19/2024)
+
+## New Features
+- Added registered_by field to registries. 
+
+## Changes
+- We replaced the FORTRAN implementation for BEA with code from package TSP.
+- ME is now calculated using C code.
+- optimal.c: updated memory allocation to R allocation.
+- stress.c: updated memory allocation to R allocation.
+
+## Bug Fixes
+- Added two missing package anchors to palette man page.
+
+
 # seriation 1.5.5 (04/17/2024)
 
+## Changes
 - Updated man pages.
 
 # seriation 1.5.4 (12/11/2023)
@@ -25,7 +41,7 @@
 
 # seriation 1.5.1 (07/20/2023)
 
-## New Fearures
+## New Features
 - pimage and permute now accept order = TRUE to perform the default seriation.
 - hmap gained parameter col_dist to define the color palette used for distance
   matrices.
