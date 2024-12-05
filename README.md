@@ -4,9 +4,9 @@
 [![r-universe
 status](https://mhahsler.r-universe.dev/badges/seriation)](https://mhahsler.r-universe.dev/seriation)
 [![Package on
-CRAN](http://www.r-pkg.org/badges/version/seriation)](https://CRAN.R-project.org/package=seriation)
+CRAN](https://www.r-pkg.org/badges/version/seriation)](https://CRAN.R-project.org/package=seriation)
 [![CRAN RStudio mirror
-downloads](http://cranlogs.r-pkg.org/badges/seriation)](https://CRAN.R-project.org/package=seriation)
+downloads](https://cranlogs.r-pkg.org/badges/seriation)](https://CRAN.R-project.org/package=seriation)
 [![Anaconda.org](https://anaconda.org/conda-forge/r-seriation/badges/version.svg)](https://anaconda.org/conda-forge/r-seriation)
 [![StackOverflow](https://img.shields.io/badge/stackoverflow-seriation+r-orange.svg)](https://stackoverflow.com/questions/tagged/seriation+r)
 
@@ -57,6 +57,7 @@ The following R packages use `seriation`:
 [DendSer](https://CRAN.R-project.org/package=DendSer),
 [dendsort](https://CRAN.R-project.org/package=dendsort),
 [disclapmix](https://CRAN.R-project.org/package=disclapmix),
+[elaborator](https://CRAN.R-project.org/package=elaborator),
 [flexclust](https://CRAN.R-project.org/package=flexclust),
 [ggraph](https://CRAN.R-project.org/package=ggraph),
 [heatmaply](https://CRAN.R-project.org/package=heatmaply),
@@ -139,7 +140,7 @@ reconstruction error.
 These methods try to optimize a seriation criterion directly, typically
 using a heuristic approach.
 
-- **ARSA** - optimize the linear seriation critreion using simulated
+- **ARSA** - optimize the linear seriation criterion using simulated
   annealing  
 - **Branch-and-bound** to minimize the unweighted/weighted column
   gradient
@@ -184,6 +185,8 @@ Row and column order influence each other.
 - **BEA** - Bond Energy Algorithm to maximize the measure of
   effectiveness (ME)
 - **BEA_TSP** - TSP to optimize the measure of effectiveness
+- **BK_unconstrained** - Algorithm by Brower and Kyle (1988) to arrange
+  binary matrices.
 - **CA** - calculates a correspondence analysis of a matrix of
   frequencies (count table) and reorders according to the scores on a
   correspondence analysis dimension

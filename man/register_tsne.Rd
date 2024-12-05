@@ -19,7 +19,7 @@ Registers the method \code{"tsne"} for \code{\link[=seriate]{seriate()}}. This m
 1D t-SNE to a data matrix or a distance matrix and extracts the order
 from the 1D embedding. To speed up the process, an initial embedding is
 created using 1D multi-dimensional scaling (MDS) or principal
-comonents analysis (PCA) which is improved by t-SNE.
+components analysis (PCA) which is improved by t-SNE.
 
 The \code{control} parameter \code{"mds"} or \code{"pca"} controls if MDS (for distances)
 or PCA (for data matrices) is used to create an
@@ -91,7 +91,7 @@ Other seriation:
 \code{\link{register_optics}()},
 \code{\link{register_smacof}()},
 \code{\link{register_umap}()},
-\code{\link{registry_for_seriaiton_methods}},
+\code{\link{registry_for_seriation_methods}},
 \code{\link{seriate}()},
 \code{\link{seriate_best}()}
 }

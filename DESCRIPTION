@@ -1,8 +1,8 @@
 Package: seriation
 Type: Package
 Title: Infrastructure for Ordering Objects Using Seriation
-Version: 1.5.6
-Date: 2024-08-19
+Version: 1.5.7
+Date: 2024-12-05
 Authors@R: c(
 	person("Michael", "Hahsler", role = c("aut", "cre", "cph"),
 	  email = "mhahsler@lyle.smu.edu",
@@ -53,15 +53,16 @@ Collate: 'AAA_check_installed.R' 'AAA_color_palette.R' 'AAA_defaults.R'
         'ser_permutation_vector2matrix.R' 'seriate.R' 'seriate.dist.R'
         'seriate.matrix.R' 'seriate.array.R' 'seriate.data.frame.R'
         'seriate.table.R' 'seriate_AOE.R' 'seriate_ARSA_Branch-Bound.R'
-        'seriate_TSP.R' 'seriate_BEA.R' 'seriate_CA.R' 'seriate_GSA.R'
-        'seriate_HC.R' 'seriate_LLE.R' 'seriate_MDS.R' 'seriate_Mean.R'
-        'seriate_PCA.R' 'seriate_QAP.R' 'seriate_R2E.R' 'seriate_SGD.R'
-        'seriate_SPIN.R' 'seriate_VAT.R' 'seriate_best.R'
-        'seriate_enumerate.R' 'seriate_heatmap.R' 'seriate_identity.R'
-        'seriate_random.R' 'seriate_reverse.R' 'seriate_spectral.R'
-        'seriate_vegan.R' 'uniscale.R'
+        'seriate_TSP.R' 'seriate_BEA.R' 'seriate_BK.R' 'seriate_CA.R'
+        'seriate_GSA.R' 'seriate_HC.R' 'seriate_LLE.R' 'seriate_MDS.R'
+        'seriate_Mean.R' 'seriate_PCA.R' 'seriate_QAP.R'
+        'seriate_R2E.R' 'seriate_SGD.R' 'seriate_SPIN.R'
+        'seriate_VAT.R' 'seriate_best.R' 'seriate_enumerate.R'
+        'seriate_heatmap.R' 'seriate_identity.R' 'seriate_random.R'
+        'seriate_reverse.R' 'seriate_spectral.R' 'seriate_vegan.R'
+        'uniscale.R'
 NeedsCompilation: yes
-Packaged: 2024-08-19 15:46:46 UTC; hahsler
+Packaged: 2024-12-05 17:58:49 UTC; hahsler
 Author: Michael Hahsler [aut, cre, cph]
     (<https://orcid.org/0000-0003-2716-1405>),
   Christian Buchta [aut, cph],
@@ -74,4 +75,4 @@ Author: Michael Hahsler [aut, cre, cph]
   Stephanie Stahl [ctb, cph]
 Maintainer: Michael Hahsler <mhahsler@lyle.smu.edu>
 Repository: CRAN
-Date/Publication: 2024-08-19 16:50:02 UTC
+Date/Publication: 2024-12-05 18:40:01 UTC
