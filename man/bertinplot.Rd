@@ -57,8 +57,8 @@ ggbertinplot(
 and rows are cases. This behavior can be reversed using \code{reverse = TRUE}
 in \code{options}.}
 
-\item{order}{an object of class \code{ser_permutation} to rearrange \code{x}
-before plotting.  If \code{NULL}, no rearrangement is performed.}
+\item{order}{an object of class \code{ser_permutation} or a seriation method name
+to rearrange \code{x} before plotting.  If \code{NULL}, no rearrangement is performed.}
 
 \item{panel.function}{a function to produce the symbols. Currently available
 functions are \code{panel.bars} (default), \code{panel.circles},
@@ -131,12 +131,17 @@ relative space between symbols and \code{hl} is a logical vector indicating
 which symbol should be highlighted.
 
 Cut lines can be added to an existing Bertin plot using
-\code{bertin_cut_line(x = NULL, y = NULL)}. \code{x}/\code{y} is can be a
-number indicating where to draw the cut line between two columns/rows. If
-both \code{x} and \code{y} is specified then one can select a row/column and
+\code{bertin_cut_line(x = NULL, y = NULL)}. \code{x} and \code{y} indicate
+where to draw the cut line between two columns/rows. If
+both \code{x} and \code{y} are specified then one can select a row/column and
 the other can select a range to draw a line which does only span a part of
 the row/column. It is important to call \code{bertinplot()} with the option
 \code{pop = FALSE}.
+
+\code{bertinplot()} uses \code{grid.lines()}, \code{grid.rect()} and \code{grid.circle()} to
+draw the panels. For large matrices, the outline around rectangles may cover
+most of the image. Use the parameter \code{gp_panels = gpar(col = NA)} to
+remove the outline.
 
 \code{ggbertinplot()} calls \code{\link[=ggpimage]{ggpimage()}} and all additional parameters are
 passed on.
@@ -156,10 +161,10 @@ order <- c(
 bertinplot(x, order)
 
 # Some alternative displays
-bertinplot(x, order, panel = panel.tiles, shading_col = bluered(100), highlight = FALSE)
-bertinplot(x, order, panel = panel.circles, spacing = -.2)
-bertinplot(x, order, panel = panel.rectangles)
-bertinplot(x, order, panel = panel.lines)
+bertinplot(x, order, panel.function = panel.tiles, shading_col = bluered(100), highlight = FALSE)
+bertinplot(x, order, panel.function = panel.circles, spacing = -.2)
+bertinplot(x, order, panel.function = panel.rectangles)
+bertinplot(x, order, panel.function = panel.lines)
 
 # Plot with cut lines (we manually set the order here)
 order <- ser_permutation(c(6L, 9L, 29L, 10L, 32L, 22L, 2L, 35L,
