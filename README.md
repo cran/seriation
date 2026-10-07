@@ -11,6 +11,8 @@ downloads](https://cranlogs.r-pkg.org/badges/seriation)](https://CRAN.R-project.
 status](https://mhahsler.r-universe.dev/badges/seriation)](https://mhahsler.r-universe.dev/seriation)
 [![StackOverflow](https://img.shields.io/badge/stackoverflow-seriation+r-orange.svg)](https://stackoverflow.com/questions/tagged/seriation+r)
 
+**Maintainer:** [Michael Hahsler](https://michael.hahsler.net)
+
 ## Introduction
 
 Seriation arranges a set of objects into a linear order given available
@@ -25,31 +27,24 @@ information, including permuted image plots, reordered heatmaps, Bertin
 plots, clustering visualizations like dissimilarity plots, and visual
 assessment of cluster tendency plots (VAT and iVAT).
 
-Here are some quick guides on applications of seriation:
-
-- [Introduction the R package
-  seriation](https://cran.r-project.org/package=seriation/vignettes/seriation.pdf)
-- [How to reorder
-  heatmaps](https://mhahsler.github.io/seriation/heatmaps.html)
-- [How to reorder correlation
-  matrices](https://mhahsler.github.io/seriation/correlation_matrix.html)
-- [How to evaluate clusters using dissimilarity
-  plots](https://mhahsler.github.io/seriation/clustering.html)
-
 Implemented seriation methods and criteria:
 
 - [Documentation of the implemented seriation
-  methods](https://mhahsler.github.io/seriation/seriation_methods.html)
+  methods](https://michael.hahsler.net/seriation/articles/seriation_methods.html)
 - [Documentation of the implemented seriation
-  criteria](https://mhahsler.github.io/seriation/seriation_criteria.html)
-- [A visual comparison between seriation
-  methods](https://mhahsler.github.io/seriation/comparison.html)
+  criteria](https://michael.hahsler.net/seriation/articles/seriation_criteria.html)
+
+A detailed introduction is available in the package vignette:
+[Introduction to the R package
+seriation](https://cran.r-project.org/package=seriation/vignettes/seriation.pdf)
 
 The following R packages use `seriation`:
 [adepro](https://CRAN.R-project.org/package=adepro),
 [arulesViz](https://CRAN.R-project.org/package=arulesViz),
 [baizer](https://CRAN.R-project.org/package=baizer),
+[cellGeometry](https://CRAN.R-project.org/package=cellGeometry),
 [ChemoSpec](https://CRAN.R-project.org/package=ChemoSpec),
+[ClusteredMutations](https://CRAN.R-project.org/package=ClusteredMutations),
 [corrgram](https://CRAN.R-project.org/package=corrgram),
 [corrplot](https://CRAN.R-project.org/package=corrplot),
 [corrr](https://CRAN.R-project.org/package=corrr),
@@ -59,37 +54,19 @@ The following R packages use `seriation`:
 [disclapmix](https://CRAN.R-project.org/package=disclapmix),
 [elaborator](https://CRAN.R-project.org/package=elaborator),
 [flexclust](https://CRAN.R-project.org/package=flexclust),
+[futurize](https://CRAN.R-project.org/package=futurize),
 [GAPR](https://CRAN.R-project.org/package=GAPR),
 [ggraph](https://CRAN.R-project.org/package=ggraph),
 [heatmaply](https://CRAN.R-project.org/package=heatmaply),
 [MEDseq](https://CRAN.R-project.org/package=MEDseq),
 [ockc](https://CRAN.R-project.org/package=ockc),
+[PairViz](https://CRAN.R-project.org/package=PairViz),
 [protti](https://CRAN.R-project.org/package=protti),
+[Proximum](https://CRAN.R-project.org/package=Proximum),
 [RMaCzek](https://CRAN.R-project.org/package=RMaCzek),
-[SFS](https://CRAN.R-project.org/package=SFS),
 [tidygraph](https://CRAN.R-project.org/package=tidygraph),
 [treeheatr](https://CRAN.R-project.org/package=treeheatr),
 [vcdExtra](https://CRAN.R-project.org/package=vcdExtra)
-
-To cite package ‘seriation’ in publications use:
-
-> Hahsler M, Hornik K, Buchta C (2008). “Getting things in order: An
-> introduction to the R package seriation.” *Journal of Statistical
-> Software*, *25*(3), 1-34. ISSN 1548-7660, <doi:10.18637/jss.v025.i03>
-> <https://doi.org/10.18637/jss.v025.i03>.
-
-    @Article{,
-      title = {Getting things in order:  An introduction to the R package seriation},
-      author = {Michael Hahsler and Kurt Hornik and Christian Buchta},
-      year = {2008},
-      journal = {Journal of Statistical Software},
-      volume = {25},
-      number = {3},
-      pages = {1--34},
-      doi = {10.18637/jss.v025.i03},
-      month = {March},
-      issn = {1548-7660},
-    }
 
 ## Available seriation methods to reorder dissimilarity data
 
@@ -120,8 +97,8 @@ reconstruction error.
 
 - **MDS** - classical metric multidimensional scaling
 - **MDS_angle** - order by the angular order in the 2D MDS projection
-  space split by the larges gap
-- **isoMDS** - 1D Krusakl’s non-metric multidimensional scaling
+  space split by the largest gap
+- **isoMDS** - 1D Kruskal’s non-metric multidimensional scaling
 - **isomap** - 1D isometric feature mapping ordination
 - **monoMDS** - order along 1D global and local non-metric
   multidimensional scaling using monotone regression (NMDS)
@@ -148,8 +125,8 @@ using a heuristic approach.
   criteria
 - **GSA** - General simulated annealing to optimize any seriation
   criteria
-- **SGD** - stochastic gradient descent to find a local optimum given an
-  initial order and a seriation criterion.
+- **SGLS** - stochastic greedy local search to improve an initial order
+  for a specified seriation criterion.
 - **QAP** - Quadratic assignment problem heuristic (optimizes 2-SUM,
   linear seriation, inertia, banded anti-Robinson form)
 - **Spectral** seriation to optimize the 2-SUM criterion (unnormalized,
@@ -166,7 +143,7 @@ using a heuristic approach.
 - **Random** permutation
 - **Reverse** order
 - **SPIN** - Sorting points into neighborhoods (neighborhood algorithm,
-  side-to-site algorithm)
+  side-to-side algorithm)
 - **VAT** - Order of the visual assessment of clustering tendency
 
 A detailed comparison of the most popular methods is available in the
@@ -203,7 +180,7 @@ These methods need access to the data matrix instead of dissimilarities
 to reorder objects (rows). The same approach can be applied to columns.
 
 - **PCA_angle** - order by the angular order in the 2D PCA projection
-  space split by the larges gap
+  space split by the largest gap
 - **LLE** reorder along a 1D locally linear embedding
 - **Means** - reorders using row means
 - **PCA** - orders along the first principal component
@@ -292,7 +269,7 @@ pimage(d, main = "Judges (original alphabetical order)")
 pimage(d, order, main = "Judges (reordered by seriation)")
 ```
 
-<img src="inst/README_files/seriation-1.png" width="50%" /><img src="inst/README_files/seriation-2.png" width="50%" />
+<img src="man/figures/README-seriation-1.png" alt="" width="50%" /><img src="man/figures/README-seriation-2.png" alt="" width="50%" />
 
 Darker squares around the main diagonal indicate groups of similar
 objects. After seriation, two groups are visible.
@@ -309,8 +286,8 @@ rbind(alphabetical = criterion(d), seriated = criterion(d, order))
     ## alphabetical  872        10.304        80 1.8            8              0.54
     ## seriated      811         0.064         5 1.1          158             19.76
     ##              Inertia Lazy_path_length Least_squares LS MDS_stress  ME
-    ## alphabetical     267              6.9           967 99       0.62  99
-    ## seriated         364              4.6           942 86       0.17 101
+    ## alphabetical     267              6.9           967 59       0.62  99
+    ## seriated         364              4.6           942 72       0.17 101
     ##              Moore_stress Neumann_stress Path_length RGAR   Rho
     ## alphabetical          7.0            3.9         1.8 0.48 0.028
     ## seriated              2.5            1.3         1.1 0.03 0.913
@@ -331,9 +308,31 @@ get_config(order)
 plot_config(order)
 ```
 
-<img src="inst/README_files/configuration-1.png" style="display: block; margin: auto;" />
+<img src="man/figures/README-configuration-1.png" alt="" style="display: block; margin: auto;" />
 
 We can see a clear divide between the two groups in the configuration.
+
+## Citation request
+
+To cite package ‘seriation’ in publications use:
+
+> Hahsler M, Hornik K, Buchta C (2008). “Getting things in order: An
+> introduction to the R package seriation.” *Journal of Statistical
+> Software*, *25*(3), 1-34. ISSN 1548-7660. <doi:10.18637/jss.v025.i03>
+> <https://doi.org/10.18637/jss.v025.i03>.
+
+    @Article{,
+      title = {Getting things in order:  An introduction to the R package seriation},
+      author = {Michael Hahsler and Kurt Hornik and Christian Buchta},
+      year = {2008},
+      journal = {Journal of Statistical Software},
+      volume = {25},
+      number = {3},
+      pages = {1--34},
+      doi = {10.18637/jss.v025.i03},
+      month = {March},
+      issn = {1548-7660},
+    }
 
 ## References
 
@@ -353,6 +352,6 @@ We can see a clear divide between the two groups in the configuration.
   10.1198/jcgs.2010.09139 (read the
   [preprint](https://michael.hahsler.net/research/paper/dissplot_JCGS2011_preprint.pdf);
   [code
-  examples](https://mhahsler.github.io/seriation/seriation_cluster_evaluation.html))
+  examples](https://michael.hahsler.net/seriation/articles/clustering.html))
 - [Reference manual for package
   seriation.](https://mhahsler.r-universe.dev/seriation/doc/manual.html#seriation-package)

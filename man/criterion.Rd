@@ -43,7 +43,9 @@ A named vector of real values.
 }
 \description{
 Compute the value for different loss functions \eqn{L} and merit function
-\eqn{M} for data given a permutation.
+\eqn{M} for data given a permutation. A list with all methods and the
+available parameters is available
+\href{https://michael.hahsler.net/seriation/articles/seriation_criteria.html}{here}.
 }
 \details{
 \strong{Criteria for distance matrices (dist)}
@@ -335,7 +337,7 @@ patterns in gene expression profiles, \emph{BMC Bioinformatics,}
 \doi{10.1186/1471-2105-9-155}
 }
 \seealso{
-Other criterion: 
+Other criterion:
 \code{\link{registry_for_criterion_methods}}
 }
 \author{

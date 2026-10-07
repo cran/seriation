@@ -89,14 +89,15 @@ problem is easy for Robinsonian matrices with Toeplitz structure,
 \emph{Operations Research Letters} \strong{43}(1), 103--109.
 }
 \seealso{
-Other data: 
+Other data:
 \code{\link{Chameleon}},
 \code{\link{Irish}},
 \code{\link{Munsingen}},
+\code{\link{Psych24}},
 \code{\link{SupremeCourt}},
 \code{\link{Townships}},
 \code{\link{Wood}},
 \code{\link{Zoo}},
-\code{\link{create_lines_data}()}
+\code{\link[=create_lines_data]{create_lines_data()}}
 }
 \concept{data}

@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Michael Hahsler" />
+
+
+<title>Seriation Criteria implemented in the R package seriation</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Seriation Criteria implemented in the R
+package seriation</h1>
+<h4 class="author">Michael Hahsler</h4>
+
+
+<div id="TOC">
+<ul>
+<li><a href="#criteria-for-dissimilarity-data-dist" id="toc-criteria-for-dissimilarity-data-dist">Criteria for dissimilarity
+data (dist)</a>
+<ul>
+<li><a href="#sum" id="toc-sum">2SUM</a></li>
+<li><a href="#ar_deviations" id="toc-ar_deviations">AR_deviations</a></li>
+<li><a href="#ar_events" id="toc-ar_events">AR_events</a></li>
+<li><a href="#arc" id="toc-arc">ARc</a></li>
+<li><a href="#bar" id="toc-bar">BAR</a></li>
+<li><a href="#gradient_raw" id="toc-gradient_raw">Gradient_raw</a></li>
+<li><a href="#gradient_weighted" id="toc-gradient_weighted">Gradient_weighted</a></li>
+<li><a href="#inertia" id="toc-inertia">Inertia</a></li>
+<li><a href="#ls" id="toc-ls">LS</a></li>
+<li><a href="#lazy_path_length" id="toc-lazy_path_length">Lazy_path_length</a></li>
+<li><a href="#least_squares" id="toc-least_squares">Least_squares</a></li>
+<li><a href="#mds_stress" id="toc-mds_stress">MDS_stress</a></li>
+<li><a href="#me" id="toc-me">ME</a></li>
+<li><a href="#moore_stress" id="toc-moore_stress">Moore_stress</a></li>
+<li><a href="#neumann_stress" id="toc-neumann_stress">Neumann_stress</a></li>
+<li><a href="#path_length" id="toc-path_length">Path_length</a></li>
+<li><a href="#rgar" id="toc-rgar">RGAR</a></li>
+<li><a href="#rho" id="toc-rho">Rho</a></li>
+<li><a href="#smacof_stress0" id="toc-smacof_stress0">smacof_stress0</a></li>
+</ul></li>
+<li><a href="#criteria-for-data-matrices-tables-and-data.frames" id="toc-criteria-for-data-matrices-tables-and-data.frames">Criteria for
+data matrices, tables and data.frames</a>
+<ul>
+<li><a href="#cor_r" id="toc-cor_r">Cor_R</a></li>
+<li><a href="#me-1" id="toc-me-1">ME</a></li>
+<li><a href="#moore_stress-1" id="toc-moore_stress-1">Moore_stress</a></li>
+<li><a href="#neumann_stress-1" id="toc-neumann_stress-1">Neumann_stress</a></li>
+</ul></li>
+<li><a href="#references" id="toc-references">References</a></li>
+</ul>
+</div>
+
+<p>This document contains the seriation criteria for judging the quality
+of permutations given data implemented in the R package
+<code>seriation</code>.</p>
+<p>This list was created for the following version of seriation:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;seriation&quot;</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">packageVersion</span>(<span class="st">&#39;seriation&#39;</span>)</span></code></pre></div>
+<pre><code>## [1] &#39;1.6.0&#39;</code></pre>
+<p>Register some additional criteria</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">register_DendSer</span>()</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">register_smacof</span>()</span></code></pre></div>
+<p>The criteria are organized by methods that evaluate the permutation
+based on distance data or data matrices.</p>
+<p><code>merit</code> specified if the criteria function increases with
+better fit or if it is formulated as a loss criteria functions
+(<code>merit = FALSE</code>).</p>
+<p>If a seriation method directly tries to optimize the criterion, than
+its name is specified under “optimized by”. The names can be used as the
+<code>method</code> argument in <code>seriate()</code>.</p>
+<div id="criteria-for-dissimilarity-data-dist" class="section level2">
+<h2>Criteria for dissimilarity data (dist)</h2>
+<div id="sum" class="section level3">
+<h3>2SUM</h3>
+<p>2-Sum Criterion: The 2-Sum loss criterion multiplies the similarity
+between objects with the squared rank differences (Barnard, Pothen and
+Simon, 1993).</p>
+<ul>
+<li>merit: FALSE</li>
+<li>optimized by: <a href="seriation_methods.html#qap_2sum">QAP_2SUM</a>, <a href="seriation_methods.html#spectral">Spectral</a>, <a href="seriation_methods.html#spectral_norm">Spectral_norm</a></li>
+<li>additional parameters: no parameters</li>
+</ul>
+<hr />
+</div>
+<div id="ar_deviations" class="section level3">
+<h3>AR_deviations</h3>
+<p>Anti-Robinson deviations: The number of violations of the
+anti-Robinson form weighted by the deviation (Chen, 2002).</p>
+<ul>
+<li>merit: FALSE</li>
+<li>optimized by: N/A</li>
+<li>additional parameters: no parameters</li>
+</ul>
+<hr />
+</div>
+<div id="ar_events" class="section level3">
+<h3>AR_events</h3>
+<p>Anti-Robinson events: The number of violations of the anti-Robinson
+form (Chen, 2002).</p>
+<ul>
+<li>merit: FALSE</li>
+<li>optimized by: N/A</li>
+<li>additional parameters: no parameters</li>
+</ul>
+<hr />
+</div>
+<div id="arc" class="section level3">
+<h3>ARc</h3>
+<p>Anti-Robinson form cost (Earle and Hurley, 2015).</p>
+<ul>
+<li>merit: FALSE</li>
+<li>optimized by: <a href="seriation_methods.html#dendser_arc">DendSer_ARc</a></li>
+<li>registered by: register_DendSer()</li>
+<li>additional parameters: no parameters</li>
+</ul>
+<hr />
+</div>
+<div id="bar" class="section level3">
+<h3>BAR</h3>
+<p>Banded Anti-Robinson form criterion: Measure for closeness to the
+anti-Robinson form in a band of size b (Earle and Hurley, 2015).</p>
+<ul>
+<li>merit: FALSE</li>
+<li>optimized by: <a href="seriation_methods.html#qap_bar">QAP_BAR</a>,
+<a href="seriation_methods.html#dendser_bar">DendSer_BAR</a></li>
+<li>additional parameters:</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="left">default</th>
+<th align="left">help</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">b</td>
+<td align="left">NULL</td>
+<td align="left">band size defaults to a band of 20% of n</td>
+</tr>
+</tbody>
+</table>
+<hr />
+</div>
+<div id="gradient_raw" class="section level3">
+<h3>Gradient_raw</h3>
+<p>Gradient measure: Evaluates how well distances increase when moving
+away from the diagonal of the distance matrix (Hubert et al, 2001).</p>
+<ul>
+<li>merit: TRUE</li>
+<li>optimized by: <a href="seriation_methods.html#bburcg">BBURCG</a></li>
+<li>additional parameters: no parameters</li>
+</ul>
+<hr />
+</div>
+<div id="gradient_weighted" class="section level3">
+<h3>Gradient_weighted</h3>
+<p>Gradient measure (weighted): Evaluates how well distances increase
+when moving away from the diagonal of the distance matrix (Hubert et al,
+2001).</p>
+<ul>
+<li>merit: TRUE</li>
+<li>optimized by: <a href="seriation_methods.html#bbwrcg">BBWRCG</a></li>
+<li>additional parameters: no parameters</li>
+</ul>
+<hr />
+</div>
+<div id="inertia" class="section level3">
+<h3>Inertia</h3>
+<p>Inertia criterion: Measures the moment of the inertia of
+dissimilarity values around the diagonal of the distance matrix (Caraux
+and Pinloche, 2005).</p>
+<ul>
+<li>merit: TRUE</li>
+<li>optimized by: <a href="seriation_methods.html#qap_inertia">QAP_Inertia</a></li>
+<li>additional parameters: no parameters</li>
+</ul>
+<hr />
+</div>
+<div id="ls" class="section level3">
+<h3>LS</h3>
+<p>Linear Seriation Criterion: Weights the distances with the absolute
+rank differences (Hubert and Schultz, 1976).</p>
+<ul>
+<li>merit: TRUE</li>
+<li>optimized by: <a href="seriation_methods.html#arsa">ARSA</a>, <a href="seriation_methods.html#qap_ls">QAP_LS</a></li>
+<li>additional parameters: no parameters</li>
+</ul>
+<hr />
+</div>
+<div id="lazy_path_length" class="section level3">
+<h3>Lazy_path_length</h3>
+<p>Lazy path length: A weighted version of the Hamiltonian path
+criterion where later distances are less important (Earl and Hurley,
+2015).</p>
+<ul>
+<li>merit: FALSE</li>
+<li>optimized by: <a href="seriation_methods.html#dendser_lpl">DendSer_LPL</a></li>
+<li>additional parameters: no parameters</li>
+</ul>
+<hr />
+</div>
+<div id="least_squares" class="section level3">
+<h3>Least_squares</h3>
+<p>Least squares criterion: The sum of squared differences between
+distances and the rank differences (Caraux and Pinloche, 2005).</p>
+<ul>
+<li>merit: FALSE</li>
+<li>optimized by: N/A</li>
+<li>additional parameters: no parameters</li>
+</ul>
+<hr />
+</div>
+<div id="mds_stress" class="section level3">
+<h3>MDS_stress</h3>
+<p>Normalized stress of a configuration given by a seriation order</p>
+<ul>
+<li>merit: FALSE</li>
+<li>optimized by: <a href="seriation_methods.html#mds">MDS</a>, <a href="seriation_methods.html#isomds">isoMDS</a>, <a href="seriation_methods.html#sammon_mapping">Sammon_mapping</a></li>
+<li>additional parameters:</li>
+</ul>
+<table>
+<colgroup>
+<col width="4%" />
+<col width="7%" />
+<col width="88%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="left">default</th>
+<th align="left">help</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">warn</td>
+<td align="left">FALSE</td>
+<td align="left">produce a warning if the 1D MDS fit does not preserve
+the given order (see ? seriation::uniscale).</td>
+</tr>
+</tbody>
+</table>
+<hr />
+</div>
+<div id="me" class="section level3">
+<h3>ME</h3>
+<p>Measure of effectiveness applied to the reordered similarity matrix
+(McCormick, 1972).</p>
+<ul>
+<li>merit: TRUE</li>
+<li>optimized by: <a href="seriation_methods.html#bea">BEA</a>, <a href="seriation_methods.html#bea_tsp">BEA_TSP</a></li>
+<li>additional parameters: no parameters</li>
+</ul>
+<hr />
+</div>
+<div id="moore_stress" class="section level3">
+<h3>Moore_stress</h3>
+<p>Stress criterion (Moore neighborhood) applied to the reordered
+similarity matrix (Niermann, 2005).</p>
+<ul>
+<li>merit: FALSE</li>
+<li>optimized by: N/A</li>
+<li>additional parameters: no parameters</li>
+</ul>
+<hr />
+</div>
+<div id="neumann_stress" class="section level3">
+<h3>Neumann_stress</h3>
+<p>Stress criterion (Neumann neighborhood) applied to the reordered
+similarity matrix (Niermann, 2005).</p>
+<ul>
+<li>merit: FALSE</li>
+<li>optimized by: N/A</li>
+<li>additional parameters: no parameters</li>
+</ul>
+<hr />
+</div>
+<div id="path_length" class="section level3">
+<h3>Path_length</h3>
+<p>Hamiltonian path length: Sum of distances by following the
+permutation (Caraux and Pinloche, 2005).</p>
+<ul>
+<li>merit: FALSE</li>
+<li>optimized by: <a href="seriation_methods.html#tsp">TSP</a>, <a href="seriation_methods.html#gw">GW</a>, <a href="seriation_methods.html#gw_single">GW_single</a>, <a href="seriation_methods.html#gw_average">GW_average</a>, <a href="seriation_methods.html#gw_complete">GW_complete</a>, <a href="seriation_methods.html#gw_ward">GW_ward</a>, <a href="seriation_methods.html#olo">OLO</a>, <a href="seriation_methods.html#olo_single">OLO_single</a>, <a href="seriation_methods.html#olo_average">OLO_average</a>, <a href="seriation_methods.html#olo_complete">OLO_complete</a>, <a href="seriation_methods.html#olo_ward">OLO_ward</a>, <a href="seriation_methods.html#dendser_pl">DendSer_PL</a></li>
+<li>additional parameters: no parameters</li>
+</ul>
+<hr />
+</div>
+<div id="rgar" class="section level3">
+<h3>RGAR</h3>
+<p>Relative generalized anti-Robinson events: Counts Anti-Robinson
+events in a variable band of size w around the main diagonal and
+normalizes by the maximum of possible events (Tien et al, 2008).</p>
+<ul>
+<li>merit: FALSE</li>
+<li>optimized by: N/A</li>
+<li>additional parameters:</li>
+</ul>
+<table>
+<colgroup>
+<col width="9%" />
+<col width="8%" />
+<col width="83%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="left">default</th>
+<th align="left">help</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">w</td>
+<td align="left">NULL</td>
+<td align="left">window size. Default is to use a pct of 100% of n</td>
+</tr>
+<tr class="even">
+<td align="left">pct</td>
+<td align="left">100</td>
+<td align="left">specify w as a percentage of n in (0,100]</td>
+</tr>
+<tr class="odd">
+<td align="left">relative</td>
+<td align="left">TRUE</td>
+<td align="left">set to FALSE to get the GAR, i.e., the absolute number
+of AR events in the window.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+</div>
+<div id="rho" class="section level3">
+<h3>Rho</h3>
+<p>Absolute value of the Spearman rank correlation between original
+distances and rank differences of the order.</p>
+<ul>
+<li>merit: TRUE</li>
+<li>optimized by: N/A</li>
+<li>additional parameters: no parameters</li>
+</ul>
+<hr />
+</div>
+<div id="smacof_stress0" class="section level3">
+<h3>smacof_stress0</h3>
+<p>Stress0 calculated for different transformation types from package
+smacof.</p>
+<ul>
+<li>merit: FALSE</li>
+<li>optimized by: <a href="seriation_methods.html#mds_smacof">MDS_smacof</a></li>
+<li>registered by: register_smacof()</li>
+<li>additional parameters:</li>
+</ul>
+<table>
+<colgroup>
+<col width="4%" />
+<col width="7%" />
+<col width="88%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="left">default</th>
+<th align="left">help</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">type</td>
+<td align="left">“ratio”</td>
+<td align="left">MDS type (see ? smacof::stress0)</td>
+</tr>
+<tr class="even">
+<td align="left">warn</td>
+<td align="left">FALSE</td>
+<td align="left">produce a warning if the 1D MDS fit does not preserve
+the given order (see ? seriation::uniscale).</td>
+</tr>
+<tr class="odd">
+<td align="left">more</td>
+<td align="left">NA</td>
+<td align="left">more arguments are passed on to smacof::stress0.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+</div>
+</div>
+<div id="criteria-for-data-matrices-tables-and-data.frames" class="section level2">
+<h2>Criteria for data matrices, tables and data.frames</h2>
+<div id="cor_r" class="section level3">
+<h3>Cor_R</h3>
+<p>Weighted correlation coefficient R: A measure of effectiveness
+normalized between -1 and 1 (Deutsch and Martin, 1971).</p>
+<ul>
+<li>merit: TRUE</li>
+<li>optimized by: N/A</li>
+<li>additional parameters: no parameters</li>
+</ul>
+<hr />
+</div>
+<div id="me-1" class="section level3">
+<h3>ME</h3>
+<p>Measure of effectiveness (McCormick, 1972).</p>
+<ul>
+<li>merit: TRUE</li>
+<li>optimized by: <a href="seriation_methods.html#bea">BEA</a>, <a href="seriation_methods.html#bea_tsp">BEA_TSP</a></li>
+<li>additional parameters: no parameters</li>
+</ul>
+<hr />
+</div>
+<div id="moore_stress-1" class="section level3">
+<h3>Moore_stress</h3>
+<p>Stress criterion (Moore neighborhood) applied to the reordered matrix
+(Niermann, 2005).</p>
+<ul>
+<li>merit: FALSE</li>
+<li>optimized by: N/A</li>
+<li>additional parameters: no parameters</li>
+</ul>
+<hr />
+</div>
+<div id="neumann_stress-1" class="section level3">
+<h3>Neumann_stress</h3>
+<p>Stress criterion (Neumann neighborhood) applied to the reordered
+matrix (Niermann, 2005).</p>
+<ul>
+<li>merit: FALSE</li>
+<li>optimized by: N/A</li>
+<li>additional parameters: no parameters</li>
+</ul>
+<hr />
+</div>
+</div>
+<div id="references" class="section level1">
+<h1>References</h1>
+<p>Barnard, S.T., A. Pothen, and H. D. Simon (1993): A Spectral
+Algorithm for Envelope Reduction of Sparse Matrices. <em>In Proceedings
+of the 1993 ACM/IEEE Conference on Supercomputing,</em> 493–502.
+Supercomputing ’93. New York, NY, USA: ACM.</p>
+<p>Caraux, G. and S. Pinloche (2005): Permutmatrix: A Graphical
+Environment to Arrange Gene Expression Profiles in Optimal Linear Order,
+<em>Bioinformatics,</em> <strong>21</strong>(7), 1280–1281.</p>
+<p>Chen, C.-H. (2002): Generalized association plots: Information
+visualization via iteratively generated correlation matrices,
+<em>Statistica Sinica,</em> <strong>12</strong>(1), 7–29.</p>
+<p>Deutsch, S.B. and J.J. Martin (1971): An ordering algorithm for
+analysis of data arrays. <em>Operational Research,</em>
+<strong>19</strong>(6), 1350–1362. <a href="https://doi.org/10.1287/opre.19.6.1350" class="uri">https://doi.org/10.1287/opre.19.6.1350</a></p>
+<p>Earle, D. and C.B. Hurley (2015): Advances in Dendrogram Seriation
+for Application to Visualization. <em>Journal of Computational and
+Graphical Statistics,</em> <strong>24</strong>(1), 1–25. <a href="https://doi.org/10.1080/10618600.2013.874295" class="uri">https://doi.org/10.1080/10618600.2013.874295</a></p>
+<p>Hahsler, M. (2017): An experimental comparison of seriation methods
+for one-mode two-way data. <em>European Journal of Operational
+Research,</em> <strong>257</strong>, 133–143. <a href="https://doi.org/10.1016/j.ejor.2016.08.066" class="uri">https://doi.org/10.1016/j.ejor.2016.08.066</a></p>
+<p>Hubert, L. and J. Schultz (1976): Quadratic Assignment as a General
+Data Analysis Strategy. <em>British Journal of Mathematical and
+Statistical Psychology,</em> <strong>29</strong>(2). Blackwell
+Publishing Ltd. 190–241. <a href="https://doi.org/10.1111/j.2044-8317.1976.tb00714.x" class="uri">https://doi.org/10.1111/j.2044-8317.1976.tb00714.x</a></p>
+<p>Hubert, L., P. Arabie, and J. Meulman (2001): <em>Combinatorial Data
+Analysis: Optimization by Dynamic Programming.</em> Society for
+Industrial Mathematics. <a href="https://doi.org/10.1137/1.9780898718553" class="uri">https://doi.org/10.1137/1.9780898718553</a></p>
+<p>Niermann, S. (2005): Optimizing the Ordering of Tables With
+Evolutionary Computation, <em>The American Statistician,</em>
+<strong>59</strong>(1), 41–46. <a href="https://doi.org/10.1198/000313005X22770" class="uri">https://doi.org/10.1198/000313005X22770</a></p>
+<p>McCormick, W.T., P.J. Schweitzer and T.W. White (1972): Problem
+decomposition and data reorganization by a clustering technique,
+<em>Operations Research,</em> <strong>20</strong>(5), 993-1009. <a href="https://doi.org/10.1287/opre.20.5.993" class="uri">https://doi.org/10.1287/opre.20.5.993</a></p>
+<p>Robinson, W.S. (1951): A method for chronologically ordering
+archaeological deposits, <em>American Antiquity,</em>
+<strong>16</strong>, 293–301. <a href="https://doi.org/10.2307/276978" class="uri">https://doi.org/10.2307/276978</a></p>
+<p>Tien, Y-J., Yun-Shien Lee, Han-Ming Wu and Chun-Houh Chen (2008):
+Methods for simultaneously identifying coherent local clusters with
+smooth global patterns in gene expression profiles, <em>BMC
+Bioinformatics,</em> <strong>9</strong>(155), 1–16. <a href="https://doi.org/10.1186/1471-2105-9-155" class="uri">https://doi.org/10.1186/1471-2105-9-155</a></p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

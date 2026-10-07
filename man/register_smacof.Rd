@@ -56,15 +56,16 @@ Jan de Leeuw, Patrick Mair (2009). Multidimensional Scaling Using Majorization: 
 \emph{Journal of Statistical Software, 31(3),} 1-30. \doi{10.18637/jss.v031.i03}
 }
 \seealso{
-Other seriation: 
-\code{\link{register_DendSer}()},
-\code{\link{register_GA}()},
-\code{\link{register_optics}()},
-\code{\link{register_tsne}()},
-\code{\link{register_umap}()},
+Other seriation:
+\code{\link[=register_DendSer]{register_DendSer()}},
+\code{\link[=register_GA]{register_GA()}},
+\code{\link[=register_optics]{register_optics()}},
+\code{\link[=register_tsne]{register_tsne()}},
+\code{\link[=register_umap]{register_umap()}},
+\code{\link[=register_vegan]{register_vegan()}},
 \code{\link{registry_for_seriation_methods}},
-\code{\link{seriate}()},
-\code{\link{seriate_best}()}
+\code{\link[=seriate]{seriate()}},
+\code{\link[=seriate_best]{seriate_best()}}
 }
 \concept{seriation}
 \keyword{cluster}

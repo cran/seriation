@@ -47,7 +47,7 @@ seriation algorithms and criterion functions.
 }
 \details{
 \code{create_lines_data()} recreates the lines data set used in for \code{\link[=iVAT]{iVAT()}} in
-Havens and Bezdeck (2012).
+Havens and Bezdek (2012).
 
 \code{create_ordered_data()} (Hahsler et al, 2021) is a versatile
 function which creates "orderable"
@@ -121,15 +121,16 @@ Ordering Objects Using Seriation. R package version 1.3.2.
 \seealso{
 \code{\link[=seriate]{seriate()}}, \code{\link[=criterion]{criterion()}}, \code{\link[=iVAT]{iVAT()}}.
 
-Other data: 
+Other data:
 \code{\link{Chameleon}},
 \code{\link{Irish}},
 \code{\link{Munsingen}},
+\code{\link{Psych24}},
 \code{\link{SupremeCourt}},
 \code{\link{Townships}},
 \code{\link{Wood}},
 \code{\link{Zoo}},
-\code{\link{is.robinson}()}
+\code{\link[=is.robinson]{is.robinson()}}
 }
 \author{
 Michael Hahsler

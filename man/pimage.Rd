@@ -206,7 +206,7 @@ d <- dist(x)
 pimage(d)
 pimage(d, order = TRUE)
 
-# Supress the upper triangle and diagonal
+# Suppress the upper triangle and diagonal
 pimage(d, order = TRUE, upper_tri = FALSE, diag = FALSE)
 
 # Show only distances that are smaller than 2 using limits on z.
@@ -303,7 +303,7 @@ d <- dist(x)
 ggpimage(d)
 ggpimage(d, order = TRUE)
 
-# Supress the upper triangle and diagonal
+# Suppress the upper triangle and diagonal
 ggpimage(d, order = TRUE, upper_tri = FALSE, diag = FALSE)
 
 # Show only distances that are smaller than 2 using limits on z.
@@ -347,12 +347,12 @@ ggpimage(d, order = seriate(d), upper_tri = FALSE) +
 }
 }
 \seealso{
-Other plots: 
-\code{\link{VAT}()},
-\code{\link{bertinplot}()},
-\code{\link{dissplot}()},
-\code{\link{hmap}()},
-\code{\link{palette}()}
+Other plots:
+\code{\link[=VAT]{VAT()}},
+\code{\link[=bertinplot]{bertinplot()}},
+\code{\link[=dissplot]{dissplot()}},
+\code{\link[=hmap]{hmap()}},
+\code{\link{palette}}
 }
 \author{
 Christian Buchta and Michael Hahsler

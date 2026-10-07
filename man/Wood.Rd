@@ -8,8 +8,7 @@
 The format is a 136 x 6 matrix.
 }
 \source{
-The data was obtained from
-\url{http://www.atgc-montpellier.fr/permutmatrix/manual/Exemples/Wood/Wood.htm}.
+The data was obtained from the Montpellier Bioinformatics Platform
 }
 \description{
 A data matrix containing a sample of the normalized gene expression data for
@@ -32,15 +31,16 @@ arrange gene expression profiles in optimal linear order,
 \emph{Bioinformatics,} \strong{21}(7) 1280--1281.
 }
 \seealso{
-Other data: 
+Other data:
 \code{\link{Chameleon}},
 \code{\link{Irish}},
 \code{\link{Munsingen}},
+\code{\link{Psych24}},
 \code{\link{SupremeCourt}},
 \code{\link{Townships}},
 \code{\link{Zoo}},
-\code{\link{create_lines_data}()},
-\code{\link{is.robinson}()}
+\code{\link[=create_lines_data]{create_lines_data()}},
+\code{\link[=is.robinson]{is.robinson()}}
 }
 \concept{data}
 \keyword{datasets}

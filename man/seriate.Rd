@@ -70,7 +70,8 @@ used to reorder the dissimilarity matrix/data matrix using
 Seriation methods are managed via a registry. See
 \code{\link[=list_seriation_methods]{list_seriation_methods()}} for help. In the following, we focus on
 discussing the
-built-in methods that are registered automatically by the package \pkg{seriation}.
+methods provided by the package \pkg{seriation}. Some methods that use
+optional packages need to be registered first using a \verb{register_*()} function.
 
 The available control options, default settings, and
 a description for each algorithm
@@ -96,7 +97,7 @@ dissimilarities.
 Seriation algorithms fall into different groups based on the approach.
 In the following, we describe the currently implemented methods.
 A list with all methods and the available parameters is available
-\href{https://mhahsler.github.io/seriation/seriation_methods.html}{here}.
+\href{https://michael.hahsler.net/seriation/articles/seriation_methods.html}{here}.
 \href{https://michael.hahsler.net/research/paper/EJOR_seriation_2016.pdf}{Hahsler (2017)}
 for a more detailed description and an experimental comparison of the most
 popular methods.
@@ -120,7 +121,7 @@ For convenience, the other methods are provided as shortcuts.
 \code{"GW_complete"}, \code{"GW_ward"}  (Gruvaeus and Wainer, 1972)
 
 Method \code{"GW"} uses an algorithm developed by Gruvaeus and Wainer (1972)
-as implemented \code{\link[gclus:hclust]{gclus::reorder.hclust()}} (Hurley 2004).  The clusters are
+as implemented \code{\link[gclus:reorder.hclust]{gclus::reorder.hclust()}} (Hurley 2004).  The clusters are
 ordered at each level so that the objects at the edge of each cluster are
 adjacent to the nearest object outside the cluster. The
 method produces a unique order.
@@ -171,13 +172,16 @@ Orders along the 1D classical metric multidimensional scaling.
 \code{control} parameters are passed on to \code{\link[stats:cmdscale]{stats::cmdscale()}}.
 \item \strong{Isometric feature mapping:} \code{"isomap"} (Tenenbaum, 2000)
 
-Orders along the 1D isometric feature mapping.
+Orders along the 1D isometric feature mapping. This method is available
+after calling \code{\link[=register_vegan]{register_vegan()}}.
 \code{control} parameters are passed on to \code{\link[vegan:isomap]{vegan::isomap()}}
 \item \strong{Kruskal's non-metric multidimensional scaling:} \code{"isoMDS"}, \code{"monoMDS"},
 \code{"metaMDS"} (Kruskal, 1964)
 
 Orders along the 1D Kruskal's non-metric multidimensional scaling.
-Package \pkg{vegan} provides an alternative implementation called \code{monoMDS}
+Package \pkg{vegan} provides optional methods. Call
+\code{\link[=register_vegan]{register_vegan()}} to register \code{"monoMDS"} and \code{"metaMDS"}.
+It provides an alternative implementation called \code{monoMDS}
 and a version that uses random restarts for stability called \code{metaMDS}.
 \code{control} parameters are passed on to \code{\link[MASS:isoMDS]{MASS::isoMDS()}}, \code{\link[vegan:monoMDS]{vegan::monoMDS()}} or \code{\link[vegan:metaMDS]{vegan::metaMDS()}}.
 \item \strong{Sammon's non-linear mapping:} \code{"Sammon_mapping"} (Sammon, 1969)
@@ -190,7 +194,7 @@ Finds a 2D configuration using MDS (\code{\link[stats:cmdscale]{stats::cmdscale(
 to approximate the eigenvectors of the covariance matrix in the
 original data matrix.
 Orders by the angle in this space and splits the order by the
-larges gap between adjacent angles. A similar method was used by
+largest gap between adjacent angles. A similar method was used by
 Friendly (2002) to order variables in correlation matrices
 by angles of first two eigenvectors.
 \item \strong{Smacof:} \code{"MDS_smacof"} (de Leeuw and Mair, 2009)
@@ -252,14 +256,18 @@ the \strong{2-Sum Problem} formulation (Barnard, Pothen, and Simon 1993), the
 An important parameter is \code{rep} to return the best result from the
 given number of repetitions with random restarts. The default is 1, but bigger
 numbers result in better and more stable results.
-\item \strong{General Simulated Annealing:} \code{"GSA"}
+\item \strong{General Simulated Annealing:} \code{"GSA"} (Hahsler, Hornik,
+and Buchta, 2023)
 
-Implement simulated annealing similar to the ARSA method. However, it
-can optimize
+Implement simulated annealing similar to the ARSA method
+(Brusco et al 2008) which can optimize
 for any criterion measure defined in \pkg{seriation}. By default, the
 algorithm optimizes for the raw gradient measure, and is warm started with the
 result of spectral seriation (2-Sum problem) since Hahsler (2017) shows that
 2-Sum solutions are similar to solutions for the gradient measure.
+This method was first introduced in the R package \strong{seriation}
+version 1.5.0.
+
 Use \code{warmstart = "random"} for no warm start.
 
 The initial temperature \code{t0} and minimum temperature \code{tmin} can be set. If
@@ -275,10 +283,13 @@ iteration \code{nlocal} times the number of objects.
 
 Note that this is an R implementation repeatedly calling the criterion function
 which is very slow.
-\item \strong{Stochastic gradient descent:} \code{"SGD"}
+\item \strong{Stochastic greedy local search:} \code{"SGLS"} (Hahsler, Hornik, and Buchta, 2023)
 
-Starts with a solution and then performs stochastic gradient descent to find
-a close-by local optimum given a specified criterion.
+Starts with a solution and repeatedly applies a randomly selected local
+move, accepting only moves that improve the specified criterion. This is
+stochastic greedy local search over permutations.
+This method was first introduced in the R package \strong{seriation}
+version 1.5.0.
 
 Important \code{control} parameters:
 \itemize{
@@ -434,7 +445,7 @@ can be found.
 }
 \item \strong{Unconstrained Brower and Kyle seriation}: \code{"BK_unconstrained"} (Brower and Kyle 1988).
 
-Reorderes 0-1 matrices to create a block structure along the diagonal. It iteratively
+Reorders 0-1 matrices to create a block structure along the diagonal. It iteratively
 reorders by the mean row indices of 1s and mean column indices of 1s till the orders
 become stable.
 
@@ -478,7 +489,7 @@ seriation methods.
 \strong{Seriate rows using the data matrix}
 
 These methods need access to the data matrix instead of dissimilarities to
-reorder objects (rows). Columns can also be reorderd by applying the same technique
+reorder objects (rows). Columns can also be reordered by applying the same technique
 to the transposed data matrix.
 \itemize{
 \item \strong{Order along the 1D locally linear embedding:} \code{"LLE"}
@@ -499,7 +510,7 @@ distance, this method minimizes the least square criterion.
 \item \strong{Angular order of the first two PCA components:} \code{"PCA_angle"}
 
 For rows, projects the data on the first two principal components
-and then orders by the angle in this space. The order is split by the larges
+and then orders by the angle in this space. The order is split by the largest
 gap between adjacent angles. A similar method was suggested by
 Friendly (2002) to order variables in correlation matrices
 by angles of first two eigenvectors. PCA also computes the eigenvectors
@@ -625,7 +636,8 @@ Optimal Leaf Ordering for Hierarchical Clustering. \emph{Bioinformatics,}
 Barnard, S. T., A. Pothen, and H. D. Simon (1993): A Spectral Algorithm for
 Envelope Reduction of Sparse Matrices. \emph{In Proceedings of the 1993
 ACM/IEEE Conference on Supercomputing,} 493--502. Supercomputing '93. New
-York, NY, USA: ACM. \url{https://ieeexplore.ieee.org/document/1263497}
+York, NY, USA: ACM.
+\doi{10.1145/169627.169790}
 
 Bezdek, J.C. and Hathaway, R.J. (2002): VAT: a tool for visual assessment of
 (cluster) tendency. \emph{Proceedings of the 2002 International Joint
@@ -679,6 +691,10 @@ one-mode two-way data. \emph{European Journal of Operational Research,}
 \strong{257}, 133--143.
 \doi{10.1016/j.ejor.2016.08.066}
 
+Hahsler M, Buchta C, Hornik K (2023). \emph{seriation: Infrastructure for Ordering
+Objects Using Seriation}. R package version 1.5.0/
+\doi{10.32614/CRAN.package.seriation}
+
 Hubert, Lawrence, and James Schultz (1976): Quadratic Assignment as a
 General Data Analysis Strategy. \emph{British Journal of Mathematical and
 Statistical Psychology,} \strong{29}(2). Blackwell Publishing Ltd. 190--241.
@@ -719,15 +735,16 @@ Sammon, J. W. (1969) A non-linear mapping for data structure analysis.
 \emph{IEEE Trans. Comput.}, \strong{C-18} 401--409.
 }
 \seealso{
-Other seriation: 
-\code{\link{register_DendSer}()},
-\code{\link{register_GA}()},
-\code{\link{register_optics}()},
-\code{\link{register_smacof}()},
-\code{\link{register_tsne}()},
-\code{\link{register_umap}()},
+Other seriation:
+\code{\link[=register_DendSer]{register_DendSer()}},
+\code{\link[=register_GA]{register_GA()}},
+\code{\link[=register_optics]{register_optics()}},
+\code{\link[=register_smacof]{register_smacof()}},
+\code{\link[=register_tsne]{register_tsne()}},
+\code{\link[=register_umap]{register_umap()}},
+\code{\link[=register_vegan]{register_vegan()}},
 \code{\link{registry_for_seriation_methods}},
-\code{\link{seriate_best}()}
+\code{\link[=seriate_best]{seriate_best()}}
 }
 \author{
 Michael Hahsler

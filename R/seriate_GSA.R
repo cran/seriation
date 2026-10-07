@@ -28,6 +28,7 @@
 #'  (1/3 insertion, 1/3 swap and 1/3 reverse). Any neighborhood function can be defined.
 #' @name LS
 #' @aliases LS
+#' @family helper
 #' @param o an integer vector with the order
 #' @param pos random positions used for the local move.
 #' @returns returns the new order vector representing the random neighbor.
@@ -208,7 +209,7 @@ set_seriation_method(
   "dist",
   "GSA",
   seriate_sa,
-  "Minimize a specified seriation measure (criterion) using simulated annealing.",
+  "Minimize a specified seriation measure (criterion) using simulated annealing. (Hahsler, Hornik, and Buchta, 2023)",
   .sa_contr,
   optimizes = .opt (NA, "set via control criterion"),
   randomized = TRUE

@@ -23,7 +23,7 @@
 #' `seriate_best()` and `seriate_rep()` automatically try different seriation methods or
 #' rerun randomized methods several times to find the best and order
 #' given a criterion measure. `seriate_improve()` uses a local improvement strategy
-#' to imporve an existing solution.
+#' to improve an existing solution.
 #'
 #' `seriate_rep()` rerun a randomized seriation methods to find the best solution
 #' given the criterion specified for the method in the registry.
@@ -218,7 +218,7 @@ seriate_best <- function(x,
 }
 
 #' @rdname seriate_best
-#' @importFrom foreach times `%dopar%` `%do%`
+#' @importFrom foreach times "%dopar%" "%do%"
 #' @export
 seriate_rep <- function(x,
                         method = NULL,

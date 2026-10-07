@@ -108,7 +108,7 @@ permute(m, "PCA")
 ## permute only rows using PCA
 permute(m, "PCA", margin = 1)
 
-# Permute data.frames using heatmap seration (= hierarchical
+# Permute data.frames using heatmap seriation (= hierarchical
 #  clustering + optimal leaf ordering)
 df <- as.data.frame(m)
 permute(df, "Heatmap")
@@ -132,7 +132,6 @@ hc <- hclust(d)
 plot(hc)
 
 plot(permute(hc, 5:1))
-plot(permute(hc, 5:1, incompartible = "stop"))
 
 plot(permute(hc, "OLO", dist = d))
 plot(permute(hc, "GW", dist = d))
@@ -140,12 +139,13 @@ plot(permute(hc, "MDS", dist = d))
 plot(permute(hc, "TSP", dist = d))
 }
 \seealso{
-Other permutation: 
-\code{\link{get_order}()},
-\code{\link{permutation_vector2matrix}()},
-\code{\link{ser_dist}()},
-\code{\link{ser_permutation}()},
-\code{\link{ser_permutation_vector}()}
+Other permutation:
+\code{\link[=get_order]{get_order()}},
+\code{\link[=permutation_vector2matrix]{permutation_vector2matrix()}},
+\code{\link[=reorder.hclust]{reorder.hclust()}},
+\code{\link[=ser_dist]{ser_dist()}},
+\code{\link[=ser_permutation]{ser_permutation()}},
+\code{\link[=ser_permutation_vector]{ser_permutation_vector()}}
 }
 \author{
 Michael Hahsler

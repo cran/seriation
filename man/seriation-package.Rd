@@ -6,6 +6,8 @@
 \alias{seriation-package}
 \title{seriation: Infrastructure for Ordering Objects Using Seriation}
 \description{
+\if{html}{\figure{logo.svg}{options: style='float: right' alt='logo' width='120'}}
+
 Infrastructure for ordering objects with an implementation of several seriation/sequencing/ordination techniques to reorder matrices, dissimilarity matrices, and dendrograms. Also provides (optimally) reordered heatmaps, color images and clustering visualizations like dissimilarity plots, and visual assessment of cluster tendency plots (VAT and iVAT). Hahsler et al (2008) \doi{10.18637/jss.v025.i03}.
 }
 \section{Key functions}{
@@ -19,28 +21,32 @@ Infrastructure for ordering objects with an implementation of several seriation/
 \section{Available seriation methods and criteria}{
 
 \itemize{
-\item \href{https://mhahsler.github.io/seriation/seriation_methods.html}{A list with the implemented seriation methods}
-\item \href{https://mhahsler.github.io/seriation/comparison.html}{A visual comparison between seriation methods}
-\item \href{https://mhahsler.github.io/seriation/seriation_criteria.html}{A list with the implemented seriation criteria}
+\item \href{https://michael.hahsler.net/seriation/articles/seriation_methods.html}{A list with the implemented seriation methods}
+\item \href{https://michael.hahsler.net/seriation/articles/comparison.html}{A visual comparison between seriation methods}
+\item \href{https://michael.hahsler.net/seriation/articles/seriation_criteria.html}{A list with the implemented seriation criteria}
 }
 }
 
 \section{Quickstart guides}{
 
 \itemize{
-\item \href{https://mhahsler.github.io/seriation/heatmaps.html}{How to reorder heatmaps}
-\item \href{https://mhahsler.github.io/seriation/correlation_matrix.html}{How to reorder correlation matrices}
-\item \href{https://mhahsler.github.io/seriation/seriation_cluster_evaluation.html}{How to evaluate clusters using dissimilarity plots}
+\item \href{https://michael.hahsler.net/seriation/articles/heatmaps.html}{How to reorder heatmaps}
+\item \href{https://michael.hahsler.net/seriation/articles/correlation_matrix.html}{How to reorder correlation matrices}
+\item \href{https://michael.hahsler.net/seriation/articles/clustering.html}{How to evaluate clusters using dissimilarity plots}
 }
 }
 
 \references{
-Michael Hahsler, Kurt Hornik, and Christian Buchta. Getting things in order: An introduction to the R package seriation. Journal of Statistical Software, 25(3):1--34, March 2008. \doi{10.18637/jss.v025.i03}
+Michael Hahsler, Kurt Hornik, and Christian Buchta.
+Getting things in order: An introduction to the R package seriation.
+Journal of Statistical Software, 25(3):1--34, March 2008.
+\doi{10.18637/jss.v025.i03}
 }
 \seealso{
 Useful links:
 \itemize{
   \item \url{https://github.com/mhahsler/seriation}
+  \item \url{http://michael.hahsler.net/seriation/}
   \item Report bugs at \url{https://github.com/mhahsler/seriation/issues}
 }
 
@@ -50,6 +56,7 @@ Useful links:
 
 Authors:
 \itemize{
+  \item Michael Hahsler \email{mhahsler@lyle.smu.edu} (\href{https://orcid.org/0000-0003-2716-1405}{ORCID}) [copyright holder]
   \item Christian Buchta [copyright holder]
   \item Kurt Hornik (\href{https://orcid.org/0000-0003-4198-9911}{ORCID}) [copyright holder]
 }

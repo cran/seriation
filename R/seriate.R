@@ -27,7 +27,8 @@
 #' Seriation methods are managed via a registry. See
 #' [list_seriation_methods()] for help. In the following, we focus on
 #' discussing the
-#' built-in methods that are registered automatically by the package \pkg{seriation}.
+#' methods provided by the package \pkg{seriation}. Some methods that use
+#' optional packages need to be registered first using a `register_*()` function.
 #'
 #' The available control options, default settings, and
 #' a description for each algorithm
@@ -53,7 +54,7 @@
 #' Seriation algorithms fall into different groups based on the approach.
 #' In the following, we describe the currently implemented methods.
 #' A list with all methods and the available parameters is available
-#' [here](https://mhahsler.github.io/seriation/seriation_methods.html).
+#' [here](https://michael.hahsler.net/seriation/articles/seriation_methods.html).
 #' [Hahsler (2017)](https://michael.hahsler.net/research/paper/EJOR_seriation_2016.pdf)
 #' for a more detailed description and an experimental comparison of the most
 #' popular methods.
@@ -132,14 +133,17 @@
 
 #'   - **Isometric feature mapping:** `"isomap"` (Tenenbaum, 2000)
 #'
-#'     Orders along the 1D isometric feature mapping.
+#'     Orders along the 1D isometric feature mapping. This method is available
+#'     after calling [`register_vegan()`].
 #'     `control` parameters are passed on to [vegan::isomap()]
 #'
 #'   - **Kruskal's non-metric multidimensional scaling:** `"isoMDS"`, `"monoMDS"`,
 #'    `"metaMDS"` (Kruskal, 1964)
 #'
 #'      Orders along the 1D Kruskal's non-metric multidimensional scaling.
-#'      Package \pkg{vegan} provides an alternative implementation called `monoMDS`
+#'      Package \pkg{vegan} provides optional methods. Call
+#'      [`register_vegan()`] to register `"monoMDS"` and `"metaMDS"`.
+#'      It provides an alternative implementation called `monoMDS`
 #'      and a version that uses random restarts for stability called `metaMDS`.
 #'      `control` parameters are passed on to [MASS::isoMDS()], [vegan::monoMDS()] or [vegan::metaMDS()].
 #'
@@ -155,7 +159,7 @@
 #'       to approximate the eigenvectors of the covariance matrix in the
 #'       original data matrix.
 #'       Orders by the angle in this space and splits the order by the
-#'       larges gap between adjacent angles. A similar method was used by
+#'       largest gap between adjacent angles. A similar method was used by
 #'       Friendly (2002) to order variables in correlation matrices
 #'       by angles of first two eigenvectors.
 #'
@@ -222,14 +226,18 @@
 #'   given number of repetitions with random restarts. The default is 1, but bigger
 #'   numbers result in better and more stable results.
 #'
-#' - **General Simulated Annealing:** `"GSA"`
+#' - **General Simulated Annealing:** `"GSA"` (Hahsler, Hornik,
+#'   and Buchta, 2023)
 #'
-#'   Implement simulated annealing similar to the ARSA method. However, it
-#'   can optimize
+#'   Implement simulated annealing similar to the ARSA method
+#'   (Brusco et al 2008) which can optimize
 #'   for any criterion measure defined in \pkg{seriation}. By default, the
 #'   algorithm optimizes for the raw gradient measure, and is warm started with the
 #'   result of spectral seriation (2-Sum problem) since Hahsler (2017) shows that
 #'   2-Sum solutions are similar to solutions for the gradient measure.
+#'   This method was first introduced in the R package **seriation**
+#'   version 1.5.0.
+#'
 #'   Use `warmstart = "random"` for no warm start.
 #'
 #'   The initial temperature `t0` and minimum temperature `tmin` can be set. If
@@ -246,10 +254,13 @@
 #'   Note that this is an R implementation repeatedly calling the criterion function
 #'   which is very slow.
 #'
-#' - **Stochastic gradient descent:** `"SGD"`
+#' - **Stochastic greedy local search:** `"SGLS"` (Hahsler, Hornik, and Buchta, 2023)
 #'
-#'   Starts with a solution and then performs stochastic gradient descent to find
-#'   a close-by local optimum given a specified criterion.
+#'   Starts with a solution and repeatedly applies a randomly selected local
+#'   move, accepting only moves that improve the specified criterion. This is
+#'   stochastic greedy local search over permutations.
+#'   This method was first introduced in the R package **seriation**
+#'   version 1.5.0.
 #'
 #'   Important `control` parameters:
 #'     - `"criterion"`: the criterion to optimize
@@ -408,7 +419,7 @@
 #'
 #' - **Unconstrained Brower and Kyle seriation**: `"BK_unconstrained"` (Brower and Kyle 1988).
 #'
-#'   Reorderes 0-1 matrices to create a block structure along the diagonal. It iteratively
+#'   Reorders 0-1 matrices to create a block structure along the diagonal. It iteratively
 #'   reorders by the mean row indices of 1s and mean column indices of 1s till the orders
 #'   become stable.
 #'
@@ -448,7 +459,7 @@
 #' **Seriate rows using the data matrix**
 #'
 #' These methods need access to the data matrix instead of dissimilarities to
-#' reorder objects (rows). Columns can also be reorderd by applying the same technique
+#' reorder objects (rows). Columns can also be reordered by applying the same technique
 #' to the transposed data matrix.
 #'
 #' - **Order along the 1D locally linear embedding:** `"LLE"`
@@ -469,7 +480,7 @@
 #' - **Angular order of the first two PCA components:** `"PCA_angle"`
 #'
 #'   For rows, projects the data on the first two principal components
-#'   and then orders by the angle in this space. The order is split by the larges
+#'   and then orders by the angle in this space. The order is split by the largest
 #'   gap between adjacent angles. A similar method was suggested by
 #'   Friendly (2002) to order variables in correlation matrices
 #'   by angles of first two eigenvectors. PCA also computes the eigenvectors
@@ -536,7 +547,8 @@
 #' Barnard, S. T., A. Pothen, and H. D. Simon (1993): A Spectral Algorithm for
 #' Envelope Reduction of Sparse Matrices. _In Proceedings of the 1993
 #' ACM/IEEE Conference on Supercomputing,_ 493--502. Supercomputing '93. New
-#' York, NY, USA: ACM. \url{https://ieeexplore.ieee.org/document/1263497}
+#' York, NY, USA: ACM.
+#' \doi{10.1145/169627.169790}
 #'
 #' Bezdek, J.C. and Hathaway, R.J. (2002): VAT: a tool for visual assessment of
 #' (cluster) tendency. _Proceedings of the 2002 International Joint
@@ -589,6 +601,10 @@
 #' one-mode two-way data. _European Journal of Operational Research,_
 #' **257**, 133--143.
 #' \doi{10.1016/j.ejor.2016.08.066}
+#'
+#' Hahsler M, Buchta C, Hornik K (2023). _seriation: Infrastructure for Ordering
+#' Objects Using Seriation_. R package version 1.5.0/
+#' \doi{10.32614/CRAN.package.seriation}
 #'
 #' Hubert, Lawrence, and James Schultz (1976): Quadratic Assignment as a
 #' General Data Analysis Strategy. _British Journal of Mathematical and

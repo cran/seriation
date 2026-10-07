@@ -8,7 +8,7 @@ extra_integer <- NULL
 extra_hclust <- NULL
 
 if(seriation:::check_installed("DendSer", "check")) {
-  register_DendSer()
+  suppressMessages(register_DendSer())
   extra_hclust <- append(extra_hclust, c("DendSer", "DendSer_ARc",
                                            "DendSer_BAR", "DendSer_LPL",
                                            "DendSer_PL"))
@@ -16,7 +16,7 @@ if(seriation:::check_installed("DendSer", "check")) {
 
 if(seriation:::check_installed("umap", "check")) {
   extra_integer <- append(extra_integer, "umap")
-  register_umap()
+  suppressMessages(register_umap())
 }
 
 x <- matrix(
@@ -44,8 +44,8 @@ test_that("test if seriate.dist returns expected results", {
     cat("\n      seriate dist\n") # for cleaner testthat output
 
   methods <- list_seriation_methods(kind = "dist")
-  ### insufficient data for metaMDS
-  methods <- setdiff(methods, "metaMDS")
+  ### insufficient data for metaMDS; deprecated aliases are tested separately
+  methods <- setdiff(methods, c("metaMDS", "SGD"))
 
   os <- sapply(methods, function(m) {
 
@@ -55,7 +55,7 @@ test_that("test if seriate.dist returns expected results", {
     # check 0 and 1 objects
     expect_error(o <- seriate(d0, method = m))
     o <- seriate(d1, method = m)
-    expect_length(0, 1L)
+    expect_length(o[[1]], 1L)
 
     # check example with timing
     tm <- system.time(o <- seriate(d, method = m))
@@ -101,9 +101,6 @@ test_that("test if seriate.dist returns expected results", {
       "Identity",
       "MDS",
       "MDS_angle",
-      # "metaMDS",
-      "monoMDS",
-      "isomap",
       "isoMDS",
       "Sammon_mapping",
       "QAP_2SUM",
@@ -114,7 +111,7 @@ test_that("test if seriate.dist returns expected results", {
       "Random",
       "Reverse",
       "GSA",
-      "SGD",
+      "SGLS",
       "Spectral",
       "Spectral_norm",
       "SPIN_NH",
@@ -319,13 +316,12 @@ test_that("test if dist objects without Diag or Upper attributes can be permuted
 })
 
 ### Stress test to find memory access problems with randomized algorithms
-#context("memory stress test")
+# Memory stress test
 #replicate(1000, seriate(d, method="bburcg"))
 #replicate(1000, seriate(d, method="bbwrcg"))
 #replicate(1000, seriate(d, method="arsa"))
 
 test_that("test if seriate.matrix returns expected results", {
-  #local_edition(3) # for snapshot testing
 
   if (interactive())
     cat("\n      seriate matrix\n") # for cleaner testthat output
@@ -398,7 +394,6 @@ test_that("test if seriate.matrix returns expected results", {
 })
 
 test_that("test if seriate.matrix with margin returns expected results", {
-  #local_edition(3) # for snapshot testing
 
 
   if (interactive())
@@ -436,7 +431,6 @@ test_that("test if seriate.matrix with margin returns expected results", {
 })
 
 test_that("test if data.frame seriation works as expected", {
-  #local_edition(3) # for snapshot testing
 
   df <- as.data.frame(x)
   o <- seriate(df)
@@ -465,4 +459,3 @@ test_that("test if optimizes in registry is a valid criterion", {
           get_criterion_method(kind, name = m$optimizes)
   })
 })
-

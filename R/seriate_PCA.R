@@ -90,7 +90,7 @@ seriate_matrix_angle <- function(x, control = NULL, margin) {
       pr <- prcomp(x,
                    center = center,
                    scale. = scale,
-                   rank = 2L)
+                   rank. = 2L)
       row <- .order_angle(pr$x[, 1:2])
   } else
     row <- NA
@@ -99,7 +99,7 @@ seriate_matrix_angle <- function(x, control = NULL, margin) {
       pr <- prcomp(t(x),
                    center = center,
                    scale. = scale,
-                   rank = 2L)
+                   rank. = 2L)
       col <- .order_angle(pr$x[, 1:2])
   } else
     col <- NA
@@ -120,6 +120,6 @@ set_seriation_method(
   "matrix",
   "PCA_angle",
   seriate_matrix_angle,
-  "Uses the angular order in the 2D PCA projection space split by the larges gap.",
+  "Uses the angular order in the 2D PCA projection space split by the largest gap.",
   .pca_contr
 )

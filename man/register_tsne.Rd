@@ -28,7 +28,7 @@ available \code{control} parameters.
 
 Perplexity is automatically set as the minimum between 30 and the number of
 observations. It can be also specified using the control parameter
-\code{"preplexity"}.
+\code{"perplexity"}.
 
 \strong{Note:} Package \pkg{Rtsne} needs to be installed.
 }
@@ -85,15 +85,16 @@ pp.2579-2605.
 \seealso{
 \code{\link[Rtsne:Rtsne]{Rtsne::Rtsne()}}
 
-Other seriation: 
-\code{\link{register_DendSer}()},
-\code{\link{register_GA}()},
-\code{\link{register_optics}()},
-\code{\link{register_smacof}()},
-\code{\link{register_umap}()},
+Other seriation:
+\code{\link[=register_DendSer]{register_DendSer()}},
+\code{\link[=register_GA]{register_GA()}},
+\code{\link[=register_optics]{register_optics()}},
+\code{\link[=register_smacof]{register_smacof()}},
+\code{\link[=register_umap]{register_umap()}},
+\code{\link[=register_vegan]{register_vegan()}},
 \code{\link{registry_for_seriation_methods}},
-\code{\link{seriate}()},
-\code{\link{seriate_best}()}
+\code{\link[=seriate]{seriate()}},
+\code{\link[=seriate_best]{seriate_best()}}
 }
 \concept{seriation}
 \keyword{cluster}

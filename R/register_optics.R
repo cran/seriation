@@ -53,7 +53,7 @@ register_optics <- function() {
   check_installed("dbscan")
 
   .contr <- structure(
-    list(eps = NULL,
+    list(eps = Inf,
          minPts = 5),
     help = list(eps = "upper limit of the size of the epsilon neighborhood (see ? optics)" ,
                 minPts = "minimum density for dense neighborhoods")
@@ -63,7 +63,6 @@ register_optics <- function() {
     control <- .get_parameters(control, .contr)
 
     control$minPts <- min(control$minPts, attr(x, "Size"))
-
     dbscan::optics(x, eps = control$eps, minPts = control$minPts)$order
   }
 
